@@ -1,4 +1,4 @@
-package pl.edu.agh.ghayyeda.nursescheduling;
+package pl.edu.agh.ghayyeda.student.nursescheduling;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

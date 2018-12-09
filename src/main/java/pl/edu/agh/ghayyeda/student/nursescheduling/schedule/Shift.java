@@ -4,28 +4,44 @@ import java.time.Duration;
 import java.time.LocalTime;
 
 public enum Shift {
-    //    R - 8h od 7 do 15 - min. przerwa 11h
-//    P - 4h od 15 do 19 - min. przerwa 11h
-//    D - 12h od 7 do 19 - min. przerwa 11h
-//    N - 12h od 19 do 7 - min. przerwa 11h
-//    DN - 24h od 7 do 7 - min. przerwa 24h
-    R(timeOfHour(7), timeOfHour(15)),
-    P(timeOfHour(15), timeOfHour(19)),
-    D(timeOfHour(7), timeOfHour(19)),
-    N(timeOfHour(19), timeOfHour(7)),
-    DN(timeOfHour(7), timeOfHour(7)),
-    W(timeOfHour(0), timeOfHour(0)); //TODO day off
 
-    private final LocalTime startTime;
-    private final LocalTime endTime;
+    R(7, 15),
+    P(15, 19),
+    D(7, 19),
+    N(19, 7),
+    DN(7, 7),
+    W();
 
-    Shift(LocalTime startTime, LocalTime endTime) {
+    private final int startTime;
+    private final int endTime;
+    private final boolean workDay;
+
+    Shift(int startTime, int endTime) {
         this.startTime = startTime;
         this.endTime = endTime;
+        this.workDay = true;
     }
 
-    Duration getDuration() {
-        return Duration.between(startTime, endTime);
+    Shift() {
+        this.workDay = false;
+        this.startTime = 0;
+        this.endTime = 0;
+    }
+
+    public Duration getDuration() {
+        return isWorkDay() ? Duration.ofHours(Math.abs(endTime - startTime)) : Duration.ZERO;
+    }
+
+    public LocalTime getStartTime() {
+        return timeOfHour(startTime);
+    }
+
+    public LocalTime getEndTime() {
+        return timeOfHour(endTime);
+    }
+
+    public boolean isWorkDay() {
+        return workDay;
     }
 
     private static LocalTime timeOfHour(int i) {

@@ -1,6 +1,7 @@
 package pl.edu.agh.ghayyeda.student.nursescheduling
 
-import pl.edu.agh.ghayyeda.student.nursescheduling.staff.Nurse
+import pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee
+
 import spock.lang.Specification
 
 import static java.time.Month.NOVEMBER
@@ -17,10 +18,10 @@ class ScheduleTest extends Specification {
         def schedule = schedule()
                 .forMonth(NOVEMBER)
                 .forYear(2018)
-                .onDay(1, employeeShiftAssignment().employee(new Nurse("Nurse 1")).shift(R))
-                .onDay(1, employeeShiftAssignment().employee(new Nurse("Nurse 2")).shift(D))
-                .onDay(2, employeeShiftAssignment().employee(new Nurse("Nurse 1")).shift(D))
-                .onDay(2, employeeShiftAssignment().employee(new Nurse("Nurse 2")).shift(N))
+                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(R))
+                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(D))
+                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(D))
+                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(N))
                 .build()
 
 

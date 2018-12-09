@@ -1,20 +1,25 @@
 package pl.edu.agh.ghayyeda.student.nursescheduling.schedule;
 
+import io.vavr.Tuple;
+import io.vavr.Tuple2;
+
 import java.time.LocalDate;
 import java.time.Month;
-import java.time.MonthDay;
 import java.time.Year;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeMap;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.*;
 
 public class ScheduleBuilder {
 
     private final TreeMap<LocalDate, List<EmployeeShiftAssignment>> schedule = new TreeMap<>();
-    private int year;
-    private Month month;
+    private final Collection<Tuple2<LocalDate, EmployeeShiftAssignment>> shiftAssignments = new LinkedList<>();
+    private int year = Year.now().getValue();
+    private Month month = LocalDate.now().getMonth();
 
     public static ScheduleBuilder schedule() {
         return new ScheduleBuilder();
@@ -31,18 +36,17 @@ public class ScheduleBuilder {
     }
 
     public ScheduleBuilder onDay(int monthDay, EmployeeShiftAssignmentBuilder employeeShiftAssignmentBuilder) {
-        schedule.compute(LocalDate.of(year, month, monthDay), (k, v) -> {
-            final EmployeeShiftAssignment employeeShiftAssignment = employeeShiftAssignmentBuilder.build();
-            return v != null ? concat(v, employeeShiftAssignment) : List.of(employeeShiftAssignment);
-        });
+        shiftAssignments.add(Tuple.of(LocalDate.of(year, month, monthDay), employeeShiftAssignmentBuilder.build()));
         return this;
     }
 
     public Schedule build() {
-        return new Schedule(schedule);
+        return shiftAssignments.stream()
+                .collect(groupingBy(Tuple2::_1, mapping(Tuple2::_2, toList())))
+                .entrySet()
+                .stream()
+                .map(entry -> new DateEmployeeShiftAssignments(entry.getKey(), entry.getValue()))
+                .collect(Collectors.collectingAndThen(toList(), Schedule::new));
     }
 
-    private List<EmployeeShiftAssignment> concat(List<EmployeeShiftAssignment> v, EmployeeShiftAssignment employeeShiftAssignment) {
-        return Stream.concat(v.stream(), Stream.of(employeeShiftAssignment)).collect(toList());
-    }
 }

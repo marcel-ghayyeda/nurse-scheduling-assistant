@@ -2,16 +2,38 @@ package pl.edu.agh.ghayyeda.student.nursescheduling.staff;
 
 import java.util.Objects;
 
-public abstract class Employee {
+import static pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee.Type.BABY_SITTER;
+import static pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee.Type.NURSE;
+
+public class Employee {
+
+    public enum Type {
+        NURSE,
+        BABY_SITTER;
+    }
 
     private final String name;
+    private final Type type;
 
-    public Employee(String name) {
+    private Employee(String name, Type type) {
         this.name = name;
+        this.type = type;
+    }
+
+    public static Employee nurse(String name) {
+        return new Employee(name, NURSE);
+    }
+
+    public static Employee babySitter(String name) {
+        return new Employee(name, BABY_SITTER);
     }
 
     public String getName() {
         return name;
+    }
+
+    public Type getType() {
+        return type;
     }
 
     @Override

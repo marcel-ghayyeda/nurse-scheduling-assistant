@@ -1,17 +1,16 @@
-package pl.edu.agh.ghayyeda.student.nursescheduling
+package pl.edu.agh.ghayyeda.student.nursescheduling.schedule
 
 import pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee
-
 import spock.lang.Specification
 
 import static java.time.Month.NOVEMBER
 import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.EmployeeShiftAssignmentBuilder.employeeShiftAssignment
 import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.ScheduleBuilder.schedule
-import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Shift.D
-import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Shift.N
-import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Shift.R
+import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Shift.*
 
-class ScheduleTest extends Specification {
+class ScheduleAsciiTablePresenterTest extends Specification {
+
+    def presenter = new ScheduleAsciiTablePresenter();
 
     def "Should correctly build human-friendly representation of a schedule"() {
         given:
@@ -26,7 +25,7 @@ class ScheduleTest extends Specification {
 
 
         when:
-        def humanFriendlyString = schedule.toHumanFriendlyString()
+        def humanFriendlyString = presenter.buildAsciiTableRepresentationOf(schedule)
 
         then:
         humanFriendlyString ==

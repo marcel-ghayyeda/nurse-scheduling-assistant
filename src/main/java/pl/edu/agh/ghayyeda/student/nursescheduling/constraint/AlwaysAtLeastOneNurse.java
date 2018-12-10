@@ -3,6 +3,7 @@ package pl.edu.agh.ghayyeda.student.nursescheduling.constraint;
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.EmployeeShiftAssignment;
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Schedule;
 import pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee;
+import pl.edu.agh.ghayyeda.student.nursescheduling.util.YearMonthUtil;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -40,9 +41,7 @@ public class AlwaysAtLeastOneNurse implements ScheduleConstraint {
 
     @Override
     public ScheduleConstraintValidationResult validate(Schedule schedule) {
-        var lastDayOfMonth = validationMonth.lengthOfMonth();
-        var isFeasible = IntStream.rangeClosed(1, lastDayOfMonth)
-                .mapToObj(validationMonth::atDay)
+        var isFeasible = YearMonthUtil.allDaysOf(validationMonth)
                 .flatMap(dayOfMonth -> allHoursADay().mapToObj(toLocalDateTimeOn(dayOfMonth)))
                 .filter(notBeforeValidationStartTime())
                 .filter(beforeValidationEndtime())

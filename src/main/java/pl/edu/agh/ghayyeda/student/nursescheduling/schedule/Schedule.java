@@ -13,7 +13,7 @@ public class Schedule {
         this.schedule = schedule;
     }
 
-    public List<DateEmployeeShiftAssignments> getDateEmployeeShiftAssignments() {
+    public List<DateEmployeeShiftAssignments> getDateEmployeeShiftAssignmentsByDate() {
         return schedule;
     }
 
@@ -22,5 +22,9 @@ public class Schedule {
                 .flatMap(dateEmployeeShiftAssignments -> dateEmployeeShiftAssignments.getFor(localDateTime));
     }
 
+    public Stream<DateEmployeeShiftAssignment> getDateShiftAssignments() {
+        return schedule.stream()
+                .flatMap(dateEmployeeShiftAssignments -> dateEmployeeShiftAssignments.getShiftAssignments().stream().map(employeeShiftAssignment -> new DateEmployeeShiftAssignment(dateEmployeeShiftAssignments.getStartDate(), employeeShiftAssignment)));
+    }
 
 }

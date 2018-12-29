@@ -5,20 +5,22 @@ import java.time.LocalTime;
 
 public enum Shift {
 
-    R(7, 15),
-    P(15, 19),
-    D(7, 19),
-    N(19, 7),
-    DN(7, 7),
+    R(7, 15, RestTime.hours(11)),
+    P(15, 19, RestTime.hours(11)),
+    D(7, 19, RestTime.hours(11)),
+    N(19, 7, RestTime.hours(11)),
+    DN(7, 7, RestTime.hours(24)),
     W();
 
     private final int startTime;
     private final int endTime;
     private final boolean workDay;
+    private final RestTime restTime;
 
-    Shift(int startTime, int endTime) {
+    Shift(int startTime, int endTime, RestTime restTime) {
         this.startTime = startTime;
         this.endTime = endTime;
+        this.restTime = restTime;
         this.workDay = true;
     }
 
@@ -26,6 +28,7 @@ public enum Shift {
         this.workDay = false;
         this.startTime = 0;
         this.endTime = 0;
+        this.restTime = RestTime.hours(0);
     }
 
     public Duration getDuration() {
@@ -40,12 +43,15 @@ public enum Shift {
         return timeOfHour(endTime);
     }
 
+    public Duration getRestTime(){
+        return restTime.getDuration();
+    }
+
     public boolean isWorkDay() {
         return workDay;
     }
 
     private static LocalTime timeOfHour(int i) {
         return LocalTime.of(i, 0);
-
     }
 }

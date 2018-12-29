@@ -36,7 +36,7 @@ public class ScheduleAsciiTablePresenter {
     }
 
     private Stream<String> listScheduleDays(Schedule schedule) {
-        return schedule.getDateEmployeeShiftAssignments().stream()
+        return schedule.getDateEmployeeShiftAssignmentsByDate().stream()
                 .distinct()
                 .map(DateEmployeeShiftAssignments::getStartDate)
                 .sorted()
@@ -45,7 +45,7 @@ public class ScheduleAsciiTablePresenter {
 
 
     private Map<LocalDate, List<EmployeeShiftAssignment>> groupByDate(Schedule schedule) {
-        return schedule.getDateEmployeeShiftAssignments().stream().collect(groupingBy(DateEmployeeShiftAssignments::getStartDate, TreeMap::new, flatMapping(x -> x.getShiftAssignments().stream(), toList())));
+        return schedule.getDateEmployeeShiftAssignmentsByDate().stream().collect(groupingBy(DateEmployeeShiftAssignments::getStartDate, TreeMap::new, flatMapping(x -> x.getShiftAssignments().stream(), toList())));
     }
 
     private Stream<String> listShifts(Map.Entry<Employee, List<EmployeeShiftAssignment>> entry) {

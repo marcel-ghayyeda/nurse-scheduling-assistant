@@ -2,6 +2,10 @@ package pl.edu.agh.ghayyeda.student.nursescheduling.schedule;
 
 import java.time.Duration;
 import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.concurrent.ThreadLocalRandom;
+
+import static java.util.stream.Collectors.toList;
 
 public enum Shift {
 
@@ -29,6 +33,11 @@ public enum Shift {
         this.startTime = 0;
         this.endTime = 0;
         this.restTime = RestTime.hours(0);
+    }
+
+    public static Shift randomWorkShift() {
+        var workShifts = Arrays.stream(values()).filter(Shift::isWorkDay).collect(toList());
+        return workShifts.get(ThreadLocalRandom.current().nextInt(workShifts.size()));
     }
 
     public Duration getDuration() {

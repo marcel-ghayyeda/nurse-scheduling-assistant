@@ -7,10 +7,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static java.util.Locale.US;
@@ -26,7 +23,7 @@ public class ScheduleAsciiTablePresenter {
         var columnNames = Stream.concat(Stream.of(""), listScheduleDays(schedule)).toArray(String[]::new);
         final String[][] data = groupByDate(schedule).values().stream()
                 .flatMap(Collection::stream)
-                .collect(groupingBy(EmployeeShiftAssignment::getEmployee))
+                .collect(groupingBy(EmployeeShiftAssignment::getEmployee, LinkedHashMap::new, toList()))
                 .entrySet()
                 .stream()
                 .map(entry -> Stream.concat(Stream.of(entry.getKey().getName()), listShifts(entry)).toArray(String[]::new))

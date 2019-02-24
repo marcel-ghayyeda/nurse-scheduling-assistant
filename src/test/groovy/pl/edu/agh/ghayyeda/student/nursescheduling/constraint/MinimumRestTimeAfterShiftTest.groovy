@@ -31,6 +31,25 @@ class MinimumRestTimeAfterShiftTest extends Specification {
         !constraintValidationResult.feasible
     }
 
+    def "Should classify as not feasible when first shift overlapses on the next day"() {
+        given:
+        def constraint = new MinimumRestTimeAfterShift()
+
+        def schedule = schedule()
+                .forMonth(NOVEMBER)
+                .forYear(2018)
+                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(N))
+                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(D))
+                .build()
+
+        when:
+        def constraintValidationResult = constraint.validate(schedule)
+
+        then:
+        !constraintValidationResult.feasible
+    }
+
+
     def "Should classify as feasible when all nurses have minimum required rest time assured"() {
         given:
         def constraint = new MinimumRestTimeAfterShift()

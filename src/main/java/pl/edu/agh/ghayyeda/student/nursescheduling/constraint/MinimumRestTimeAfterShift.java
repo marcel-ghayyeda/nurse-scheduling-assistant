@@ -38,7 +38,7 @@ public class MinimumRestTimeAfterShift implements ScheduleConstraint {
             var firstShift = firstAssignment.getShift();
             var secondShift = secondAssignment.getShift();
 
-            var firstShiftEndTime = LocalDateTime.of(firstAssignment.getStartDate(), firstShift.getEndTime());
+            var firstShiftEndTime = LocalDateTime.of(firstAssignment.getEndDate(), firstShift.getEndTime());
             var secondShiftStartTime = LocalDateTime.of(secondAssignment.getStartDate(), secondShift.getStartTime());
 
             var requiredRestTime = firstShift.getRestTime();

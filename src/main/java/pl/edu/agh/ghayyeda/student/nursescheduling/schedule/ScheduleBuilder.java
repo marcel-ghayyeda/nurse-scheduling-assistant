@@ -16,7 +16,6 @@ import static java.util.stream.Collectors.*;
 
 public class ScheduleBuilder {
 
-    private final TreeMap<LocalDate, List<EmployeeShiftAssignment>> schedule = new TreeMap<>();
     private final Collection<Tuple2<LocalDate, EmployeeShiftAssignment>> shiftAssignments = new LinkedList<>();
     private int year = Year.now().getValue();
     private Month month = LocalDate.now().getMonth();

@@ -29,12 +29,6 @@ public class AlwaysAtLeastOneNurse implements ScheduleConstraint {
         this.validationMonth = YearMonth.from(validationStartTime);
     }
 
-    public static AlwaysAtLeastOneNurse since(LocalDateTime validationStartTime) {
-        var validationEndDate = LocalDate.of(validationStartTime.getYear(), validationStartTime.getMonth(), YearMonth.from(validationStartTime).lengthOfMonth());
-        var validationEndTime = LocalDateTime.of(validationEndDate, LocalTime.of(23, 0));
-        return new AlwaysAtLeastOneNurse(validationStartTime, validationEndTime);
-    }
-
     public static AlwaysAtLeastOneNurse between(LocalDateTime validationStartTime, LocalDateTime validationEndTime) {
         return new AlwaysAtLeastOneNurse(validationStartTime, validationEndTime);
     }

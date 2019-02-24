@@ -1,23 +1,36 @@
 package pl.edu.agh.ghayyeda.student.nursescheduling.schedule;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.Objects;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.*;
 import static pl.edu.agh.ghayyeda.student.nursescheduling.util.Predicates.not;
 
 public class Schedule {
 
+    private static final Logger log = LoggerFactory.getLogger(Schedule.class);
 
     private final List<DateEmployeeShiftAssignments> schedule;
 
     Schedule(List<DateEmployeeShiftAssignments> schedule) {
         this.schedule = schedule;
+    }
+
+    public static Schedule ofDateEmployeeShiftAssignment(List<DateEmployeeShiftAssignment> dateEmployeeShiftAssignments) {
+        return dateEmployeeShiftAssignments.stream()
+                .collect(groupingBy(DateEmployeeShiftAssignment::getStartDate, mapping(DateEmployeeShiftAssignment::getEmployeeShiftAssignment, toList())))
+                .entrySet()
+                .stream()
+                .map(entry -> new DateEmployeeShiftAssignments(entry.getKey(), entry.getValue()))
+                .collect(Collectors.collectingAndThen(toList(), Schedule::new));
     }
 
     public List<DateEmployeeShiftAssignments> getDateEmployeeShiftAssignmentsByDate() {
@@ -35,32 +48,53 @@ public class Schedule {
     }
 
     public List<Schedule> getNeighbourhood() {
-        return List.of(addRandomShift(), removeRandomShift());
+        var neighbourhood = Stream.concat(addRandomShifts(), removeRandomShifts()).collect(toList());
+        log.debug("Neighbourhood size: {}", neighbourhood.size());
+        return neighbourhood;
     }
 
-    Schedule addRandomShift() {
-        DateEmployeeShiftAssignments randomDateEmployeeShiftAssignments = getRandomDateShiftAssignmentsMatching(dateEmployeeShiftAssignments -> dateEmployeeShiftAssignments.anyMatch(not(EmployeeShiftAssignment::isWorkDay)), schedule);
-        DateEmployeeShiftAssignments dateEmployeeShiftAssignmentsWithAddedShift = randomDateEmployeeShiftAssignments.addRandomShift();
-
-        List<DateEmployeeShiftAssignments> newSchedule = new ArrayList<>(schedule);
-        newSchedule.set(schedule.indexOf(randomDateEmployeeShiftAssignments), dateEmployeeShiftAssignmentsWithAddedShift);
-        return new Schedule(newSchedule);
+    Stream<Schedule> addRandomShifts() {
+        return getDateShiftAssignmentMatching(not(DateEmployeeShiftAssignment::isWorkDay))
+                .flatMap(dateEmployeeShiftAssignment -> Shift.allWorkingShifts().map(shift -> {
+                    DateEmployeeShiftAssignment dateEmployeeShiftAssignmentWithAddedShift = dateEmployeeShiftAssignment.setShift(shift);
+                    List<DateEmployeeShiftAssignment> dateEmployeeShiftAssignments = getDateShiftAssignments().collect(toList());
+                    List<DateEmployeeShiftAssignment> newSchedule = new ArrayList<>(dateEmployeeShiftAssignments);
+                    newSchedule.set(dateEmployeeShiftAssignments.indexOf(dateEmployeeShiftAssignment), dateEmployeeShiftAssignmentWithAddedShift);
+                    return Schedule.ofDateEmployeeShiftAssignment(newSchedule);
+                }));
     }
 
-    Schedule removeRandomShift() {
-        DateEmployeeShiftAssignments randomDateEmployeeShiftAssignments = getRandomDateShiftAssignmentsMatching(dateEmployeeShiftAssignments -> dateEmployeeShiftAssignments.anyMatch(EmployeeShiftAssignment::isWorkDay), schedule);
-        DateEmployeeShiftAssignments dateEmployeeShiftAssignmentsWithAddedShift = randomDateEmployeeShiftAssignments.removeRandomShift();
-
-        List<DateEmployeeShiftAssignments> newSchedule = new ArrayList<>(schedule);
-        newSchedule.set(schedule.indexOf(randomDateEmployeeShiftAssignments), dateEmployeeShiftAssignmentsWithAddedShift);
-        return new Schedule(newSchedule);
+    Stream<Schedule> removeRandomShifts() {
+        return getDateShiftAssignmentMatching(DateEmployeeShiftAssignment::isWorkDay)
+                .map(randomDateEmployeeShiftAssignments -> {
+                    DateEmployeeShiftAssignment dateEmployeeShiftAssignmentWithAddedShift = randomDateEmployeeShiftAssignments.removeShift();
+                    List<DateEmployeeShiftAssignment> dateEmployeeShiftAssignments = getDateShiftAssignments().collect(toList());
+                    List<DateEmployeeShiftAssignment> newSchedule = new ArrayList<>(dateEmployeeShiftAssignments);
+                    newSchedule.set(dateEmployeeShiftAssignments.indexOf(randomDateEmployeeShiftAssignments), dateEmployeeShiftAssignmentWithAddedShift);
+                    return Schedule.ofDateEmployeeShiftAssignment(newSchedule);
+                });
     }
 
-    private DateEmployeeShiftAssignments getRandomDateShiftAssignmentsMatching(Predicate<DateEmployeeShiftAssignments> predicate, Collection<DateEmployeeShiftAssignments> dateEmployeeShiftAssignments) {
-        var dateShiftAssignmentsMatchingPredicate = dateEmployeeShiftAssignments.stream()
-                .filter(predicate)
-                .collect(toList());
+    private Stream<DateEmployeeShiftAssignment> getDateShiftAssignmentMatching(Predicate<DateEmployeeShiftAssignment> predicate) {
+        return getDateShiftAssignments().filter(predicate);
+    }
 
-        return dateShiftAssignmentsMatchingPredicate.get(ThreadLocalRandom.current().nextInt(dateShiftAssignmentsMatchingPredicate.size()));
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Schedule schedule1 = (Schedule) o;
+        return Objects.equals(schedule, schedule1.schedule);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(schedule);
+    }
+
+    @Override
+    public String toString() {
+        return ScheduleAsciiTablePresenter.buildAsciiTableRepresentationOf(this);
     }
 }

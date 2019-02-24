@@ -17,7 +17,7 @@ public class ScheduleAsciiTablePresenter {
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE d").localizedBy(US);
 
-    public String buildAsciiTableRepresentationOf(Schedule schedule) {
+    public static String buildAsciiTableRepresentationOf(Schedule schedule) {
         var baos = new ByteArrayOutputStream();
         var ps = new PrintStream(baos);
         var columnNames = Stream.concat(Stream.of(""), listScheduleDays(schedule)).toArray(String[]::new);
@@ -32,7 +32,7 @@ public class ScheduleAsciiTablePresenter {
         return baos.toString();
     }
 
-    private Stream<String> listScheduleDays(Schedule schedule) {
+    private static Stream<String> listScheduleDays(Schedule schedule) {
         return schedule.getDateEmployeeShiftAssignmentsByDate().stream()
                 .distinct()
                 .map(DateEmployeeShiftAssignments::getStartDate)
@@ -41,11 +41,11 @@ public class ScheduleAsciiTablePresenter {
     }
 
 
-    private Map<LocalDate, List<EmployeeShiftAssignment>> groupByDate(Schedule schedule) {
+    private static Map<LocalDate, List<EmployeeShiftAssignment>> groupByDate(Schedule schedule) {
         return schedule.getDateEmployeeShiftAssignmentsByDate().stream().collect(groupingBy(DateEmployeeShiftAssignments::getStartDate, TreeMap::new, flatMapping(x -> x.getShiftAssignments().stream(), toList())));
     }
 
-    private Stream<String> listShifts(Map.Entry<Employee, List<EmployeeShiftAssignment>> entry) {
+    private static Stream<String> listShifts(Map.Entry<Employee, List<EmployeeShiftAssignment>> entry) {
         return entry.getValue().stream().map(EmployeeShiftAssignment::getShift).map(Enum::toString);
     }
 }

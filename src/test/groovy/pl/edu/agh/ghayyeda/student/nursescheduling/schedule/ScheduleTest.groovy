@@ -10,81 +10,93 @@ import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Shift.*
 
 class ScheduleTest extends Specification {
 
-    def "Should create new Schedule by adding exactly one working shift in place of free shift"() {
+    def "Should create new schedules by adding exactly one working shift in place of free shift"() {
         given:
-        def originalSchedule = schedule()
-                .forMonth(NOVEMBER)
-                .forYear(2018)
-                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(W))
-                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(D))
-                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(D))
-                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(N))
+        def originalSchedule = baseScheduleBuilderWithAllWorkingShifts()
                 .onDay(3, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(W))
-                .onDay(3, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(N))
                 .build()
 
 
         when:
-        def newSchedule = originalSchedule.addRandomShift()
+        def newSchedules = originalSchedule.addRandomShifts().collect()
 
         then:
-        def numberOfDateEmployeeShiftAssignmentDifferences = 0
-        def numberOfAddedWorkShifts = 0
-        for (int i = 0; i < originalSchedule.dateEmployeeShiftAssignmentsByDate.size(); i++) {
-            if (originalSchedule.dateEmployeeShiftAssignmentsByDate.get(i) != newSchedule.dateEmployeeShiftAssignmentsByDate.get(i)) {
-                def originalShiftAssignments = originalSchedule.dateEmployeeShiftAssignmentsByDate.get(i).shiftAssignments
-                def newShiftAssignments = newSchedule.dateEmployeeShiftAssignmentsByDate.get(i).shiftAssignments
-                for (int j = 0; j < originalShiftAssignments.size(); j++) {
-                    if (originalShiftAssignments.get(j) != newShiftAssignments.get(j)) {
-                        numberOfDateEmployeeShiftAssignmentDifferences++
-                        if (newShiftAssignments.get(j).isWorkDay() && !originalShiftAssignments.get(j).isWorkDay())
-                            numberOfAddedWorkShifts++
-                    }
-                }
-            }
-        }
-
-        numberOfDateEmployeeShiftAssignmentDifferences == 1
-        numberOfAddedWorkShifts == 1
+        newSchedules.size() == 5
+        newSchedules.contains(baseScheduleBuilderWithAllWorkingShifts()
+                .onDay(3, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(R))
+                .build())
+        newSchedules.contains(baseScheduleBuilderWithAllWorkingShifts()
+                .onDay(3, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(P))
+                .build())
+        newSchedules.contains(baseScheduleBuilderWithAllWorkingShifts()
+                .onDay(3, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(D))
+                .build())
+        newSchedules.contains(baseScheduleBuilderWithAllWorkingShifts()
+                .onDay(3, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(N))
+                .build())
+        newSchedules.contains(baseScheduleBuilderWithAllWorkingShifts()
+                .onDay(3, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(DN))
+                .build())
 
     }
 
-    def "Should create new Schedule by removing exactly one working shift and replacing it with free shift"() {
-        given:
-        def originalSchedule = schedule()
+    private static ScheduleBuilder baseScheduleBuilderWithAllWorkingShifts() {
+        schedule()
                 .forMonth(NOVEMBER)
                 .forYear(2018)
-                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(W))
+                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(D))
                 .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(D))
                 .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(D))
                 .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(N))
-                .onDay(3, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(W))
+                .onDay(3, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(N))
+    }
+
+    def "Should create new scheduled by removing exactly one working shift and replacing it with free shift"() {
+        given:
+        def originalSchedule = baseScheduleBuilderWithTwoFreeShifts()
+                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(D))
+                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(D))
+                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(N))
                 .onDay(3, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(N))
                 .build()
 
 
         when:
-        def newSchedule = originalSchedule.removeRandomShift()
+        def newSchedules = originalSchedule.removeRandomShifts().collect()
 
         then:
-        def numberOfDateEmployeeShiftAssignmentDifferences = 0
-        def numberOfAddedFreeShifts = 0
-        for (int i = 0; i < originalSchedule.dateEmployeeShiftAssignmentsByDate.size(); i++) {
-            if (originalSchedule.dateEmployeeShiftAssignmentsByDate.get(i) != newSchedule.dateEmployeeShiftAssignmentsByDate.get(i)) {
-                def originalShiftAssignments = originalSchedule.dateEmployeeShiftAssignmentsByDate.get(i).shiftAssignments
-                def newShiftAssignments = newSchedule.dateEmployeeShiftAssignmentsByDate.get(i).shiftAssignments
-                for (int j = 0; j < originalShiftAssignments.size(); j++) {
-                    if (originalShiftAssignments.get(j) != newShiftAssignments.get(j)) {
-                        numberOfDateEmployeeShiftAssignmentDifferences++
-                        if (!newShiftAssignments.get(j).isWorkDay() && originalShiftAssignments.get(j).isWorkDay())
-                            numberOfAddedFreeShifts++
-                    }
-                }
-            }
-        }
+        newSchedules.size() == 4
+        newSchedules.contains(baseScheduleBuilderWithTwoFreeShifts()
+                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(W))
+                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(D))
+                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(N))
+                .onDay(3, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(N))
+                .build())
+        newSchedules.contains(baseScheduleBuilderWithTwoFreeShifts()
+                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(D))
+                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(W))
+                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(N))
+                .onDay(3, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(N))
+                .build())
+        newSchedules.contains(baseScheduleBuilderWithTwoFreeShifts()
+                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(D))
+                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(D))
+                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(W))
+                .onDay(3, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(N))
+                .build())
+        newSchedules.contains(baseScheduleBuilderWithTwoFreeShifts()
+                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(D))
+                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(D))
+                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(N))
+                .onDay(3, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(W))
+                .build())
+    }
 
-        numberOfDateEmployeeShiftAssignmentDifferences == 1
-        numberOfAddedFreeShifts == 1
-
+    private static ScheduleBuilder baseScheduleBuilderWithTwoFreeShifts() {
+        schedule()
+                .forMonth(NOVEMBER)
+                .forYear(2018)
+                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(W))
+                .onDay(3, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(W))
     }
 }

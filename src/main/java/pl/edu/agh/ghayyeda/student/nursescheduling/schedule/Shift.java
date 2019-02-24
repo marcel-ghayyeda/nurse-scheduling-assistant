@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 
@@ -40,6 +41,11 @@ public enum Shift {
         return workShifts.get(ThreadLocalRandom.current().nextInt(workShifts.size()));
     }
 
+    public static Stream<Shift> allWorkingShifts() {
+        return Arrays.stream(values())
+                .filter(Shift::isWorkDay);
+    }
+
     public Duration getDuration() {
         return isWorkDay() ? Duration.ofHours(Math.abs(endTime - startTime)) : Duration.ZERO;
     }
@@ -52,7 +58,11 @@ public enum Shift {
         return timeOfHour(endTime);
     }
 
-    public Duration getRestTime(){
+    public boolean endsOnNextDay() {
+        return getEndTime().isBefore(getStartTime()) || getEndTime().equals(getStartTime());
+    }
+
+    public Duration getRestTime() {
         return restTime.getDuration();
     }
 

@@ -3,42 +3,37 @@ package pl.edu.agh.ghayyeda.student.nursescheduling.schedule;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.util.Arrays;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Stream;
-
-import static java.util.stream.Collectors.toList;
 
 public enum Shift {
 
-    R(7, 15, RestTime.hours(11)),
-    P(15, 19, RestTime.hours(11)),
-    D(7, 19, RestTime.hours(11)),
-    N(19, 7, RestTime.hours(11)),
-    DN(7, 7, RestTime.hours(24)),
-    W();
+    MORNING(7, 15, RestTime.hours(11), "R"),
+    AFTERNOON(15, 19, RestTime.hours(11), "P"),
+    DAY(7, 19, RestTime.hours(11), "D"),
+    NIGHT(19, 7, RestTime.hours(11), "N"),
+    DAY_NIGHT(7, 7, RestTime.hours(24), "DN"),
+    DAY_OFF("W");
 
     private final int startTime;
     private final int endTime;
     private final boolean workDay;
     private final RestTime restTime;
+    private final String localizedShiftSymbol;
 
-    Shift(int startTime, int endTime, RestTime restTime) {
+    Shift(int startTime, int endTime, RestTime restTime, String localizedShiftSymbol) {
         this.startTime = startTime;
         this.endTime = endTime;
         this.restTime = restTime;
         this.workDay = true;
+        this.localizedShiftSymbol = localizedShiftSymbol;
     }
 
-    Shift() {
+    Shift(String localizedShiftSymbol) {
         this.workDay = false;
         this.startTime = 0;
         this.endTime = 0;
         this.restTime = RestTime.hours(0);
-    }
-
-    public static Shift randomWorkShift() {
-        var workShifts = Arrays.stream(values()).filter(Shift::isWorkDay).collect(toList());
-        return workShifts.get(ThreadLocalRandom.current().nextInt(workShifts.size()));
+        this.localizedShiftSymbol = localizedShiftSymbol;
     }
 
     public static Stream<Shift> allWorkingShifts() {
@@ -72,5 +67,9 @@ public enum Shift {
 
     private static LocalTime timeOfHour(int i) {
         return LocalTime.of(i, 0);
+    }
+
+    public String getLocalizedShiftSymbol() {
+        return localizedShiftSymbol;
     }
 }

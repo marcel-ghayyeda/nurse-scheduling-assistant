@@ -46,6 +46,6 @@ public class ScheduleAsciiTablePresenter {
     }
 
     private static Stream<String> listShifts(Map.Entry<Employee, List<EmployeeShiftAssignment>> entry) {
-        return entry.getValue().stream().map(EmployeeShiftAssignment::getShift).map(Enum::toString);
+        return entry.getValue().stream().map(EmployeeShiftAssignment::getShift).map(Shift::getLocalizedShiftSymbol);
     }
 }

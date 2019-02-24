@@ -45,7 +45,7 @@ public class DateEmployeeShiftAssignment {
     }
 
     DateEmployeeShiftAssignment removeShift() {
-        return new DateEmployeeShiftAssignment(getStartDate(), new EmployeeShiftAssignment(getEmployee(), Shift.W));
+        return new DateEmployeeShiftAssignment(getStartDate(), new EmployeeShiftAssignment(getEmployee(), Shift.DAY_OFF));
     }
 
     @Override

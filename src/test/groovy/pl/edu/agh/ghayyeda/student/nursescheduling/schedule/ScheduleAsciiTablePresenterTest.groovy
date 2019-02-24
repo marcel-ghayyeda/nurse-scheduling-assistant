@@ -17,10 +17,10 @@ class ScheduleAsciiTablePresenterTest extends Specification {
         def schedule = schedule()
                 .forMonth(NOVEMBER)
                 .forYear(2018)
-                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(R))
-                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(D))
-                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(D))
-                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(N))
+                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(MORNING))
+                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(DAY))
+                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(DAY))
+                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(NIGHT))
                 .build()
 
 

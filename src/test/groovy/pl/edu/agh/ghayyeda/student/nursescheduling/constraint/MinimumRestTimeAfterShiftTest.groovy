@@ -17,11 +17,11 @@ class MinimumRestTimeAfterShiftTest extends Specification {
         def schedule = schedule()
                 .forMonth(NOVEMBER)
                 .forYear(2018)
-                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(R))
-                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(N))
+                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(MORNING))
+                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(NIGHT))
 
-                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(D))
-                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(D))
+                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(DAY))
+                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(DAY))
                 .build()
 
         when:
@@ -38,8 +38,8 @@ class MinimumRestTimeAfterShiftTest extends Specification {
         def schedule = schedule()
                 .forMonth(NOVEMBER)
                 .forYear(2018)
-                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(N))
-                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(D))
+                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(NIGHT))
+                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(DAY))
                 .build()
 
         when:
@@ -57,13 +57,13 @@ class MinimumRestTimeAfterShiftTest extends Specification {
         def schedule = schedule()
                 .forMonth(NOVEMBER)
                 .forYear(2018)
-                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(R))
-                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(D))
-                .onDay(3, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(DN))
+                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(MORNING))
+                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(DAY))
+                .onDay(3, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(DAY_NIGHT))
 
-                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(DN))
-                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(W))
-                .onDay(3, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(DN))
+                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(DAY_NIGHT))
+                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(DAY_OFF))
+                .onDay(3, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(DAY_NIGHT))
                 .build()
 
         when:

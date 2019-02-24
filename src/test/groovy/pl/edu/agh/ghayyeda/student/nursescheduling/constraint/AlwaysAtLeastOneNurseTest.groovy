@@ -16,15 +16,15 @@ class AlwaysAtLeastOneNurseTest extends Specification {
 
     def "Should classify as not feasible when no nurse in some hour of day"() {
         given:
-        def validationStartTime = LocalDateTime.of(LocalDate.of(2018, NOVEMBER, 1), D.startTime)
-        def validationEndTime = LocalDateTime.of(LocalDate.of(2018, NOVEMBER, 2), N.endTime)
+        def validationStartTime = LocalDateTime.of(LocalDate.of(2018, NOVEMBER, 1), DAY.startTime)
+        def validationEndTime = LocalDateTime.of(LocalDate.of(2018, NOVEMBER, 2), NIGHT.endTime)
         def constraint = AlwaysAtLeastOneNurse.between(validationStartTime, validationEndTime)
 
         def schedule = schedule()
                 .forMonth(NOVEMBER)
                 .forYear(2018)
-                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(R))
-                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(N))
+                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(MORNING))
+                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(NIGHT))
                 .build()
 
         when:
@@ -43,7 +43,7 @@ class AlwaysAtLeastOneNurseTest extends Specification {
         def schedule = schedule()
                 .forMonth(NOVEMBER)
                 .forYear(2018)
-                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(W))
+                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(DAY_OFF))
                 .build()
 
         when:
@@ -55,15 +55,15 @@ class AlwaysAtLeastOneNurseTest extends Specification {
 
     def "Should classify as not feasible when no nurse in some hour of day but babysitters present"() {
         given:
-        def validationStartTime = LocalDateTime.of(LocalDate.of(2018, NOVEMBER, 1), D.startTime)
-        def validationEndTime = LocalDateTime.of(LocalDate.of(2018, NOVEMBER, 2), N.endTime)
+        def validationStartTime = LocalDateTime.of(LocalDate.of(2018, NOVEMBER, 1), DAY.startTime)
+        def validationEndTime = LocalDateTime.of(LocalDate.of(2018, NOVEMBER, 2), NIGHT.endTime)
         def constraint = AlwaysAtLeastOneNurse.between(validationStartTime, validationEndTime)
 
         def schedule = schedule()
                 .forMonth(NOVEMBER)
                 .forYear(2018)
-                .onDay(1, employeeShiftAssignment().employee(Employee.babySitter("BabySitter 1")).shift(D))
-                .onDay(1, employeeShiftAssignment().employee(Employee.babySitter("BabySitter 2")).shift(N))
+                .onDay(1, employeeShiftAssignment().employee(Employee.babySitter("BabySitter 1")).shift(DAY))
+                .onDay(1, employeeShiftAssignment().employee(Employee.babySitter("BabySitter 2")).shift(NIGHT))
                 .build()
 
         when:
@@ -76,17 +76,17 @@ class AlwaysAtLeastOneNurseTest extends Specification {
 
     def "Should classify as feasible when one nurse always present"() {
         given:
-        def validationStartTime = LocalDateTime.of(LocalDate.of(2018, NOVEMBER, 1), D.startTime)
-        def validationEndTime = LocalDateTime.of(LocalDate.of(2018, NOVEMBER, 3), N.endTime)
+        def validationStartTime = LocalDateTime.of(LocalDate.of(2018, NOVEMBER, 1), DAY.startTime)
+        def validationEndTime = LocalDateTime.of(LocalDate.of(2018, NOVEMBER, 3), NIGHT.endTime)
         def constraint = AlwaysAtLeastOneNurse.between(validationStartTime, validationEndTime)
 
         def schedule = schedule()
                 .forMonth(NOVEMBER)
                 .forYear(2018)
-                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(D))
-                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(N))
-                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(D))
-                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(N))
+                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(DAY))
+                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(NIGHT))
+                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(DAY))
+                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(NIGHT))
                 .build()
 
         when:
@@ -98,18 +98,18 @@ class AlwaysAtLeastOneNurseTest extends Specification {
 
     def "Should classify as feasible when more than one nurse always present"() {
         given:
-        def validationStartTime = LocalDateTime.of(LocalDate.of(2018, NOVEMBER, 1), D.startTime)
-        def validationEndTime = LocalDateTime.of(LocalDate.of(2018, NOVEMBER, 2), N.endTime)
+        def validationStartTime = LocalDateTime.of(LocalDate.of(2018, NOVEMBER, 1), DAY.startTime)
+        def validationEndTime = LocalDateTime.of(LocalDate.of(2018, NOVEMBER, 2), NIGHT.endTime)
         def constraint = AlwaysAtLeastOneNurse.between(validationStartTime, validationEndTime)
 
         def schedule = schedule()
                 .forMonth(NOVEMBER)
                 .forYear(2018)
-                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(D))
-                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(D))
-                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 3")).shift(R))
-                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 4")).shift(N))
-                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 5")).shift(N))
+                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(DAY))
+                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(DAY))
+                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 3")).shift(MORNING))
+                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 4")).shift(NIGHT))
+                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 5")).shift(NIGHT))
                 .build()
 
         when:

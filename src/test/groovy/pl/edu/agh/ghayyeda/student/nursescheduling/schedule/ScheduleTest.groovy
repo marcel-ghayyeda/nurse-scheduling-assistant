@@ -13,7 +13,7 @@ class ScheduleTest extends Specification {
     def "Should create new schedules by adding exactly one working shift in place of free shift"() {
         given:
         def originalSchedule = baseScheduleBuilderWithAllWorkingShifts()
-                .onDay(3, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(W))
+                .onDay(3, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(DAY_OFF))
                 .build()
 
 
@@ -23,19 +23,19 @@ class ScheduleTest extends Specification {
         then:
         newSchedules.size() == 5
         newSchedules.contains(baseScheduleBuilderWithAllWorkingShifts()
-                .onDay(3, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(R))
+                .onDay(3, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(MORNING))
                 .build())
         newSchedules.contains(baseScheduleBuilderWithAllWorkingShifts()
-                .onDay(3, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(P))
+                .onDay(3, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(AFTERNOON))
                 .build())
         newSchedules.contains(baseScheduleBuilderWithAllWorkingShifts()
-                .onDay(3, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(D))
+                .onDay(3, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(DAY))
                 .build())
         newSchedules.contains(baseScheduleBuilderWithAllWorkingShifts()
-                .onDay(3, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(N))
+                .onDay(3, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(NIGHT))
                 .build())
         newSchedules.contains(baseScheduleBuilderWithAllWorkingShifts()
-                .onDay(3, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(DN))
+                .onDay(3, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(DAY_NIGHT))
                 .build())
 
     }
@@ -44,20 +44,20 @@ class ScheduleTest extends Specification {
         schedule()
                 .forMonth(NOVEMBER)
                 .forYear(2018)
-                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(D))
-                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(D))
-                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(D))
-                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(N))
-                .onDay(3, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(N))
+                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(DAY))
+                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(DAY))
+                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(DAY))
+                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(NIGHT))
+                .onDay(3, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(NIGHT))
     }
 
     def "Should create new scheduled by removing exactly one working shift and replacing it with free shift"() {
         given:
         def originalSchedule = baseScheduleBuilderWithTwoFreeShifts()
-                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(D))
-                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(D))
-                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(N))
-                .onDay(3, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(N))
+                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(DAY))
+                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(DAY))
+                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(NIGHT))
+                .onDay(3, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(NIGHT))
                 .build()
 
 
@@ -67,28 +67,28 @@ class ScheduleTest extends Specification {
         then:
         newSchedules.size() == 4
         newSchedules.contains(baseScheduleBuilderWithTwoFreeShifts()
-                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(W))
-                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(D))
-                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(N))
-                .onDay(3, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(N))
+                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(DAY_OFF))
+                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(DAY))
+                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(NIGHT))
+                .onDay(3, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(NIGHT))
                 .build())
         newSchedules.contains(baseScheduleBuilderWithTwoFreeShifts()
-                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(D))
-                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(W))
-                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(N))
-                .onDay(3, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(N))
+                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(DAY))
+                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(DAY_OFF))
+                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(NIGHT))
+                .onDay(3, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(NIGHT))
                 .build())
         newSchedules.contains(baseScheduleBuilderWithTwoFreeShifts()
-                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(D))
-                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(D))
-                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(W))
-                .onDay(3, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(N))
+                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(DAY))
+                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(DAY))
+                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(DAY_OFF))
+                .onDay(3, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(NIGHT))
                 .build())
         newSchedules.contains(baseScheduleBuilderWithTwoFreeShifts()
-                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(D))
-                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(D))
-                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(N))
-                .onDay(3, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(W))
+                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(DAY))
+                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(DAY))
+                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(NIGHT))
+                .onDay(3, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(DAY_OFF))
                 .build())
     }
 
@@ -96,7 +96,7 @@ class ScheduleTest extends Specification {
         schedule()
                 .forMonth(NOVEMBER)
                 .forYear(2018)
-                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(W))
-                .onDay(3, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(W))
+                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(DAY_OFF))
+                .onDay(3, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(DAY_OFF))
     }
 }

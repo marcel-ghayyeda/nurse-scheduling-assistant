@@ -23,21 +23,21 @@ class BfsSolverTest extends Specification {
 
     def "Should return the same feasible schedule"() {
         given:
-        def validationStartTime = LocalDateTime.of(LocalDate.of(2018, NOVEMBER, 1), D.startTime)
-        def validationEndTime = LocalDateTime.of(LocalDate.of(2018, NOVEMBER, 3), N.endTime)
+        def validationStartTime = LocalDateTime.of(LocalDate.of(2018, NOVEMBER, 1), DAY.startTime)
+        def validationEndTime = LocalDateTime.of(LocalDate.of(2018, NOVEMBER, 3), NIGHT.endTime)
         def solver = new BfsSolver(scheduleConstraintValidationFacade, validationStartTime, validationEndTime, 3)
 
         def schedule = schedule()
                 .forMonth(NOVEMBER)
                 .forYear(2018)
-                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(D))
-                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(N))
-                .onDay(1, employeeShiftAssignment().employee(Employee.babySitter("Baby sitter 1")).shift(D))
-                .onDay(1, employeeShiftAssignment().employee(Employee.babySitter("Baby sitter 2")).shift(N))
-                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(D))
-                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(N))
-                .onDay(2, employeeShiftAssignment().employee(Employee.babySitter("Baby sitter 1")).shift(D))
-                .onDay(2, employeeShiftAssignment().employee(Employee.babySitter("Baby sitter 2")).shift(N))
+                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(DAY))
+                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(NIGHT))
+                .onDay(1, employeeShiftAssignment().employee(Employee.babySitter("Baby sitter 1")).shift(DAY))
+                .onDay(1, employeeShiftAssignment().employee(Employee.babySitter("Baby sitter 2")).shift(NIGHT))
+                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(DAY))
+                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(NIGHT))
+                .onDay(2, employeeShiftAssignment().employee(Employee.babySitter("Baby sitter 1")).shift(DAY))
+                .onDay(2, employeeShiftAssignment().employee(Employee.babySitter("Baby sitter 2")).shift(NIGHT))
                 .build()
 
         when:
@@ -50,21 +50,21 @@ class BfsSolverTest extends Specification {
 
     def "Should find feasible schedule when only one change needed"() {
         given:
-        def validationStartTime = LocalDateTime.of(LocalDate.of(2018, NOVEMBER, 1), D.startTime)
-        def validationEndTime = LocalDateTime.of(LocalDate.of(2018, NOVEMBER, 3), N.endTime)
+        def validationStartTime = LocalDateTime.of(LocalDate.of(2018, NOVEMBER, 1), DAY.startTime)
+        def validationEndTime = LocalDateTime.of(LocalDate.of(2018, NOVEMBER, 3), NIGHT.endTime)
         def solver = new BfsSolver(scheduleConstraintValidationFacade, validationStartTime, validationEndTime, 3)
 
         def originalSchedule = schedule()
                 .forMonth(NOVEMBER)
                 .forYear(2018)
-                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(W))
-                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(N))
-                .onDay(1, employeeShiftAssignment().employee(Employee.babySitter("Baby sitter 1")).shift(D))
-                .onDay(1, employeeShiftAssignment().employee(Employee.babySitter("Baby sitter 2")).shift(N))
-                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(D))
-                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(N))
-                .onDay(2, employeeShiftAssignment().employee(Employee.babySitter("Baby sitter 1")).shift(D))
-                .onDay(2, employeeShiftAssignment().employee(Employee.babySitter("Baby sitter 2")).shift(N))
+                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(DAY_OFF))
+                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(NIGHT))
+                .onDay(1, employeeShiftAssignment().employee(Employee.babySitter("Baby sitter 1")).shift(DAY))
+                .onDay(1, employeeShiftAssignment().employee(Employee.babySitter("Baby sitter 2")).shift(NIGHT))
+                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(DAY))
+                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(NIGHT))
+                .onDay(2, employeeShiftAssignment().employee(Employee.babySitter("Baby sitter 1")).shift(DAY))
+                .onDay(2, employeeShiftAssignment().employee(Employee.babySitter("Baby sitter 2")).shift(NIGHT))
                 .build()
 
         when:
@@ -74,14 +74,14 @@ class BfsSolverTest extends Specification {
         def expectedSchedule = schedule()
                 .forMonth(NOVEMBER)
                 .forYear(2018)
-                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(D))
-                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(N))
-                .onDay(1, employeeShiftAssignment().employee(Employee.babySitter("Baby sitter 1")).shift(D))
-                .onDay(1, employeeShiftAssignment().employee(Employee.babySitter("Baby sitter 2")).shift(N))
-                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(D))
-                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(N))
-                .onDay(2, employeeShiftAssignment().employee(Employee.babySitter("Baby sitter 1")).shift(D))
-                .onDay(2, employeeShiftAssignment().employee(Employee.babySitter("Baby sitter 2")).shift(N))
+                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(DAY))
+                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(NIGHT))
+                .onDay(1, employeeShiftAssignment().employee(Employee.babySitter("Baby sitter 1")).shift(DAY))
+                .onDay(1, employeeShiftAssignment().employee(Employee.babySitter("Baby sitter 2")).shift(NIGHT))
+                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(DAY))
+                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(NIGHT))
+                .onDay(2, employeeShiftAssignment().employee(Employee.babySitter("Baby sitter 1")).shift(DAY))
+                .onDay(2, employeeShiftAssignment().employee(Employee.babySitter("Baby sitter 2")).shift(NIGHT))
                 .build()
 
         foundSchedule == expectedSchedule

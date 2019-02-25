@@ -1,6 +1,8 @@
 package pl.edu.agh.ghayyeda.student.nursescheduling.schedule;
 
 import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.stream.Stream;
@@ -12,7 +14,9 @@ public enum Shift {
     DAY(7, 19, RestTime.hours(11), "D"),
     NIGHT(19, 7, RestTime.hours(11), "N"),
     DAY_NIGHT(7, 7, RestTime.hours(24), "DN"),
-    DAY_OFF("W");
+    DAY_OFF("W"),
+    VACATION("UR"),
+    SICK_LEAVE("L4");
 
     private final int startTime;
     private final int endTime;
@@ -42,7 +46,12 @@ public enum Shift {
     }
 
     public Duration getDuration() {
-        return isWorkDay() ? Duration.ofHours(Math.abs(endTime - startTime)) : Duration.ZERO;
+        if (isWorkDay())
+            if (endsOnNextDay())
+                return Duration.between(LocalDateTime.of(LocalDate.now(), getStartTime()),
+                        LocalDateTime.of(LocalDate.now().plusDays(1), getStartTime()));
+            else return Duration.ofHours(Math.abs(endTime - startTime));
+        else return Duration.ZERO;
     }
 
     public LocalTime getStartTime() {
@@ -63,6 +72,10 @@ public enum Shift {
 
     public boolean isWorkDay() {
         return workDay;
+    }
+
+    public boolean isDayOff() {
+        return DAY_OFF == this;
     }
 
     private static LocalTime timeOfHour(int i) {

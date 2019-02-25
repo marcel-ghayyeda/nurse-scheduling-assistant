@@ -1,5 +1,7 @@
 package pl.edu.agh.ghayyeda.student.nursescheduling.constraint;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.EmployeeShiftAssignment;
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Schedule;
 import pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee;
@@ -18,6 +20,7 @@ import static pl.edu.agh.ghayyeda.student.nursescheduling.constraint.HardConstra
 
 public class AlwaysAtLeastOneNurse implements ScheduleConstraint {
 
+    private static final Logger log = LoggerFactory.getLogger(AlwaysAtLeastOneNurse.class);
     private final LocalDateTime validationStartTime;
     private final LocalDateTime validationEndTime;
     private final YearMonth validationMonth;
@@ -39,7 +42,13 @@ public class AlwaysAtLeastOneNurse implements ScheduleConstraint {
                 .flatMap(dayOfMonth -> allHoursADay().mapToObj(toLocalDateTimeOn(dayOfMonth)))
                 .filter(notBeforeValidationStartTime())
                 .filter(beforeValidationEndtime())
-                .allMatch(timeOfDuty -> schedule.getEmployeeShiftAssignmentsFor(timeOfDuty).anyMatch(isNurse()));
+                .allMatch(timeOfDuty -> {
+                    boolean feasible = schedule.getEmployeeShiftAssignmentsFor(timeOfDuty).anyMatch(isNurse());
+                    if(!feasible){
+                        log.debug("No nurse on " + timeOfDuty);
+                    }
+                    return feasible;
+                });
 
         return isFeasible ? feasibleConstraintValidationResult() : notFeasibleConstraintValidationResult();
     }

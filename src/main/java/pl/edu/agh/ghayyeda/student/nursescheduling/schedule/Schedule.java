@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.*;
-import static pl.edu.agh.ghayyeda.student.nursescheduling.util.Predicates.not;
 
 public class Schedule {
 
@@ -54,7 +53,7 @@ public class Schedule {
     }
 
     Stream<Schedule> addRandomShifts() {
-        return getDateShiftAssignmentMatching(not(DateEmployeeShiftAssignment::isWorkDay))
+        return getDateShiftAssignmentMatching(DateEmployeeShiftAssignment::isDayOff)
                 .flatMap(dateEmployeeShiftAssignment -> Shift.allWorkingShifts().map(shift -> {
                     DateEmployeeShiftAssignment dateEmployeeShiftAssignmentWithAddedShift = dateEmployeeShiftAssignment.setShift(shift);
                     List<DateEmployeeShiftAssignment> dateEmployeeShiftAssignments = getDateShiftAssignments().collect(toList());

@@ -32,10 +32,6 @@ public class EmployeeShiftAssignment {
         return new EmployeeShiftAssignment(employee, shift);
     }
 
-    boolean isWorkDay() {
-        return shift.isWorkDay();
-    }
-
     Duration getDuration() {
         return shift.getDuration();
     }

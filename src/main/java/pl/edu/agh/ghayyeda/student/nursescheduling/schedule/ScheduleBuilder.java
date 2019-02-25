@@ -9,10 +9,12 @@ import java.time.Year;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.*;
+import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.EmployeeShiftAssignmentBuilder.employeeShiftAssignment;
+import static pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee.nurse;
 
 public class ScheduleBuilder {
 
@@ -39,6 +41,32 @@ public class ScheduleBuilder {
         return this;
     }
 
+    public ScheduleBuilder nursesShifts(List<List<Shift>> nursesShifts) {
+        var nurseCounter = new AtomicInteger();
+        nursesShifts.forEach(nurse -> {
+            var dayCounter = new AtomicInteger();
+            int nurseNumber = nurseCounter.incrementAndGet();
+            nurse.forEach(dayShift ->
+                    onDay(dayCounter.incrementAndGet(), employeeShiftAssignment()
+                            .employee(nurse("Nurse " + nurseNumber))
+                            .shift(dayShift)));
+        });
+        return this;
+    }
+
+    public ScheduleBuilder babySittersShifts(List<List<Shift>> babySittersShifts) {
+        var babySitterCounter = new AtomicInteger();
+        babySittersShifts.forEach(babySitter -> {
+            var dayCounter = new AtomicInteger();
+            int babySitterNumber = babySitterCounter.incrementAndGet();
+            babySitter.forEach(dayShift ->
+                    onDay(dayCounter.incrementAndGet(), employeeShiftAssignment()
+                            .employee(nurse("BabySitter " + babySitterNumber))
+                            .shift(dayShift)));
+        });
+        return this;
+    }
+
     public Schedule build() {
         return shiftAssignments.stream()
                 .collect(groupingBy(Tuple2::_1, mapping(Tuple2::_2, toList())))
@@ -47,5 +75,6 @@ public class ScheduleBuilder {
                 .map(entry -> new DateEmployeeShiftAssignments(entry.getKey(), entry.getValue()))
                 .collect(Collectors.collectingAndThen(toList(), Schedule::new));
     }
+
 
 }

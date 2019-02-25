@@ -35,9 +35,12 @@ public class DateEmployeeShiftAssignment {
         return employeeShiftAssignment.getShift();
     }
 
-
     public boolean isWorkDay() {
         return getShift().isWorkDay();
+    }
+
+    public boolean isDayOff() {
+        return getShift().isDayOff();
     }
 
     DateEmployeeShiftAssignment setShift(Shift shift) {

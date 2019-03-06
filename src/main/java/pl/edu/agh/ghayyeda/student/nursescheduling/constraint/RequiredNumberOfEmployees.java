@@ -1,8 +1,6 @@
 package pl.edu.agh.ghayyeda.student.nursescheduling.constraint;
 
-import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.EmployeeShiftAssignment;
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Schedule;
-import pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee;
 import pl.edu.agh.ghayyeda.student.nursescheduling.util.YearMonthUtil;
 
 import java.time.LocalDate;
@@ -16,17 +14,17 @@ import java.util.stream.IntStream;
 import static pl.edu.agh.ghayyeda.student.nursescheduling.constraint.HardConstraintValidationResult.feasibleConstraintValidationResult;
 import static pl.edu.agh.ghayyeda.student.nursescheduling.constraint.HardConstraintValidationResult.notFeasibleConstraintValidationResult;
 
-public class RequiredNumberOfBabySitters implements ScheduleConstraint {
+public class RequiredNumberOfEmployees implements ScheduleConstraint {
 
-    private static final int MAX_CHILDREN_PER_BABY_SITTER_DURING_DAY = 3;
-    private static final int MAX_CHILDREN_PER_BABY_SITTER_DURING_NIGHT = 5;
+    private static final int MAX_CHILDREN_PER_EMPLOYEE_DURING_DAY = 3;
+    private static final int MAX_CHILDREN_PER_EMPLOYEE_DURING_NIGHT = 5;
 
     private final LocalDateTime validationStartTime;
     private final LocalDateTime validationEndTime;
     private final YearMonth validationMonth;
     private final int numberOfChildren;
 
-    private RequiredNumberOfBabySitters(LocalDateTime validationStartTime, LocalDateTime validationEndTime, int numberOfChildren) {
+    private RequiredNumberOfEmployees(LocalDateTime validationStartTime, LocalDateTime validationEndTime, int numberOfChildren) {
         assert validationStartTime.getMonth() == validationEndTime.getMonth();
         this.validationStartTime = validationStartTime;
         this.validationEndTime = validationEndTime;
@@ -34,8 +32,8 @@ public class RequiredNumberOfBabySitters implements ScheduleConstraint {
         this.numberOfChildren = numberOfChildren;
     }
 
-    public static RequiredNumberOfBabySitters between(LocalDateTime validationStartTime, LocalDateTime validationEndTime, int numberOfChildren) {
-        return new RequiredNumberOfBabySitters(validationStartTime, validationEndTime, numberOfChildren);
+    public static RequiredNumberOfEmployees between(LocalDateTime validationStartTime, LocalDateTime validationEndTime, int numberOfChildren) {
+        return new RequiredNumberOfEmployees(validationStartTime, validationEndTime, numberOfChildren);
     }
 
     @Override
@@ -51,20 +49,16 @@ public class RequiredNumberOfBabySitters implements ScheduleConstraint {
 
     private Predicate<? super LocalDateTime> hasMinimumRequiredNumberOfBabySitters(Schedule schedule) {
         return timeOfDuty -> {
-            var numberOfBabySitters = schedule.getEmployeeShiftAssignmentsFor(timeOfDuty).filter(isBabySitter()).count();
+            var numberOfBabySitters = schedule.getEmployeeShiftAssignmentsFor(timeOfDuty).count();
             final boolean feasible = isDay(timeOfDuty) ?
-                    numberOfBabySitters >= Math.ceil(numberOfChildren / (double) MAX_CHILDREN_PER_BABY_SITTER_DURING_DAY) :
-                    numberOfBabySitters >= Math.ceil(numberOfChildren / (double) MAX_CHILDREN_PER_BABY_SITTER_DURING_NIGHT);
+                    numberOfBabySitters >= Math.ceil(numberOfChildren / (double) MAX_CHILDREN_PER_EMPLOYEE_DURING_DAY) :
+                    numberOfBabySitters >= Math.ceil(numberOfChildren / (double) MAX_CHILDREN_PER_EMPLOYEE_DURING_NIGHT);
             return feasible;
         };
     }
 
     private boolean isDay(LocalDateTime timeOfDuty) {
         return timeOfDuty.getHour() >= 6 && timeOfDuty.getHour() < 22;
-    }
-
-    private Predicate<? super EmployeeShiftAssignment> isBabySitter() {
-        return employeeShiftAssignment -> Employee.Type.BABY_SITTER == employeeShiftAssignment.getEmployeeType();
     }
 
     private IntStream allHoursADay() {

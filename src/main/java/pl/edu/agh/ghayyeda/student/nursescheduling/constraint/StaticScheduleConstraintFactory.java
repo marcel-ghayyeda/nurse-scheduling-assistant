@@ -10,7 +10,7 @@ public class StaticScheduleConstraintFactory implements ScheduleConstraintFactor
     public Collection<ScheduleConstraint> get(LocalDateTime validationStartTime, LocalDateTime validationEndTime, int numberOfChildren) {
         var alwaysAtLeastOneNurse = AlwaysAtLeastOneNurse.between(validationStartTime, validationEndTime);
         var minimumRestTimeAfterShift = new MinimumRestTimeAfterShift();
-        var requiredNumberOfBabySitters = RequiredNumberOfBabySitters.between(validationStartTime, validationEndTime, numberOfChildren);
+        var requiredNumberOfBabySitters = RequiredNumberOfEmployees.between(validationStartTime, validationEndTime, numberOfChildren);
         return List.of(alwaysAtLeastOneNurse, minimumRestTimeAfterShift, requiredNumberOfBabySitters);
     }
 

@@ -2,6 +2,7 @@ package pl.edu.agh.ghayyeda.student.nursescheduling.constraint;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pl.edu.agh.ghayyeda.student.nursescheduling.benchmark.TimeLogger;
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.EmployeeShiftAssignment;
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Schedule;
 import pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee;
@@ -38,19 +39,21 @@ public class AlwaysAtLeastOneNurse implements ScheduleConstraint {
 
     @Override
     public ScheduleConstraintValidationResult validate(Schedule schedule) {
-        var isFeasible = YearMonthUtil.allDaysOf(validationMonth)
-                .flatMap(dayOfMonth -> allHoursADay().mapToObj(toLocalDateTimeOn(dayOfMonth)))
-                .filter(notBeforeValidationStartTime())
-                .filter(beforeValidationEndtime())
-                .allMatch(timeOfDuty -> {
-                    boolean feasible = schedule.getEmployeeShiftAssignmentsFor(timeOfDuty).anyMatch(isNurse());
-                    if(!feasible){
-                        log.debug("No nurse on " + timeOfDuty);
-                    }
-                    return feasible;
-                });
+        return TimeLogger.measure("AlwaysAtLeastOneNurse", () -> {
+            var isFeasible = YearMonthUtil.allDaysOf(validationMonth)
+                    .flatMap(dayOfMonth -> allHoursADay().mapToObj(toLocalDateTimeOn(dayOfMonth)))
+                    .filter(notBeforeValidationStartTime())
+                    .filter(beforeValidationEndtime())
+                    .allMatch(timeOfDuty -> {
+                        boolean feasible = schedule.getEmployeeShiftAssignmentsFor(timeOfDuty).anyMatch(isNurse());
+                        if (!feasible) {
+                            log.debug("No nurse on " + timeOfDuty);
+                        }
+                        return feasible;
+                    });
 
-        return isFeasible ? feasibleConstraintValidationResult() : notFeasibleConstraintValidationResult();
+            return isFeasible ? feasibleConstraintValidationResult() : notFeasibleConstraintValidationResult();
+        });
     }
 
     private IntFunction<LocalDateTime> toLocalDateTimeOn(LocalDate dayOfMonth) {

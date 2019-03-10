@@ -37,7 +37,7 @@ public class Schedule {
                 .entrySet()
                 .stream()
                 .map(entry -> new DateEmployeeShiftAssignments(entry.getKey(), entry.getValue()))
-                .collect(Collectors.collectingAndThen(toList(), schedule1 -> new Schedule(schedule1, year, month, numberOfChildren)));
+                .collect(collectingAndThen(toList(), schedule1 -> new Schedule(schedule1, year, month, numberOfChildren)));
     }
 
     public List<DateEmployeeShiftAssignments> getDateEmployeeShiftAssignmentsByDate() {
@@ -105,16 +105,24 @@ public class Schedule {
         if (o == null || getClass() != o.getClass()) return false;
         Schedule schedule1 = (Schedule) o;
         return numberOfChildren == schedule1.numberOfChildren &&
-                Objects.equals(schedule, schedule1.schedule);
+                Objects.equals(schedule, schedule1.schedule) &&
+                Objects.equals(year, schedule1.year) &&
+                month == schedule1.month;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(schedule);
+
+        return Objects.hash(schedule, year, month, numberOfChildren);
     }
 
     @Override
     public String toString() {
-        return "Number of children: " + numberOfChildren + "\n" + ScheduleAsciiTablePresenter.buildAsciiTableRepresentationOf(this);
+        return "Schedule{" +
+                "schedule=" + ScheduleAsciiTablePresenter.buildAsciiTableRepresentationOf(this) +
+                ", year=" + year +
+                ", month=" + month +
+                ", numberOfChildren=" + numberOfChildren +
+                '}';
     }
 }

@@ -1,10 +1,12 @@
 package pl.edu.agh.ghayyeda.student.nursescheduling.solver;
 
 import org.slf4j.Logger;
+import pl.edu.agh.ghayyeda.student.nursescheduling.benchmark.TimeLogger;
 import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ScheduleConstraintValidationFacade;
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Schedule;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Queue;
@@ -27,20 +29,29 @@ public class BfsSolver implements Solver {
 
     @Override
     public Schedule findFeasibleSchedule(Schedule schedule) {
-        Queue<Schedule> queue = new LinkedList<>();
-        if (isFeasible(schedule)) {
-            return schedule;
-        }  else {
-            queue.add(schedule);
-            return bfs(queue).orElseThrow();
-        }
+        return TimeLogger.measure("BfsSolver", () -> {
+            Queue<Schedule> queue = new LinkedList<>();
+            HashSet<Schedule> history = new HashSet<>();
+            if (isFeasible(schedule)) {
+                return schedule;
+            } else {
+                queue.add(schedule);
+                return bfs(queue, history).orElseThrow();
+            }
+        });
     }
 
-    private Optional<Schedule> bfs(Queue<Schedule> queue) {
+    private Optional<Schedule> bfs(Queue<Schedule> queue, HashSet<Schedule> history) {
         while (!queue.isEmpty()) {
             log.debug("while starts");
             Schedule schedule = queue.remove();
             for (Schedule neighbour : schedule.getNeighbourhood()) {
+                if (history.contains(neighbour)) {
+                    log.debug("Rejecting neighbour due to history");
+                    continue;
+                } else {
+                    history.add(neighbour);
+                }
                 log.debug("for");
                 if (isFeasible(neighbour)) {
                     return Optional.of(neighbour);

@@ -18,13 +18,11 @@ public class BfsSolver implements Solver {
     private final ScheduleConstraintValidationFacade scheduleConstraintValidationFacade;
     private LocalDateTime validationStartTime;
     private LocalDateTime validationEndTime;
-    private int numberOfChildren;
 
-    public BfsSolver(ScheduleConstraintValidationFacade scheduleConstraintValidationFacade, LocalDateTime validationStartTime, LocalDateTime validationEndTime, int numberOfChildren) {
+    public BfsSolver(ScheduleConstraintValidationFacade scheduleConstraintValidationFacade, LocalDateTime validationStartTime, LocalDateTime validationEndTime) {
         this.scheduleConstraintValidationFacade = scheduleConstraintValidationFacade;
         this.validationStartTime = validationStartTime;
         this.validationEndTime = validationEndTime;
-        this.numberOfChildren = numberOfChildren;
     }
 
     @Override
@@ -55,6 +53,6 @@ public class BfsSolver implements Solver {
     }
 
     private boolean isFeasible(Schedule schedule) {
-        return scheduleConstraintValidationFacade.validate(schedule, validationStartTime, validationEndTime, numberOfChildren).isFeasible();
+        return scheduleConstraintValidationFacade.validate(schedule, validationStartTime, validationEndTime).isFeasible();
     }
 }

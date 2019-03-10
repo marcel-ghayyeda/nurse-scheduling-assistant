@@ -1,0 +1,15 @@
+.left-menu-not-feasible-schedule {
+    --iron-icon-fill-color: #e74c3c;
+}
+
+.left-menu-feasible-schedule {
+    --iron-icon-fill-color: #2ecc71;
+}
+
+app-menu {
+    --app-layout-app-color: #2c3e50;
+    --primary-color: #2c3e50;
+    --app-layout-app-selected-bg-color: rgba(52, 152, 219,0.5);
+    --app-menu-selected-bg-color: rgba(52, 152, 219,0.5);
+}
+

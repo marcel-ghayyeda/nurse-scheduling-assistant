@@ -19,15 +19,16 @@ import static pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee.nurse;
 public class ScheduleBuilder {
 
     private final Collection<Tuple2<LocalDate, EmployeeShiftAssignment>> shiftAssignments = new LinkedList<>();
-    private int year = Year.now().getValue();
+    private Year year = Year.now();
     private Month month = LocalDate.now().getMonth();
+    private int numberOfChildren = 1;
 
     public static ScheduleBuilder schedule() {
         return new ScheduleBuilder();
     }
 
     public ScheduleBuilder forYear(int year) {
-        this.year = year;
+        this.year = Year.of(year);
         return this;
     }
 
@@ -37,7 +38,7 @@ public class ScheduleBuilder {
     }
 
     public ScheduleBuilder onDay(int monthDay, EmployeeShiftAssignmentBuilder employeeShiftAssignmentBuilder) {
-        shiftAssignments.add(Tuple.of(LocalDate.of(year, month, monthDay), employeeShiftAssignmentBuilder.build()));
+        shiftAssignments.add(Tuple.of(LocalDate.of(year.getValue(), month, monthDay), employeeShiftAssignmentBuilder.build()));
         return this;
     }
 
@@ -67,13 +68,18 @@ public class ScheduleBuilder {
         return this;
     }
 
+    public ScheduleBuilder numberOfChildren(int numberOfChildren) {
+        this.numberOfChildren = numberOfChildren;
+        return this;
+    }
+
     public Schedule build() {
         return shiftAssignments.stream()
                 .collect(groupingBy(Tuple2::_1, mapping(Tuple2::_2, toList())))
                 .entrySet()
                 .stream()
                 .map(entry -> new DateEmployeeShiftAssignments(entry.getKey(), entry.getValue()))
-                .collect(Collectors.collectingAndThen(toList(), Schedule::new));
+                .collect(Collectors.collectingAndThen(toList(), schedule -> new Schedule(schedule,year, month, numberOfChildren)));
     }
 
 

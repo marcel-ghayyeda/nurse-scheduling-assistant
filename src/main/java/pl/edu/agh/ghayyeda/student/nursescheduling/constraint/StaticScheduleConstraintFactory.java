@@ -1,9 +1,12 @@
 package pl.edu.agh.ghayyeda.student.nursescheduling.constraint;
 
+import org.springframework.stereotype.Component;
+
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
+@Component
 public class StaticScheduleConstraintFactory implements ScheduleConstraintFactory {
 
     @Override

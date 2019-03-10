@@ -28,7 +28,7 @@ class BfsSolverTest extends Specification {
         given:
         def validationStartTime = LocalDateTime.of(LocalDate.of(2018, NOVEMBER, 1), DAY.startTime)
         def validationEndTime = LocalDateTime.of(LocalDate.of(2018, NOVEMBER, 3), NIGHT.endTime)
-        def solver = new BfsSolver(scheduleConstraintValidationFacade, validationStartTime, validationEndTime, 3)
+        def solver = new BfsSolver(scheduleConstraintValidationFacade, validationStartTime, validationEndTime)
 
         def schedule = schedule()
                 .forMonth(NOVEMBER)
@@ -41,6 +41,7 @@ class BfsSolverTest extends Specification {
                 .onDay(2, employeeShiftAssignment().employee(nurse("Nurse 2")).shift(NIGHT))
                 .onDay(2, employeeShiftAssignment().employee(babySitter("Baby sitter 1")).shift(DAY))
                 .onDay(2, employeeShiftAssignment().employee(babySitter("Baby sitter 2")).shift(NIGHT))
+                .numberOfChildren(3)
                 .build()
 
         when:
@@ -55,7 +56,7 @@ class BfsSolverTest extends Specification {
         given:
         def validationStartTime = LocalDateTime.of(LocalDate.of(2018, NOVEMBER, 1), DAY.startTime)
         def validationEndTime = LocalDateTime.of(LocalDate.of(2018, NOVEMBER, 3), NIGHT.endTime)
-        def solver = new BfsSolver(scheduleConstraintValidationFacade, validationStartTime, validationEndTime, 3)
+        def solver = new BfsSolver(scheduleConstraintValidationFacade, validationStartTime, validationEndTime)
 
         def originalSchedule = schedule()
                 .forMonth(NOVEMBER)
@@ -68,6 +69,7 @@ class BfsSolverTest extends Specification {
                 .onDay(2, employeeShiftAssignment().employee(nurse("Nurse 2")).shift(NIGHT))
                 .onDay(2, employeeShiftAssignment().employee(babySitter("Baby sitter 1")).shift(DAY))
                 .onDay(2, employeeShiftAssignment().employee(babySitter("Baby sitter 2")).shift(NIGHT))
+                .numberOfChildren(3)
                 .build()
 
         when:
@@ -85,6 +87,7 @@ class BfsSolverTest extends Specification {
                 .onDay(2, employeeShiftAssignment().employee(nurse("Nurse 2")).shift(NIGHT))
                 .onDay(2, employeeShiftAssignment().employee(babySitter("Baby sitter 1")).shift(DAY))
                 .onDay(2, employeeShiftAssignment().employee(babySitter("Baby sitter 2")).shift(NIGHT))
+                .numberOfChildren(3)
                 .build()
 
         foundSchedule == expectedSchedule
@@ -94,7 +97,7 @@ class BfsSolverTest extends Specification {
         given:
         def validationStartTime = LocalDateTime.of(LocalDate.of(2018, SEPTEMBER, 1), DAY.startTime)
         def validationEndTime = LocalDateTime.of(LocalDate.of(2018, SEPTEMBER, 30), NIGHT.endTime)
-        def solver = new BfsSolver(scheduleConstraintValidationFacade, validationStartTime, validationEndTime, 3)
+        def solver = new BfsSolver(scheduleConstraintValidationFacade, validationStartTime, validationEndTime)
 
         def nursesShifts = [
                 //NURSE 1
@@ -167,6 +170,7 @@ class BfsSolverTest extends Specification {
                 .forMonth(SEPTEMBER)
                 .forYear(2018)
                 .nursesShifts(nursesShifts)
+                .numberOfChildren(3)
                 .build()
 
         println ScheduleAsciiTablePresenter.buildAsciiTableRepresentationOf(originalSchedule)

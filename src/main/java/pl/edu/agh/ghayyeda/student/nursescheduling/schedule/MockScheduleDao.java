@@ -19,12 +19,14 @@ class MockScheduleDao implements ScheduleDao {
                 .forMonth(SEPTEMBER)
                 .forYear(2018)
                 .nursesShifts(feasibleShifts)
+                .numberOfChildren(3)
                 .build();
 
         var notFeasibleSchedule = schedule()
                 .forMonth(SEPTEMBER)
                 .forYear(2018)
                 .nursesShifts(notFeasibleShifts)
+                .numberOfChildren(3)
                 .build();
 
         UUID feasibleScheduleId = UUID.fromString("ce88d31a-5a41-4682-a333-1b4e141498e7");

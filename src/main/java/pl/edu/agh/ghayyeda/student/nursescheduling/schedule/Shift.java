@@ -49,7 +49,7 @@ public enum Shift {
         if (isWorkDay())
             if (endsOnNextDay())
                 return Duration.between(LocalDateTime.of(LocalDate.now(), getStartTime()),
-                        LocalDateTime.of(LocalDate.now().plusDays(1), getStartTime()));
+                        LocalDateTime.of(LocalDate.now().plusDays(1), getEndTime()));
             else return Duration.ofHours(Math.abs(endTime - startTime));
         else return Duration.ZERO;
     }

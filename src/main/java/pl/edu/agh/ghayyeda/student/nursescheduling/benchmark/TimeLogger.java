@@ -1,6 +1,5 @@
 package pl.edu.agh.ghayyeda.student.nursescheduling.benchmark;
 
-import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
 
 import java.time.Duration;
@@ -13,11 +12,13 @@ public class TimeLogger {
 
     public static <T> T measure(String description, Supplier<T> function) {
         long start = System.nanoTime();
-        T result = function.get();
-        long end = System.nanoTime();
-        var duration = Duration.ofNanos(end - start);
-        log.debug(description + " :Invocation took " + duration);
-        return result;
+        try {
+            return function.get();
+        } finally {
+            long end = System.nanoTime();
+            var duration = Duration.ofNanos(end - start);
+            log.debug(description + " :Invocation took " + duration);
+        }
     }
 
 }

@@ -1,7 +1,7 @@
 package pl.edu.agh.ghayyeda.student.nursescheduling.solver
 
-import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.FailFastScheduleConstraintFactory
-import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.FailFastScheduleConstraintValidationFacade
+import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.PenaltyAwareScheduleConstraintFactory
+import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.PenaltyAwareScheduleConstraintValidationFacade
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.ScheduleAsciiTablePresenter
 import spock.lang.Specification
 
@@ -16,19 +16,19 @@ import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Shift.*
 import static pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee.babySitter
 import static pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee.nurse
 
-class BfsSolverTest extends Specification {
+class TabuSearchSolverTest extends Specification {
 
     def scheduleConstraintValidationFacade
 
     def setup() {
-        scheduleConstraintValidationFacade = new FailFastScheduleConstraintValidationFacade(new FailFastScheduleConstraintFactory())
+        scheduleConstraintValidationFacade = new PenaltyAwareScheduleConstraintValidationFacade(new PenaltyAwareScheduleConstraintFactory())
     }
 
     def "Should return the same feasible schedule"() {
         given:
         def validationStartTime = LocalDateTime.of(LocalDate.of(2018, NOVEMBER, 1), DAY.startTime)
         def validationEndTime = LocalDateTime.of(LocalDate.of(2018, NOVEMBER, 3), NIGHT.endTime)
-        def solver = new BfsSolver(scheduleConstraintValidationFacade, validationStartTime, validationEndTime)
+        def solver = new TabuSearchSolver(scheduleConstraintValidationFacade, validationStartTime, validationEndTime)
 
         def schedule = schedule()
                 .forMonth(NOVEMBER)
@@ -56,7 +56,7 @@ class BfsSolverTest extends Specification {
         given:
         def validationStartTime = LocalDateTime.of(LocalDate.of(2018, NOVEMBER, 1), DAY.startTime)
         def validationEndTime = LocalDateTime.of(LocalDate.of(2018, NOVEMBER, 3), NIGHT.endTime)
-        def solver = new BfsSolver(scheduleConstraintValidationFacade, validationStartTime, validationEndTime)
+        def solver = new TabuSearchSolver(scheduleConstraintValidationFacade, validationStartTime, validationEndTime)
 
         def originalSchedule = schedule()
                 .forMonth(NOVEMBER)
@@ -93,16 +93,16 @@ class BfsSolverTest extends Specification {
         foundSchedule == expectedSchedule
     }
 
-    def "Should recognize original schedule as feasible"() {
+    def "Should find feasible schedule"() {
         given:
         def validationStartTime = LocalDateTime.of(LocalDate.of(2018, SEPTEMBER, 1), DAY.startTime)
         def validationEndTime = LocalDateTime.of(LocalDate.of(2018, SEPTEMBER, 30), NIGHT.endTime)
-        def solver = new BfsSolver(scheduleConstraintValidationFacade, validationStartTime, validationEndTime)
+        def solver = new TabuSearchSolver(scheduleConstraintValidationFacade, validationStartTime, validationEndTime)
 
-        def nursesShifts = [
+        def inFeasibleNursesShifts = [
                 //NURSE 1
                 [DAY_OFF, DAY, DAY_OFF, DAY_NIGHT, DAY_OFF, DAY, MORNING,
-                 DAY_OFF, DAY, DAY, DAY_OFF, DAY, DAY_OFF, MORNING,
+                 DAY_OFF, DAY, DAY, DAY_OFF, DAY, DAY_OFF, DAY_OFF,
                  MORNING, DAY_OFF, DAY_OFF, DAY, MORNING, DAY_OFF, MORNING,
                  DAY, DAY_OFF, DAY_OFF, DAY_OFF, DAY, MORNING, MORNING,
                  DAY_OFF, DAY],
@@ -111,13 +111,13 @@ class BfsSolverTest extends Specification {
                 [DAY_NIGHT, DAY_OFF, DAY_OFF, DAY, NIGHT, DAY_OFF, DAY,
                  NIGHT, DAY_OFF, DAY_OFF, DAY_OFF, NIGHT, NIGHT, DAY_OFF,
                  DAY, NIGHT, DAY_OFF, DAY, DAY_OFF, NIGHT, NIGHT,
-                 DAY_OFF, DAY_OFF, NIGHT, DAY_OFF, DAY_OFF, NIGHT, DAY_OFF,
+                 DAY_OFF, DAY_OFF, DAY_OFF, DAY_OFF, DAY_OFF, NIGHT, DAY_OFF,
                  DAY, DAY_OFF],
 
                 //NURSE 3
                 [DAY_OFF, NIGHT, NIGHT, DAY_OFF, DAY, DAY_OFF, MORNING,
                  DAY, DAY_NIGHT, DAY_OFF, DAY_NIGHT, DAY_OFF, DAY_OFF, DAY,
-                 DAY_NIGHT, DAY_OFF, NIGHT, DAY_OFF, NIGHT, DAY_OFF, DAY_OFF,
+                 DAY_OFF, DAY_OFF, NIGHT, DAY_OFF, NIGHT, DAY_OFF, DAY_OFF,
                  DAY_NIGHT, DAY_OFF, NIGHT, DAY_OFF, DAY_NIGHT, DAY_OFF, DAY_OFF,
                  DAY, DAY_OFF],
 
@@ -130,15 +130,15 @@ class BfsSolverTest extends Specification {
 
                 //NURSE 5
                 [DAY_OFF, DAY_OFF, DAY_OFF, DAY_OFF, DAY, NIGHT, DAY_OFF,
-                 DAY, DAY_OFF, DAY_OFF, DAY_NIGHT, DAY_OFF, DAY_OFF, DAY_OFF,
-                 DAY_OFF, DAY_OFF, DAY, NIGHT, DAY_OFF, DAY, DAY_OFF,
+                 DAY, DAY_OFF, DAY_OFF, MORNING, DAY_OFF, DAY_OFF, DAY_OFF,
+                 DAY_OFF, DAY_OFF, DAY, DAY_OFF, DAY_OFF, DAY, DAY_OFF,
                  DAY_OFF, NIGHT, DAY_OFF, DAY_OFF, DAY_OFF, DAY_OFF, DAY_OFF,
                  DAY_OFF, DAY_OFF],
 
                 //NURSE 6
                 [DAY_OFF, DAY, DAY_OFF, DAY_NIGHT, DAY_OFF, DAY_OFF, DAY,
                  NIGHT, DAY_OFF, DAY_OFF, DAY_OFF, DAY_NIGHT, DAY_OFF, DAY_OFF,
-                 NIGHT, DAY_OFF, DAY, NIGHT, DAY_OFF, DAY, DAY_OFF,
+                 NIGHT, DAY_OFF, DAY, MORNING, DAY_OFF, DAY, DAY_OFF,
                  DAY_OFF, DAY_OFF, DAY, DAY_NIGHT, DAY_OFF, DAY_OFF, MORNING,
                  DAY_OFF, NIGHT],
 
@@ -158,27 +158,36 @@ class BfsSolverTest extends Specification {
 
                 //NURSE 9
                 [DAY_OFF, DAY_NIGHT, DAY_OFF, DAY_NIGHT, DAY_OFF, DAY_NIGHT, DAY_OFF,
-                 DAY_OFF, DAY, DAY_NIGHT, DAY_OFF, DAY_OFF, DAY_NIGHT, DAY_OFF,
-                 DAY_OFF, DAY, DAY_OFF, DAY, DAY, DAY_OFF, DAY,
+                 DAY_OFF, DAY, NIGHT, DAY_OFF, DAY_OFF, DAY_NIGHT, DAY_OFF,
+                 DAY_OFF, DAY, DAY_OFF, DAY, MORNING, DAY_OFF, DAY,
                  DAY, DAY_OFF, DAY_OFF, DAY_OFF, DAY_OFF, DAY, DAY,
                  NIGHT, DAY_OFF],
         ]
 
-        def originalSchedule = schedule()
+        def infeasibleScheduleToBeFixed = schedule()
                 .forMonth(SEPTEMBER)
                 .forYear(2018)
-                .nursesShifts(nursesShifts)
-                .numberOfChildren(3)
+                .nursesShifts(inFeasibleNursesShifts)
+                .numberOfChildren(6)
                 .build()
 
-        println ScheduleAsciiTablePresenter.buildAsciiTableRepresentationOf(originalSchedule)
-
         when:
-        def foundSchedule = solver.findFeasibleSchedule(originalSchedule)
+        def foundSchedule = solver.findFeasibleSchedule(infeasibleScheduleToBeFixed)
 
         then:
+        println "original schedule: "
+        println ScheduleAsciiTablePresenter.buildAsciiTableRepresentationOf(infeasibleScheduleToBeFixed)
+        println "found schedule: "
+        println ScheduleAsciiTablePresenter.buildAsciiTableRepresentationOf(foundSchedule)
+
+        println "original schedule work-length: "
+        println ScheduleAsciiTablePresenter.buildAsciiTableOfEmployeeWorkHours(infeasibleScheduleToBeFixed)
+        println "found schedule work-length: "
+        println ScheduleAsciiTablePresenter.buildAsciiTableOfEmployeeWorkHours(foundSchedule)
+
+        foundSchedule != null
+        foundSchedule != infeasibleScheduleToBeFixed
         scheduleConstraintValidationFacade.validate(foundSchedule, validationStartTime, validationEndTime).isFeasible()
-        foundSchedule == originalSchedule
     }
 
 

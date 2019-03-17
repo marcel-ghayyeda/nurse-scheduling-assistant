@@ -2,6 +2,7 @@ package pl.edu.agh.ghayyeda.student.nursescheduling.schedule;
 
 import pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -49,6 +50,10 @@ public class DateEmployeeShiftAssignment {
 
     DateEmployeeShiftAssignment removeShift() {
         return new DateEmployeeShiftAssignment(getStartDate(), new EmployeeShiftAssignment(getEmployee(), Shift.DAY_OFF));
+    }
+
+    public Duration getShiftDuration() {
+        return getShift().getDuration();
     }
 
     @Override

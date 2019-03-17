@@ -8,11 +8,11 @@ import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.EmployeeShift
 import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.ScheduleBuilder.schedule
 import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Shift.*
 
-class MinimumRestTimeAfterShiftTest extends Specification {
+class PenaltyAwareMinimumRestTimeAfterShiftTest extends Specification {
 
     def "Should classify as not feasible when one nurse has night shift and morning shift on the same day"() {
         given:
-        def constraint = new MinimumRestTimeAfterShift()
+        def constraint = new PenaltyAwareMinimumRestTimeAfterShift()
 
         def schedule = schedule()
                 .forMonth(NOVEMBER)
@@ -29,11 +29,12 @@ class MinimumRestTimeAfterShiftTest extends Specification {
 
         then:
         !constraintValidationResult.feasible
+        constraintValidationResult.penalty == 1
     }
 
     def "Should classify as not feasible when first shift overlapses on the next day"() {
         given:
-        def constraint = new MinimumRestTimeAfterShift()
+        def constraint = new PenaltyAwareMinimumRestTimeAfterShift()
 
         def schedule = schedule()
                 .forMonth(NOVEMBER)
@@ -47,12 +48,13 @@ class MinimumRestTimeAfterShiftTest extends Specification {
 
         then:
         !constraintValidationResult.feasible
+        constraintValidationResult.penalty == 1
     }
 
 
     def "Should classify as feasible when all nurses have minimum required rest time assured"() {
         given:
-        def constraint = new MinimumRestTimeAfterShift()
+        def constraint = new PenaltyAwareMinimumRestTimeAfterShift()
 
         def schedule = schedule()
                 .forMonth(NOVEMBER)
@@ -71,6 +73,7 @@ class MinimumRestTimeAfterShiftTest extends Specification {
 
         then:
         constraintValidationResult.feasible
+        constraintValidationResult.penalty == 0
     }
 
 }

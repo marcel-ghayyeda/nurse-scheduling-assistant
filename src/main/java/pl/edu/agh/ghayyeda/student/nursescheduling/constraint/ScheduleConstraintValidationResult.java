@@ -1,11 +1,46 @@
 package pl.edu.agh.ghayyeda.student.nursescheduling.constraint;
 
-import java.util.OptionalInt;
+import org.apache.commons.lang3.Validate;
 
-public interface ScheduleConstraintValidationResult {
+public class ScheduleConstraintValidationResult {
 
-    boolean isFeasible();
+    private final boolean feasible;
+    private final double penalty;
 
-    OptionalInt getPenalty();
+    private ScheduleConstraintValidationResult(boolean feasible) {
+        this(feasible, 0);
+    }
 
+    private ScheduleConstraintValidationResult(boolean feasible, double penalty) {
+        this.feasible = feasible;
+        this.penalty = penalty;
+    }
+
+    static ScheduleConstraintValidationResult ofPenalty(double penalty) {
+        Validate.isTrue(penalty >= 0);
+        return new ScheduleConstraintValidationResult(penalty <= 0, penalty);
+    }
+
+    @Deprecated
+    static ScheduleConstraintValidationResult notFeasibleConstraintValidationResult() {
+        return new ScheduleConstraintValidationResult(false);
+    }
+
+    @Deprecated
+    static ScheduleConstraintValidationResult notFeasibleConstraintValidationResult(double penalty) {
+        return new ScheduleConstraintValidationResult(false, penalty);
+    }
+
+    @Deprecated
+    static ScheduleConstraintValidationResult feasibleConstraintValidationResult() {
+        return new ScheduleConstraintValidationResult(true);
+    }
+
+    public boolean isFeasible() {
+        return feasible;
+    }
+
+    public double getPenalty() {
+        return penalty;
+    }
 }

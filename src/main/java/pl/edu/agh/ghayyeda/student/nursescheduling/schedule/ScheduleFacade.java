@@ -1,7 +1,7 @@
 package pl.edu.agh.ghayyeda.student.nursescheduling.schedule;
 
 import org.springframework.stereotype.Component;
-import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ScheduleConstraintValidationFacade;
+import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.FailFastScheduleConstraintValidationFacade;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,11 +12,11 @@ import java.util.stream.Collectors;
 public class ScheduleFacade {
 
     private final ScheduleDao scheduleDao;
-    private final ScheduleConstraintValidationFacade scheduleConstraintValidationFacade;
+    private final FailFastScheduleConstraintValidationFacade failFastScheduleConstraintValidationFacade;
 
-    public ScheduleFacade(ScheduleDao scheduleDao, ScheduleConstraintValidationFacade scheduleConstraintValidationFacade) {
+    public ScheduleFacade(ScheduleDao scheduleDao, FailFastScheduleConstraintValidationFacade failFastScheduleConstraintValidationFacade) {
         this.scheduleDao = scheduleDao;
-        this.scheduleConstraintValidationFacade = scheduleConstraintValidationFacade;
+        this.failFastScheduleConstraintValidationFacade = failFastScheduleConstraintValidationFacade;
     }
 
     public List<ScheduleDescription> getLatestScheduleDescriptions() {
@@ -36,7 +36,7 @@ public class ScheduleFacade {
     }
 
     private boolean isFeasible(ScheduleDto scheduleDto) {
-        return scheduleConstraintValidationFacade.validate(scheduleDto.getSchedule()).isFeasible();
+        return failFastScheduleConstraintValidationFacade.validate(scheduleDto.getSchedule()).isFeasible();
     }
 
 

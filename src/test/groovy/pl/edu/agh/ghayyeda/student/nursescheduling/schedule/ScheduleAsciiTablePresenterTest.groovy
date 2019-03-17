@@ -34,7 +34,29 @@ class ScheduleAsciiTablePresenterTest extends Specification {
                 "|======================|\n" +
                 "| Nurse 1| R    | D    |\n" +
                 "| Nurse 2| D    | N    |\n"
+    }
+
+    def "Should correctly print work-length table for all employees"() {
+        given:
+        def schedule = schedule()
+                .forMonth(NOVEMBER)
+                .forYear(2018)
+                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(MORNING))
+                .onDay(1, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(DAY))
+                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 1")).shift(DAY))
+                .onDay(2, employeeShiftAssignment().employee(Employee.nurse("Nurse 2")).shift(NIGHT))
+                .build()
 
 
+        when:
+        def humanFriendlyString = presenter.buildAsciiTableOfEmployeeWorkHours(schedule)
+
+        then:
+        humanFriendlyString ==
+                "______________________\n" +
+                "| Employee| Work-hours|\n" +
+                "|=====================|\n" +
+                "| Nurse 1 | 20        |\n" +
+                "| Nurse 2 | 24        |\n"
     }
 }

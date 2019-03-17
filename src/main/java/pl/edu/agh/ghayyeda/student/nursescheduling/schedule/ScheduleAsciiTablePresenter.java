@@ -8,8 +8,10 @@ import java.io.PrintStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
+import static java.util.Comparator.comparing;
 import static java.util.Locale.US;
 import static java.util.stream.Collectors.*;
 
@@ -30,6 +32,22 @@ public class ScheduleAsciiTablePresenter {
                 .toArray(String[][]::new);
         new TextTable(columnNames, data).printTable(ps, 0);
         return baos.toString();
+    }
+
+    public static String buildAsciiTableOfEmployeeWorkHours(Schedule schedule) {
+        var baos = new ByteArrayOutputStream();
+        var ps = new PrintStream(baos);
+        String[][] data = schedule.getWorkHoursPerEmployee().entrySet()
+                .stream()
+                .sorted(comparing(employeeName()))
+                .map(entry -> Stream.of(entry.getKey().getName(), String.valueOf(entry.getValue())).toArray(String[]::new))
+                .toArray(String[][]::new);
+        new TextTable(new String[]{"Employee", "Work-hours"}, data).printTable(ps, 0);
+        return baos.toString();
+    }
+
+    private static Function<Map.Entry<Employee, Long>, String> employeeName() {
+        return entry -> entry.getKey().getName();
     }
 
     private static Stream<String> listScheduleDays(Schedule schedule) {

@@ -11,7 +11,6 @@ import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Shift.*;
 @Service
 class MockScheduleDao implements ScheduleDao {
 
-
     private final Map<UUID, ScheduleDto> scheduleRepository;
 
     MockScheduleDao() {
@@ -167,7 +166,7 @@ class MockScheduleDao implements ScheduleDao {
             //NURSE 8
             List.of(VACATION, VACATION, VACATION, VACATION, VACATION, VACATION, VACATION,
                     DAY_OFF, MORNING, DAY_OFF, DAY_OFF, DAY, NIGHT, NIGHT,
-                    DAY_OFF, DAY, DAY_OFF, DAY, DAY_OFF, DAY_OFF, DAY_OFF,
+                    DAY_OFF, DAY, DAY_OFF, DAY, DAY, DAY_OFF, DAY_OFF,
                     DAY, SICK_LEAVE, SICK_LEAVE, SICK_LEAVE, SICK_LEAVE, DAY_OFF, NIGHT,
                     DAY_OFF, DAY),
 

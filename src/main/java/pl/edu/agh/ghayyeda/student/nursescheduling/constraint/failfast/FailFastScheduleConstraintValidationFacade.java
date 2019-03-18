@@ -1,6 +1,9 @@
-package pl.edu.agh.ghayyeda.student.nursescheduling.constraint;
+package pl.edu.agh.ghayyeda.student.nursescheduling.constraint.failfast;
 
 import org.springframework.stereotype.Component;
+import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ScheduleConstraint;
+import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ScheduleConstraintValidationFacade;
+import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ScheduleConstraintValidationResult;
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Schedule;
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Shift;
 

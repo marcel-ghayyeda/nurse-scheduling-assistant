@@ -1,5 +1,6 @@
-package pl.edu.agh.ghayyeda.student.nursescheduling.constraint
+package pl.edu.agh.ghayyeda.student.nursescheduling.constraint.failfast
 
+import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.failfast.FailFastMinimumRestTimeAfterShift
 import pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee
 import spock.lang.Specification
 

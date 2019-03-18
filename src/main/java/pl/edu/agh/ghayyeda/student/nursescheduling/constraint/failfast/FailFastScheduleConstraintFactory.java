@@ -1,12 +1,16 @@
-package pl.edu.agh.ghayyeda.student.nursescheduling.constraint;
+package pl.edu.agh.ghayyeda.student.nursescheduling.constraint.failfast;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.springframework.stereotype.Component;
+import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ScheduleConstraint;
+import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ScheduleConstraintFactory;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
 @Component
+@VisibleForTesting
 public class FailFastScheduleConstraintFactory implements ScheduleConstraintFactory {
 
     @Override

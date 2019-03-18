@@ -2,9 +2,9 @@ package pl.edu.agh.ghayyeda.student.nursescheduling.constraint;
 
 import java.util.stream.IntStream;
 
-class ScheduleContraintUtils {
+public class ScheduleContraintUtils {
 
-    static IntStream significantHoursOfDay() {
+    public static IntStream significantHoursOfDay() {
         return IntStream.of(8, 16, 23);
     }
 

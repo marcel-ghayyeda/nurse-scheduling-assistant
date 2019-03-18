@@ -16,13 +16,13 @@ public class ScheduleConstraintValidationResult {
         this.penalty = penalty;
     }
 
-    static ScheduleConstraintValidationResult ofPenalty(double penalty) {
+    public static ScheduleConstraintValidationResult ofPenalty(double penalty) {
         Validate.isTrue(penalty >= 0);
         return new ScheduleConstraintValidationResult(penalty <= 0, penalty);
     }
 
     @Deprecated
-    static ScheduleConstraintValidationResult notFeasibleConstraintValidationResult() {
+    public static ScheduleConstraintValidationResult notFeasibleConstraintValidationResult() {
         return new ScheduleConstraintValidationResult(false);
     }
 
@@ -32,7 +32,7 @@ public class ScheduleConstraintValidationResult {
     }
 
     @Deprecated
-    static ScheduleConstraintValidationResult feasibleConstraintValidationResult() {
+    public static ScheduleConstraintValidationResult feasibleConstraintValidationResult() {
         return new ScheduleConstraintValidationResult(true);
     }
 

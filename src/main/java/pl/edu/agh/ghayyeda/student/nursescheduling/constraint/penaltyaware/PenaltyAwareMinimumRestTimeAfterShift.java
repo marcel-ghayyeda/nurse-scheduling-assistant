@@ -1,7 +1,9 @@
-package pl.edu.agh.ghayyeda.student.nursescheduling.constraint;
+package pl.edu.agh.ghayyeda.student.nursescheduling.constraint.penaltyaware;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ScheduleConstraint;
+import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ScheduleConstraintValidationResult;
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.DateEmployeeShiftAssignment;
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Schedule;
 
@@ -13,7 +15,7 @@ import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 
-public class PenaltyAwareMinimumRestTimeAfterShift implements ScheduleConstraint {
+class PenaltyAwareMinimumRestTimeAfterShift implements ScheduleConstraint {
 
     private static final Logger log = LoggerFactory.getLogger(PenaltyAwareMinimumRestTimeAfterShift.class);
 

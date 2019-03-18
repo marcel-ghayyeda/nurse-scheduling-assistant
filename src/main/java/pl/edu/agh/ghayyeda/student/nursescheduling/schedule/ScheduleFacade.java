@@ -1,7 +1,7 @@
 package pl.edu.agh.ghayyeda.student.nursescheduling.schedule;
 
 import org.springframework.stereotype.Component;
-import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.FailFastScheduleConstraintValidationFacade;
+import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.failfast.FailFastScheduleConstraintValidationFacade;
 
 import java.util.List;
 import java.util.Optional;

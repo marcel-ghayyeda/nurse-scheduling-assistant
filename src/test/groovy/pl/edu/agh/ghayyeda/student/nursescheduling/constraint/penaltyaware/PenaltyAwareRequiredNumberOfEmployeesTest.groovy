@@ -1,5 +1,6 @@
-package pl.edu.agh.ghayyeda.student.nursescheduling.constraint
+package pl.edu.agh.ghayyeda.student.nursescheduling.constraint.penaltyaware
 
+import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.penaltyaware.PenaltyAwareRequiredNumberOfEmployees
 import pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee
 import spock.lang.Specification
 

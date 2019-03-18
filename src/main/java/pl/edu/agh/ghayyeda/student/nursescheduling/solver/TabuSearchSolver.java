@@ -4,7 +4,7 @@ import io.vavr.Tuple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.edu.agh.ghayyeda.student.nursescheduling.benchmark.TimeLogger;
-import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.PenaltyAwareScheduleConstraintValidationFacade;
+import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.penaltyaware.PenaltyAwareScheduleConstraintValidationFacade;
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Schedule;
 
 import java.time.Duration;

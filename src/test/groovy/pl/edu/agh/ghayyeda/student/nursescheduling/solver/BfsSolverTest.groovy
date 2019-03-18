@@ -1,7 +1,7 @@
 package pl.edu.agh.ghayyeda.student.nursescheduling.solver
 
-import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.FailFastScheduleConstraintFactory
-import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.FailFastScheduleConstraintValidationFacade
+import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.failfast.FailFastScheduleConstraintFactory
+import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.failfast.FailFastScheduleConstraintValidationFacade
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.ScheduleAsciiTablePresenter
 import spock.lang.Specification
 

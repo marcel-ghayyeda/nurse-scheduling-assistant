@@ -17,7 +17,8 @@ public class PenaltyAwareScheduleConstraintFactory implements ScheduleConstraint
     public Collection<ScheduleConstraint> get(LocalDateTime validationStartTime, LocalDateTime validationEndTime, int numberOfChildren) {
         var minimumRestTimeAfterShift = new PenaltyAwareMinimumRestTimeAfterShift();
         var requiredNumberOfBabySitters = PenaltyAwareRequiredNumberOfEmployees.between(validationStartTime, validationEndTime, numberOfChildren);
-        return List.of(minimumRestTimeAfterShift, requiredNumberOfBabySitters);
+        var minimumOvertime = new MinimumOvertime();
+        return List.of(minimumRestTimeAfterShift, requiredNumberOfBabySitters, minimumOvertime);
     }
 
 }

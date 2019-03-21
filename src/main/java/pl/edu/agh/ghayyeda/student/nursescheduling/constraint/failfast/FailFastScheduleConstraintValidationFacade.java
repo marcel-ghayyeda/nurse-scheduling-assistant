@@ -24,7 +24,7 @@ public class FailFastScheduleConstraintValidationFacade implements ScheduleConst
     @Override
     public ScheduleConstraintValidationResult validate(Schedule schedule) {
         var validationStartTime = LocalDateTime.of(LocalDate.of(schedule.getYear().getValue(), schedule.getMonth(), 1), Shift.DAY.getStartTime());
-        var yearMonth = YearMonth.of(schedule.getYear().getValue(), schedule.getMonth());
+        var yearMonth = schedule.getYearMonth();
         var validationEndTime = LocalDateTime.of(yearMonth.atDay(yearMonth.lengthOfMonth()), LocalTime.of(23, 59));
 
         return validate(schedule, validationStartTime, validationEndTime);

@@ -4,10 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.Month;
-import java.time.Year;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -68,6 +65,10 @@ public class Schedule {
 
     public Year getYear() {
         return year;
+    }
+
+    public YearMonth getYearMonth() {
+        return YearMonth.of(getYear().getValue(), getMonth());
     }
 
     public Month getMonth() {

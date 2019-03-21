@@ -21,13 +21,17 @@ public class ScheduleConstraintValidationResult {
         return new ScheduleConstraintValidationResult(penalty <= 0, penalty);
     }
 
+    public static ScheduleConstraintValidationResult feasibleConstraintValidationResult(double penalty) {
+        return new ScheduleConstraintValidationResult(true, penalty);
+    }
+
     @Deprecated
     public static ScheduleConstraintValidationResult notFeasibleConstraintValidationResult() {
         return new ScheduleConstraintValidationResult(false);
     }
 
     @Deprecated
-    static ScheduleConstraintValidationResult notFeasibleConstraintValidationResult(double penalty) {
+    public static ScheduleConstraintValidationResult notFeasibleConstraintValidationResult(double penalty) {
         return new ScheduleConstraintValidationResult(false, penalty);
     }
 

@@ -1,23 +1,24 @@
 package pl.edu.agh.ghayyeda.student.nursescheduling.solver;
 
 import io.vavr.Tuple;
+import io.vavr.Tuple2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.edu.agh.ghayyeda.student.nursescheduling.benchmark.TimeLogger;
+import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ScheduleConstraintValidationResult;
 import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.penaltyaware.PenaltyAwareScheduleConstraintValidationFacade;
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Schedule;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.HashSet;
+import java.util.*;
 
-import static java.util.Comparator.comparing;
 import static pl.edu.agh.ghayyeda.student.nursescheduling.util.Predicates.not;
 
 public class TabuSearchSolver implements Solver {
 
     private static final Logger log = LoggerFactory.getLogger(TabuSearchSolver.class);
-    private static final int MAXIMUM_NUMBER_OF_ITERATIONS = 30;
+    private static final int MAXIMUM_NUMBER_OF_ITERATIONS = 130;
 
     private final PenaltyAwareScheduleConstraintValidationFacade scheduleConstraintValidationFacade;
     private final LocalDateTime validationStartTime;
@@ -39,19 +40,24 @@ public class TabuSearchSolver implements Solver {
 
             var bestScheduleFoundIterationNumber = 0;
 
-            var tabuList = new HashSet<>();
+            var tabuList = Collections.newSetFromMap(new LinkedHashMap<>() {
+                @Override
+                protected boolean removeEldestEntry(Map.Entry<Object, Boolean> eldest) {
+                    return size() > 5;
+                }
+            });
             for (int currentIteration = 0; currentIteration < MAXIMUM_NUMBER_OF_ITERATIONS; currentIteration++) {
                 log.debug("Current iteration: {}", currentIteration);
                 long iterationStart = System.nanoTime();
-                var neighbourCandidates = currentSchedule._1.getNeighbourhood();
+                List<Schedule> neighbourCandidates = currentSchedule._1.getNeighbourhood();
                 var bestNeighbourResult = neighbourCandidates.stream()
                         .filter(not(tabuList::contains))
                         .parallel()
                         .map(schedule -> Tuple.of(schedule, scheduleConstraintValidationFacade.validate(schedule, validationStartTime, validationEndTime)))
-                        .min(comparing(tuple -> tuple._2.getPenalty()))
+                        .min(feasibleFirst().thenComparing(tuple -> tuple._2.getPenalty()))
                         .orElseThrow();
 
-                if (bestNeighbourResult._2().getPenalty() < bestSchedule._2().getPenalty()) {
+                if (feasibleFirst().thenComparing(tuple -> tuple._2.getPenalty()).compare(bestNeighbourResult, bestSchedule) < 0) {
                     bestSchedule = bestNeighbourResult;
                     bestScheduleFoundIterationNumber = currentIteration;
                 }
@@ -70,5 +76,18 @@ public class TabuSearchSolver implements Solver {
                 throw new NoFeasibleScheduleFoundException();
             }
         });
+    }
+
+    private Comparator<Tuple2<Schedule, ScheduleConstraintValidationResult>> feasibleFirst() {
+        return (tuple1, tuple2) -> {
+            if ((tuple1._2.isFeasible() && tuple2._2.isFeasible()) || (!tuple1._2.isFeasible() && !tuple2._2.isFeasible())) {
+                return 0;
+            } else if (tuple1._2.isFeasible() && !tuple2._2.isFeasible()) {
+                return -1;
+            } else if (!tuple1._2.isFeasible() && tuple2._2.isFeasible()) {
+                return 1;
+            }
+            throw new IllegalStateException("Should never happen");
+        };
     }
 }

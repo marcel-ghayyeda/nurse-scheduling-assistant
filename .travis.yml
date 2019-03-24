@@ -1,6 +1,8 @@
 language: java
 jdk:
 - openjdk10
+install: true
+script: "mvn clean package -Pproduction-mode"
 deploy:
   provider: heroku
   api_key:

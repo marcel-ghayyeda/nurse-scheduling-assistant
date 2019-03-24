@@ -1,6 +1,7 @@
 package pl.edu.agh.ghayyeda.student.nursescheduling.view.schedule;
 
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.contextmenu.ContextMenu;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
@@ -62,6 +63,9 @@ class ScheduleTableComponent extends Grid<ScheduleTableComponent.ScheduleLayoutR
         addComponentColumn(scheduleLayoutRow -> {
             var shift = scheduleLayoutRow.shifts.get(date);
             var div = new Div(new Span(shift.getLocalizedShiftSymbol()));
+            ContextMenu contextMenu = new ContextMenu();
+            contextMenu.setTarget(div);
+            contextMenu.addItem("Set day off", e -> div.setText(Shift.DAY_OFF.getLocalizedShiftSymbol()));
             if (SICK_LEAVE == shift) {
                 div.addClassName("sick-leave");
             } else if (VACATION == shift) {

@@ -79,8 +79,18 @@ public class ScheduleBuilder {
                 .entrySet()
                 .stream()
                 .map(entry -> new DateEmployeeShiftAssignments(entry.getKey(), entry.getValue()))
-                .collect(Collectors.collectingAndThen(toList(), schedule -> new Schedule(schedule,year, month, numberOfChildren)));
+                .collect(collectingAndThen(toList(), schedule -> new Schedule(schedule, year, month, numberOfChildren)));
     }
 
 
+    public ScheduleBuilder fromEmployeeShiftMap(Collection<? extends EmployeeShiftMap> employeeShiftMaps) {
+        employeeShiftMaps
+                .forEach(employeeShiftMap -> employeeShiftMap.getDateShiftMap().forEach((localDate, shift) ->
+                        shiftAssignments.add(Tuple.of(localDate, employeeShiftAssignment()
+                                .employee(employeeShiftMap.getEmployee())
+                                .shift(shift)
+                                .build()))
+                ));
+        return this;
+    }
 }

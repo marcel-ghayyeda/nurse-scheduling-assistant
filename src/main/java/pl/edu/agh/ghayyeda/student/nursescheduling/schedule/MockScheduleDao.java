@@ -11,7 +11,8 @@ import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Shift.*;
 @Service
 class MockScheduleDao implements ScheduleDao {
 
-    private final Map<UUID, ScheduleDto> scheduleRepository;
+    private final Map
+            <UUID, ScheduleDto> scheduleRepository;
 
     MockScheduleDao() {
         var feasibleSchedule = schedule()
@@ -33,9 +34,10 @@ class MockScheduleDao implements ScheduleDao {
         var feasibleScheduleWrapper = new ScheduleDto(feasibleScheduleId, "Test schedule 1", feasibleSchedule);
         var notFeasibleScheduleWrapper = new ScheduleDto(notFeasibleScheduleId, "Test schedule 2", notFeasibleSchedule);
 
-        this.scheduleRepository = Map.of(
-                feasibleScheduleId, feasibleScheduleWrapper,
-                notFeasibleScheduleId, notFeasibleScheduleWrapper);
+        Map<UUID, ScheduleDto> scheduleMap = new LinkedHashMap<>();
+        scheduleMap.put(feasibleScheduleId, feasibleScheduleWrapper);
+        scheduleMap.put(notFeasibleScheduleId, notFeasibleScheduleWrapper);
+        this.scheduleRepository = scheduleMap;
     }
 
     @Override
@@ -46,6 +48,13 @@ class MockScheduleDao implements ScheduleDao {
     @Override
     public Optional<ScheduleDto> getById(UUID id) {
         return Optional.ofNullable(scheduleRepository.get(id));
+    }
+
+    @Override
+    public UUID save(Schedule schedule) {
+        UUID id = UUID.randomUUID();
+        scheduleRepository.put(id, new ScheduleDto(id, "schedule", schedule));
+        return id;
     }
 
     private static final List<List<Shift>> notFeasibleShifts = List.of(

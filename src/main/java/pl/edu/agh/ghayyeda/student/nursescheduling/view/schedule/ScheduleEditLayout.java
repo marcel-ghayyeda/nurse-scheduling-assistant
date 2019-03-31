@@ -1,5 +1,9 @@
 package pl.edu.agh.ghayyeda.student.nursescheduling.view.schedule;
 
+import com.vaadin.flow.component.ClickEvent;
+import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -11,15 +15,15 @@ import pl.edu.agh.ghayyeda.student.nursescheduling.view.NavigationComponents;
 
 import java.util.UUID;
 
-@Route(value = "schedule", layout = MainLayout.class)
+@Route(value = "schedule-edit", layout = MainLayout.class)
 @StyleSheet("frontend://css/schedule.css")
-public class ScheduleLayout extends VerticalLayout implements HasUrlParameter<String>, AfterNavigationObserver {
+public class ScheduleEditLayout extends VerticalLayout implements HasUrlParameter<String>, AfterNavigationObserver {
 
     private final NavigationComponents navigationComponents;
     private final ScheduleFacade scheduleFacade;
     private UUID scheduleId;
 
-    public ScheduleLayout(NavigationComponents navigationComponents, ScheduleFacade scheduleFacade) {
+    public ScheduleEditLayout(NavigationComponents navigationComponents, ScheduleFacade scheduleFacade) {
         this.navigationComponents = navigationComponents;
         this.scheduleFacade = scheduleFacade;
     }
@@ -43,9 +47,20 @@ public class ScheduleLayout extends VerticalLayout implements HasUrlParameter<St
 
     private void presentSchedule(ScheduleWrapper schedule) {
         add(new ScheduleDetailsComponent(schedule));
-        add(new ScheduleTableComponent(schedule.getSchedule()));
+        var scheduleTableComponent = new EditableScheduleTableComponent(schedule.getSchedule());
+        add(scheduleTableComponent);
+        var saveButon = new Button("Save");
+        saveButon.addClickListener(saveButtonClickHandler(scheduleTableComponent));
+        add(saveButon);
+
     }
 
+    private ComponentEventListener<ClickEvent<Button>> saveButtonClickHandler(ScheduleTableComponent scheduleTableComponent) {
+        return e -> {
+            UUID scheduleId = scheduleFacade.save(scheduleTableComponent.getSchedule());
+            UI.getCurrent().navigate("schedule/" + scheduleId);
+        };
+    }
 
     private void scheduleNotFound() {
         add(new Label("Ooops! Something went wrong. We couldn't find requested schedule. Please try again."));

@@ -26,6 +26,9 @@ public class ScheduleFacade {
                 .collect(Collectors.toList());
     }
 
+    public UUID save(Schedule schedule){
+        return scheduleDao.save(schedule);
+    }
     private ScheduleDescription toScheduleDescription(ScheduleDto scheduleDto) {
         return new ScheduleDescription(scheduleDto.getId(), scheduleDto.getName(), isFeasible(scheduleDto));
     }

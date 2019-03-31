@@ -8,5 +8,7 @@ interface ScheduleDao {
 
     List<ScheduleDto> getLatestSchedules();
 
-     Optional<ScheduleDto> getById(UUID id);
- }
+    Optional<ScheduleDto> getById(UUID id);
+
+    UUID save(Schedule schedule);
+}

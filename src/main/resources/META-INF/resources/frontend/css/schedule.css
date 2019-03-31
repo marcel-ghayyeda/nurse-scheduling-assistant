@@ -41,7 +41,7 @@ vaadin-grid-cell-content {
 }
 
 .schedule-details vaadin-details {
-    background-color: rgba(52, 152, 219, 0.5);
+    background-color: #ecf0f1;
     color: #2c3e50;
     border-radius: 6px 6px 6px 6px;
     width: 100%;
@@ -77,3 +77,20 @@ vaadin-grid-cell-content {
     color: #ecf0f1;
     margin-left: 10px;
 }
+
+.show-schedule-button {
+    background-color: #34495e;
+    color: #ecf0f1;
+    margin-left: 5px;
+}
+
+.edit-schedule-button {
+    background-color: #34495e;
+    color: #ecf0f1;
+    margin-left: 5px;
+}
+
+.button-icon iron-icon {
+    margin-top: -2px;
+}
+

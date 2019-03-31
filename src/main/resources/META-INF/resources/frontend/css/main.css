@@ -9,7 +9,10 @@
 app-menu {
     --app-layout-app-color: #2c3e50;
     --primary-color: #2c3e50;
-    --app-layout-app-selected-bg-color: rgba(52, 152, 219,0.5);
-    --app-menu-selected-bg-color: rgba(52, 152, 219,0.5);
+    --app-layout-app-selected-bg-color: #ecf0f1;
+    --app-menu-selected-bg-color: #ecf0f1;
 }
 
+.app-layout.lumo {
+    --app-layout-background:#ecf0f1;
+}

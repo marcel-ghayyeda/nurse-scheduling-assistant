@@ -47,12 +47,12 @@ public class SchedulesLayout extends VerticalLayout {
     private Component actionColumn(ScheduleRow scheduleRow) {
         Div parentDiv = new Div();
         Button showButton = new Button("Show");
-        showButton.addClassNames("show-schedule-button", "button-icon");
+        showButton.addClassNames("base-active-button");
         showButton.setIcon(EXPAND_SQUARE.create());
         showButton.addClickListener(e -> UI.getCurrent().navigate("schedule/" + scheduleRow.getId()));
 
         Button editButton = new Button("Edit");
-        editButton.addClassNames("edit-schedule-button", "button-icon");
+        editButton.addClassNames("base-active-button");
         editButton.setIcon(EDIT.create());
         editButton.addClickListener(e -> UI.getCurrent().navigate("schedule-edit/" + scheduleRow.getId()));
 

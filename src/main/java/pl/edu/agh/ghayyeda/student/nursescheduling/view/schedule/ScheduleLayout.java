@@ -44,6 +44,7 @@ public class ScheduleLayout extends VerticalLayout implements HasUrlParameter<St
     private void presentSchedule(ScheduleWrapper schedule) {
         add(new ScheduleDetailsComponent(schedule));
         add(new ScheduleTableComponent(schedule.getSchedule()));
+        add(new ScheduleActionsComponent(scheduleFacade, schedule));
     }
 
 

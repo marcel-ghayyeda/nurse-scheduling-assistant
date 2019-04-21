@@ -10,7 +10,7 @@ import com.vaadin.flow.component.page.Push;
 
 import static com.vaadin.flow.shared.communication.PushMode.MANUAL;
 
-@Push(MANUAL)
+@Push
 @StyleSheet("frontend://css/main.css")
 public class MainLayout extends AppLayoutRouterLayout {
 

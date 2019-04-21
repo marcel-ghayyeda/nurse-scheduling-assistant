@@ -3,6 +3,7 @@ package pl.edu.agh.ghayyeda.student.nursescheduling.solver
 import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.penaltyaware.PenaltyAwareScheduleConstraintFactory
 import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.penaltyaware.PenaltyAwareScheduleConstraintValidationFacade
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.ScheduleAsciiTablePresenter
+import pl.edu.agh.ghayyeda.student.nursescheduling.util.ScheduleValidationUtils
 import spock.lang.Specification
 
 import java.time.LocalDate
@@ -95,10 +96,6 @@ class TabuSearchSolverTest extends Specification {
 
     def "Should find feasible schedule"() {
         given:
-        def validationStartTime = LocalDateTime.of(LocalDate.of(2018, SEPTEMBER, 1), DAY.startTime)
-        def validationEndTime = LocalDateTime.of(LocalDate.of(2018, SEPTEMBER, 30), NIGHT.endTime)
-        def solver = new TabuSearchSolver(scheduleConstraintValidationFacade, validationStartTime, validationEndTime)
-
         def inFeasibleNursesShifts = [
                 //NURSE 1
                 [DAY_OFF, DAY, DAY_OFF, DAY_NIGHT, DAY_OFF, DAY, MORNING,
@@ -170,6 +167,10 @@ class TabuSearchSolverTest extends Specification {
                 .nursesShifts(inFeasibleNursesShifts)
                 .numberOfChildren(6)
                 .build()
+
+        def validationStartTime = ScheduleValidationUtils.getStandardValidationStartTime(infeasibleScheduleToBeFixed)
+        def validationEndTime = ScheduleValidationUtils.getStandardValidationEndTime(infeasibleScheduleToBeFixed)
+        def solver = new TabuSearchSolver(scheduleConstraintValidationFacade, validationStartTime, validationEndTime)
 
         when:
         def foundSchedule = solver.findFeasibleSchedule(infeasibleScheduleToBeFixed)

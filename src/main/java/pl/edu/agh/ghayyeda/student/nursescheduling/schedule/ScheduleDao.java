@@ -11,4 +11,8 @@ interface ScheduleDao {
     Optional<ScheduleDto> getById(UUID id);
 
     UUID save(Schedule schedule);
+
+    UUID save(Schedule schedule, String name);
+
+    UUID save(UUID id, Schedule schedule, String name);
 }

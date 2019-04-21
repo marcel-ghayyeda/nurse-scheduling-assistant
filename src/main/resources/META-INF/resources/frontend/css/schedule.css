@@ -48,6 +48,19 @@ vaadin-grid-cell-content {
     padding-left: 10px;
 }
 
+.schedule-actions {
+    width: 100%;
+}
+
+.schedule-actions vaadin-details {
+    background-color: #ecf0f1;
+    color: #2c3e50;
+    border-radius: 6px 6px 6px 6px;
+    width: 100%;
+    padding-left: 10px;
+}
+
+
 .feasible-status-button {
     background-color: #2ecc71;
 }
@@ -78,19 +91,13 @@ vaadin-grid-cell-content {
     margin-left: 10px;
 }
 
-.show-schedule-button {
-    background-color: #34495e;
-    color: #ecf0f1;
-    margin-left: 5px;
+.base-active-button {
+    background-color: #f1c40f;
+    color: #2c3e50;
+    margin-left: 10px;
+
 }
 
-.edit-schedule-button {
-    background-color: #34495e;
-    color: #ecf0f1;
-    margin-left: 5px;
-}
-
-.button-icon iron-icon {
+.base-active-button iron-icon {
     margin-top: -2px;
 }
-

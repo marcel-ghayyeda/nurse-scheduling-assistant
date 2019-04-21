@@ -5,12 +5,9 @@ import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ScheduleConstraint
 import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ScheduleConstraintValidationFacade;
 import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ScheduleConstraintValidationResult;
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Schedule;
-import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Shift;
+import pl.edu.agh.ghayyeda.student.nursescheduling.util.ScheduleValidationUtils;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.YearMonth;
 
 @Component
 public class FailFastScheduleConstraintValidationFacade implements ScheduleConstraintValidationFacade {
@@ -23,10 +20,8 @@ public class FailFastScheduleConstraintValidationFacade implements ScheduleConst
 
     @Override
     public ScheduleConstraintValidationResult validate(Schedule schedule) {
-        var validationStartTime = LocalDateTime.of(LocalDate.of(schedule.getYear().getValue(), schedule.getMonth(), 1), Shift.DAY.getStartTime());
-        var yearMonth = schedule.getYearMonth();
-        var validationEndTime = LocalDateTime.of(yearMonth.atDay(yearMonth.lengthOfMonth()), LocalTime.of(23, 59));
-
+        var validationStartTime = ScheduleValidationUtils.getStandardValidationStartTime(schedule);
+        var validationEndTime = ScheduleValidationUtils.getStandardValidationEndTime(schedule);
         return validate(schedule, validationStartTime, validationEndTime);
     }
 

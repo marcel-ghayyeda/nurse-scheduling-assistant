@@ -24,7 +24,7 @@ public class Schedule {
     private final Month month;
     private final int numberOfChildren;
 
-    Schedule(List<DateEmployeeShiftAssignments> schedule, Year year, Month month, int numberOfChildren) {
+    public Schedule(List<DateEmployeeShiftAssignments> schedule, Year year, Month month, int numberOfChildren) {
         this.schedule = schedule;
         this.year = year;
         this.month = month;

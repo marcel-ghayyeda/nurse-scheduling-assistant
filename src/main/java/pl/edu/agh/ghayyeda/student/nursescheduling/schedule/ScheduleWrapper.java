@@ -2,6 +2,7 @@ package pl.edu.agh.ghayyeda.student.nursescheduling.schedule;
 
 import java.time.Month;
 import java.time.Year;
+import java.util.UUID;
 
 public class ScheduleWrapper {
     private final ScheduleDescription scheduleDescription;
@@ -12,6 +13,10 @@ public class ScheduleWrapper {
         this.scheduleDescription = scheduleDescription;
         this.isFeasible = isFeasible;
         this.schedule = schedule;
+    }
+
+    public UUID getId() {
+        return scheduleDescription.getId();
     }
 
     public String getName() {

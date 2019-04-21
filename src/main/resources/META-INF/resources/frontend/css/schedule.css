@@ -17,6 +17,7 @@
 
 .employee-row {
     font-style: italic;
+    margin-right: 15px;
 }
 
 .sick-leave {
@@ -60,7 +61,6 @@ vaadin-grid-cell-content {
     padding-left: 10px;
 }
 
-
 .feasible-status-button {
     background-color: #2ecc71;
 }
@@ -101,3 +101,12 @@ vaadin-grid-cell-content {
 .base-active-button iron-icon {
     margin-top: -2px;
 }
+
+.delete-employee-button {
+    padding: 0;
+    background-color: white;
+    color: #e74c3c;
+    margin-top:-10px;
+    margin-bottom:-20px;
+}
+

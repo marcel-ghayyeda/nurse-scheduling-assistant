@@ -11,13 +11,13 @@ import pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import static java.time.DayOfWeek.SATURDAY;
 import static java.time.DayOfWeek.SUNDAY;
+import static java.util.Comparator.comparing;
 import static java.util.Locale.US;
 import static java.util.stream.Collectors.*;
 import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Shift.SICK_LEAVE;
@@ -29,7 +29,7 @@ class ScheduleTableComponent extends Grid<ScheduleTableComponent.ScheduleLayoutR
     //TODO use common formatter with ascii presented
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE d").localizedBy(US);
     private final Schedule initialSchedule;
-    private Collection<ScheduleLayoutRow> items;
+    protected Collection<ScheduleLayoutRow> items;
 
     ScheduleTableComponent(Schedule initialSchedule) {
         this.initialSchedule = initialSchedule;
@@ -40,7 +40,7 @@ class ScheduleTableComponent extends Grid<ScheduleTableComponent.ScheduleLayoutR
                 .entrySet()
                 .stream()
                 .map(entry -> new ScheduleLayoutRow(entry.getKey(), entry.getValue().stream().collect(toMap(DateEmployeeShiftAssignment::getStartDate, DateEmployeeShiftAssignment::getShift))))
-                .sorted(Comparator.comparing(x -> x.employee.getName()))
+                .sorted(comparing(row -> row.employee.getName()))
                 .collect(Collectors.toList());
 
         items = scheduleLayoutRows;
@@ -77,9 +77,13 @@ class ScheduleTableComponent extends Grid<ScheduleTableComponent.ScheduleLayoutR
     }
 
     private void addEmployeeColumn() {
-        addComponentColumn(scheduleLayoutRow -> withCssClass("employee-row", new Span(scheduleLayoutRow.employee.getName())))
+        addComponentColumn(createEmployeeColumn())
                 .setHeader(employeeHeader())
                 .setFlexGrow(0);
+    }
+
+    protected ValueProvider<ScheduleLayoutRow, Component> createEmployeeColumn() {
+        return scheduleLayoutRow -> withCssClass("employee-row", new Span(scheduleLayoutRow.employee.getName()));
     }
 
     private Component employeeHeader() {

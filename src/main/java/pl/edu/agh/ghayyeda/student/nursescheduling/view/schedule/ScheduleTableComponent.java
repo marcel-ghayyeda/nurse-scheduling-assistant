@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static java.lang.String.format;
 import static java.time.DayOfWeek.SATURDAY;
 import static java.time.DayOfWeek.SUNDAY;
 import static java.util.Comparator.comparing;
@@ -84,7 +85,7 @@ class ScheduleTableComponent extends Grid<ScheduleTableComponent.ScheduleLayoutR
     private void addEmployeeColumn() {
         addComponentColumn(createEmployeeColumn())
                 .setHeader(createEmployeeHeader())
-                .setWidth("150px")
+                .setWidth("180px")
                 .setFlexGrow(0);
     }
 
@@ -93,7 +94,7 @@ class ScheduleTableComponent extends Grid<ScheduleTableComponent.ScheduleLayoutR
     }
 
     private Component employeeName(ScheduleLayoutRow scheduleLayoutRow) {
-        Span span = new Span(scheduleLayoutRow.employee.getName());
+        Span span = new Span(format("%s (%s)", scheduleLayoutRow.employee.getName(), scheduleLayoutRow.employee.getType().getName()));
         Div div = new Div();
         div.add(span);
         div.setWidthFull();
@@ -104,7 +105,7 @@ class ScheduleTableComponent extends Grid<ScheduleTableComponent.ScheduleLayoutR
         var span = new Span("Employee");
         Div div = new Div();
         div.add(span);
-        div.setWidthFull();
+        div.setWidth("180px");
         return withCssClass("employee-header", div);
     }
 

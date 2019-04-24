@@ -4,6 +4,7 @@ import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.details.Details;
 import com.vaadin.flow.component.formlayout.FormLayout;
@@ -19,6 +20,8 @@ import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.ScheduleWrapper;
 import pl.edu.agh.ghayyeda.student.nursescheduling.view.MainLayout;
 import pl.edu.agh.ghayyeda.student.nursescheduling.view.NavigationComponents;
 
+import java.time.Month;
+import java.time.Year;
 import java.util.UUID;
 
 import static com.vaadin.flow.component.icon.VaadinIcon.CHECK_SQUARE;
@@ -65,19 +68,29 @@ public class ScheduleEditLayout extends VerticalLayout implements HasUrlParamete
         numberOfChildrenField.setMax(10);
         numberOfChildrenField.setHasControls(true);
         scheduleDetailsForm.add(numberOfChildrenField);
+        ComboBox<Month> monthComboBox = new ComboBox<>("Month");
+        monthComboBox.setItems(Month.values());
+        monthComboBox.setValue(schedule.getMonth());
+        scheduleDetailsForm.add(monthComboBox);
+        NumberField yearField = new NumberField("Year");
+        yearField.setValue((double) schedule.getYear().getValue());
+        yearField.setMin(1900);
+        yearField.setMax(2100);
+        yearField.setHasControls(true);
+        scheduleDetailsForm.add(yearField);
         var scheduleTableComponent = new EditableScheduleTableComponent(schedule.getSchedule());
         FormLayout actionsForm = new FormLayout();
         var saveAsNewButton = new Button("Save as new");
         saveAsNewButton.setEnabled(true);
         saveAsNewButton.setIcon(COPY.create());
         saveAsNewButton.addClassNames("base-active-button", "button-with-icon");
-        saveAsNewButton.addClickListener(saveAsNewButtonClickHandler(scheduleTableComponent, scheduleNameField, numberOfChildrenField));
+        saveAsNewButton.addClickListener(saveAsNewButtonClickHandler(scheduleTableComponent, scheduleNameField, numberOfChildrenField, monthComboBox, yearField));
         saveAsNewButton.setWidthFull();
         var saveButton = new Button("Save");
         saveButton.setEnabled(true);
         saveButton.setIcon(CHECK_SQUARE.create());
         saveButton.addClassNames("base-active-button", "button-with-icon");
-        saveButton.addClickListener(saveButtonClickHandler(schedule.getId(), scheduleTableComponent, scheduleNameField, numberOfChildrenField));
+        saveButton.addClickListener(saveButtonClickHandler(schedule.getId(), scheduleTableComponent, scheduleNameField, numberOfChildrenField, monthComboBox, yearField));
         saveButton.setWidthFull();
         actionsForm.add(saveButton, saveAsNewButton);
         HorizontalLayout actionsHorizontalLayout = new HorizontalLayout();
@@ -94,19 +107,19 @@ public class ScheduleEditLayout extends VerticalLayout implements HasUrlParamete
         return details;
     }
 
-    private ComponentEventListener<ClickEvent<Button>> saveAsNewButtonClickHandler(EditableScheduleTableComponent scheduleTableComponent, TextField scheduleName, NumberField numberOfChildren) {
+    private ComponentEventListener<ClickEvent<Button>> saveAsNewButtonClickHandler(EditableScheduleTableComponent scheduleTableComponent, TextField scheduleName, NumberField numberOfChildren, ComboBox<Month> month, NumberField year) {
         return e -> {
             Schedule editedSchedule = scheduleTableComponent.getSchedule();
-            Schedule newSchedule = new Schedule(editedSchedule.getDateEmployeeShiftAssignmentsByDate(), editedSchedule.getYear(), editedSchedule.getMonth(), numberOfChildren.getValue().intValue());
+            Schedule newSchedule = new Schedule(editedSchedule.getDateEmployeeShiftAssignmentsByDate(), Year.of(year.getValue().intValue()), month.getValue(), numberOfChildren.getValue().intValue());
             UUID newScheduleId = scheduleFacade.save(newSchedule, scheduleName.getValue());
             UI.getCurrent().navigate("schedule/" + newScheduleId);
         };
     }
 
-    private ComponentEventListener<ClickEvent<Button>> saveButtonClickHandler(UUID scheduleId, EditableScheduleTableComponent scheduleTableComponent, TextField scheduleName, NumberField numberOfChildren) {
+    private ComponentEventListener<ClickEvent<Button>> saveButtonClickHandler(UUID scheduleId, EditableScheduleTableComponent scheduleTableComponent, TextField scheduleName, NumberField numberOfChildren, ComboBox<Month> month, NumberField year) {
         return e -> {
             Schedule editedSchedule = scheduleTableComponent.getSchedule();
-            Schedule newSchedule = new Schedule(editedSchedule.getDateEmployeeShiftAssignmentsByDate(), editedSchedule.getYear(), editedSchedule.getMonth(), numberOfChildren.getValue().intValue());
+            Schedule newSchedule = new Schedule(editedSchedule.getDateEmployeeShiftAssignmentsByDate(), Year.of(year.getValue().intValue()), month.getValue(), numberOfChildren.getValue().intValue());
             UUID newScheduleId = scheduleFacade.save(scheduleId, newSchedule, scheduleName.getValue());
             UI.getCurrent().navigate("schedule/" + newScheduleId);
         };

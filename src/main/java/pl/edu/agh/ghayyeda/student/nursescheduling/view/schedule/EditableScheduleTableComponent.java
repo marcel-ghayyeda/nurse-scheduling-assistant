@@ -26,8 +26,7 @@ import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Shift.VACATIO
 import static pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee.Type.NURSE;
 import static pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee.employee;
 import static pl.edu.agh.ghayyeda.student.nursescheduling.util.YearMonthUtil.allDaysOf;
-import static pl.edu.agh.ghayyeda.student.nursescheduling.view.util.ComponentUtil.centered;
-import static pl.edu.agh.ghayyeda.student.nursescheduling.view.util.ComponentUtil.setValue;
+import static pl.edu.agh.ghayyeda.student.nursescheduling.view.util.ComponentUtil.*;
 
 class EditableScheduleTableComponent extends ScheduleTableComponent {
 
@@ -37,7 +36,7 @@ class EditableScheduleTableComponent extends ScheduleTableComponent {
 
     @Override
     protected Component createEmployeeHeader() {
-        Component employeeHeader = super.createEmployeeHeader();
+        Component employeeHeader = setCssClass("editable-employee-header", super.createEmployeeHeader());
         HorizontalLayout horizontalLayout = new HorizontalLayout();
         Button button = new Button();
         button.setIcon(PLUS_CIRCLE.create());
@@ -85,7 +84,7 @@ class EditableScheduleTableComponent extends ScheduleTableComponent {
     @Override
     protected ValueProvider<ScheduleLayoutRow, Component> createEmployeeColumn() {
         return scheduleLayoutRow -> {
-            var employeeName = super.createEmployeeColumn().apply(scheduleLayoutRow);
+            var employeeName = setCssClass("editable-employee-row", super.createEmployeeColumn().apply(scheduleLayoutRow));
             HorizontalLayout horizontalLayout = new HorizontalLayout();
             Button button = new Button();
             button.setIcon(MINUS_CIRCLE.create());

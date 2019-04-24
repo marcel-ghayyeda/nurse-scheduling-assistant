@@ -9,6 +9,11 @@ import static com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment.CE
 
 public class ComponentUtil {
 
+    public static <T extends Component> T setCssClass(String cssClass, T component) {
+        component.getElement().getClassList().clear();
+        return withCssClass(cssClass, component);
+    }
+
     public static <T extends Component> T withCssClass(String cssClass, T component) {
         component.getElement().getClassList().add(cssClass);
         return component;

@@ -13,11 +13,25 @@
 .employee-header {
     font-style: italic;
     font-weight: bold;
-    margin-left: 0;
+    margin-left: 10px;
     text-align: left;
 }
 
 .employee-row {
+    font-style: italic;
+    margin-right: 15px;
+    margin-left: 10px;
+    text-align: left;
+}
+
+.editable-employee-header {
+    font-style: italic;
+    font-weight: bold;
+    margin-left: 0;
+    text-align: left;
+}
+
+.editable-employee-row {
     font-style: italic;
     margin-right: 15px;
     margin-left: 0;

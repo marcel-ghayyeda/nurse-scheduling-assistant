@@ -8,8 +8,18 @@ import static pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee.Type.NU
 public class Employee {
 
     public enum Type {
-        NURSE,
-        BABY_SITTER;
+        NURSE("Nurse"),
+        BABY_SITTER("Baby sitter");
+
+        private final String name;
+
+        Type(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
     }
 
     private final String name;
@@ -18,6 +28,10 @@ public class Employee {
     private Employee(String name, Type type) {
         this.name = name;
         this.type = type;
+    }
+
+    public static Employee employee(String name, Type type) {
+        return new Employee(name, type);
     }
 
     public static Employee nurse(String name) {

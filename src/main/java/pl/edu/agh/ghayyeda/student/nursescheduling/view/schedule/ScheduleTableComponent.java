@@ -9,6 +9,7 @@ import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.*;
 import pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.List;
@@ -47,6 +48,10 @@ class ScheduleTableComponent extends Grid<ScheduleTableComponent.ScheduleLayoutR
         setItems(items);
     }
 
+    public YearMonth getYearMonth() {
+        return initialSchedule.getYearMonth();
+    }
+
     public Schedule getSchedule() {
         return ScheduleBuilder.schedule()
                 .numberOfChildren(initialSchedule.getNumberOfChildren())
@@ -65,7 +70,7 @@ class ScheduleTableComponent extends Grid<ScheduleTableComponent.ScheduleLayoutR
 
     protected ValueProvider<ScheduleLayoutRow, Div> createShiftComponentColumn(LocalDate date) {
         return scheduleLayoutRow -> {
-            var shift = scheduleLayoutRow.shifts.get(date);
+            var shift = scheduleLayoutRow.shifts.getOrDefault(date, Shift.DAY_OFF);
             var div = new Div(new Span(shift.getLocalizedShiftSymbol()));
             if (SICK_LEAVE == shift) {
                 div.addClassName("sick-leave");
@@ -78,18 +83,29 @@ class ScheduleTableComponent extends Grid<ScheduleTableComponent.ScheduleLayoutR
 
     private void addEmployeeColumn() {
         addComponentColumn(createEmployeeColumn())
-                .setHeader(employeeHeader())
+                .setHeader(createEmployeeHeader())
+                .setWidth("150px")
                 .setFlexGrow(0);
     }
 
     protected ValueProvider<ScheduleLayoutRow, Component> createEmployeeColumn() {
-        return scheduleLayoutRow -> withCssClass("employee-row", new Span(scheduleLayoutRow.employee.getName()));
+        return scheduleLayoutRow -> withCssClass("employee-row", employeeName(scheduleLayoutRow));
     }
 
-    private Component employeeHeader() {
+    private Component employeeName(ScheduleLayoutRow scheduleLayoutRow) {
+        Span span = new Span(scheduleLayoutRow.employee.getName());
+        Div div = new Div();
+        div.add(span);
+        div.setWidthFull();
+        return div;
+    }
+
+    protected Component createEmployeeHeader() {
         var span = new Span("Employee");
-        span.addClassName("employee-header");
-        return span;
+        Div div = new Div();
+        div.add(span);
+        div.setWidthFull();
+        return withCssClass("employee-header", div);
     }
 
     private Component dateHeader(LocalDate date) {

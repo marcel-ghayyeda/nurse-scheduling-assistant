@@ -15,7 +15,7 @@ class ScheduleDetailsComponent extends HorizontalLayout {
     ScheduleDetailsComponent(ScheduleWrapper schedule) {
         var details = new Details("Schedule details", detailsContent(schedule));
         details.setOpened(true);
-        addClassName("schedule-details");
+        addClassName("details");
         add(details);
     }
 

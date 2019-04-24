@@ -13,11 +13,15 @@
 .employee-header {
     font-style: italic;
     font-weight: bold;
+    margin-left: 0;
+    text-align: left;
 }
 
 .employee-row {
     font-style: italic;
     margin-right: 15px;
+    margin-left: 0;
+    text-align: left;
 }
 
 .sick-leave {
@@ -37,11 +41,11 @@ vaadin-grid-cell-content {
     padding: 0;
 }
 
-.schedule-details {
+.details {
     width: 100%;
 }
 
-.schedule-details vaadin-details {
+.details vaadin-details {
     background-color: #ecf0f1;
     color: #2c3e50;
     border-radius: 6px 6px 6px 6px;
@@ -98,15 +102,30 @@ vaadin-grid-cell-content {
 
 }
 
-.base-active-button iron-icon {
+.button-with-icon iron-icon {
     margin-top: -2px;
+}
+
+.delete-employee-button iron-icon {
+    margin-top: 3px;
+}
+
+.add-employee-button iron-icon {
+    margin-top: 3px;
 }
 
 .delete-employee-button {
     padding: 0;
     background-color: white;
     color: #e74c3c;
-    margin-top:-10px;
-    margin-bottom:-20px;
+    margin-top: -10px;
+    margin-bottom: -20px;
 }
 
+.add-employee-button {
+    padding: 0;
+    background-color: white;
+    color: #27ae60;
+    margin-top: -10px;
+    margin-bottom: -20px;
+}

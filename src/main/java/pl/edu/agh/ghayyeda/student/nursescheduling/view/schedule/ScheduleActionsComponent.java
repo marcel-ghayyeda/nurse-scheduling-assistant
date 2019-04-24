@@ -5,17 +5,15 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.details.Details;
 import com.vaadin.flow.component.dialog.Dialog;
-import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.progressbar.ProgressBar;
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.ScheduleFacade;
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.ScheduleWrapper;
 
 import static com.vaadin.flow.component.icon.VaadinIcon.EDIT;
 import static com.vaadin.flow.component.icon.VaadinIcon.TOOLS;
-import static com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment.CENTER;
+import static pl.edu.agh.ghayyeda.student.nursescheduling.view.util.ComponentUtil.centered;
 
 class ScheduleActionsComponent extends HorizontalLayout {
 
@@ -37,7 +35,7 @@ class ScheduleActionsComponent extends HorizontalLayout {
 
     private Component editButton(ScheduleWrapper schedule) {
         var editButton = new Button("Edit");
-        editButton.addClassNames("base-active-button");
+        editButton.addClassNames("base-active-button", "button-with-icon");
         editButton.setIcon(EDIT.create());
         editButton.addClickListener(e -> UI.getCurrent().navigate("schedule-edit/" + schedule.getId()));
         editButton.setWidthFull();
@@ -48,7 +46,7 @@ class ScheduleActionsComponent extends HorizontalLayout {
         var statusButton = new Button("Fix");
         statusButton.setEnabled(true);
         statusButton.setIcon(TOOLS.create());
-        statusButton.addClassNames("base-active-button");
+        statusButton.addClassNames("base-active-button", "button-with-icon");
         statusButton.setWidthFull();
         statusButton.addClickListener(event -> {
 
@@ -96,12 +94,6 @@ class ScheduleActionsComponent extends HorizontalLayout {
         });
 
         return statusButton;
-    }
-
-    private VerticalLayout centered(Button button) {
-        var verticalLayout = new VerticalLayout(button);
-        verticalLayout.setHorizontalComponentAlignment(CENTER, button);
-        return verticalLayout;
     }
 
 }

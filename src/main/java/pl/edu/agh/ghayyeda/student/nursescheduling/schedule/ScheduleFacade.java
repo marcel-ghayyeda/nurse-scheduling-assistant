@@ -64,7 +64,7 @@ public class ScheduleFacade {
     public CompletableFuture<UUID> fixAsync(Schedule schedule, String newScheduleName, SolverAccuracy solverAccuracy) {
         var validationStartTime = ScheduleValidationUtils.getStandardValidationStartTime(schedule);
         var validationEndTime = ScheduleValidationUtils.getStandardValidationEndTime(schedule);
-        var solver = new TabuSearchSolver(penaltyAwareScheduleConstraintValidationFacade, validationStartTime, validationEndTime, solverAccuracy.getMaximumNumberOfInterations());
+        var solver = new TabuSearchSolver(penaltyAwareScheduleConstraintValidationFacade, validationStartTime, validationEndTime, solverAccuracy);
         return supplyAsync(() -> solver.findFeasibleSchedule(schedule), executorService)
                 .thenApply(foundSchedule -> save(foundSchedule, newScheduleName));
     }

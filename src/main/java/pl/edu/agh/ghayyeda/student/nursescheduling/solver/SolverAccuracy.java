@@ -1,18 +1,18 @@
 package pl.edu.agh.ghayyeda.student.nursescheduling.solver;
 
 public enum SolverAccuracy {
-    LOW(30),
-    MEDIUM(80),
-    HIGH(130),
-    BEST(200);
+    LOW(20),
+    MEDIUM(40),
+    HIGH(60),
+    BEST(80);
 
-    private final int maximumNumberOfInterations;
+    private final int numberOfIterationsAfterFeasibleFound;
 
-    SolverAccuracy(int maximumNumberOfInterations) {
-        this.maximumNumberOfInterations = maximumNumberOfInterations;
+    SolverAccuracy(int numberOfIterationsAfterFeasibleFound) {
+        this.numberOfIterationsAfterFeasibleFound = numberOfIterationsAfterFeasibleFound;
     }
 
-    public int getMaximumNumberOfInterations() {
-        return maximumNumberOfInterations;
+    public int getNumberOfIterationsAfterFeasibleFound() {
+        return numberOfIterationsAfterFeasibleFound;
     }
 }

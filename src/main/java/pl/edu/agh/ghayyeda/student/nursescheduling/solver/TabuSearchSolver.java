@@ -18,24 +18,25 @@ import static pl.edu.agh.ghayyeda.student.nursescheduling.util.Predicates.not;
 public class TabuSearchSolver implements Solver {
 
     private static final Logger log = LoggerFactory.getLogger(TabuSearchSolver.class);
+    private static final int MAXIMUM_NUMBER_OF_ITERATIONS = 200;
 
     private final PenaltyAwareScheduleConstraintValidationFacade scheduleConstraintValidationFacade;
     private final LocalDateTime validationStartTime;
     private final LocalDateTime validationEndTime;
-    private final int maximumNumberOfIterations;
+    private final SolverAccuracy solverAccuracy;
 
     public TabuSearchSolver(PenaltyAwareScheduleConstraintValidationFacade scheduleConstraintValidationFacade, LocalDateTime validationStartTime, LocalDateTime validationEndTime) {
         this.scheduleConstraintValidationFacade = scheduleConstraintValidationFacade;
         this.validationStartTime = validationStartTime;
         this.validationEndTime = validationEndTime;
-        this.maximumNumberOfIterations = 130;
+        this.solverAccuracy = SolverAccuracy.BEST;
     }
 
-    public TabuSearchSolver(PenaltyAwareScheduleConstraintValidationFacade scheduleConstraintValidationFacade, LocalDateTime validationStartTime, LocalDateTime validationEndTime, int maximumNumberOfIterations) {
+    public TabuSearchSolver(PenaltyAwareScheduleConstraintValidationFacade scheduleConstraintValidationFacade, LocalDateTime validationStartTime, LocalDateTime validationEndTime, SolverAccuracy solverAccuracy) {
         this.scheduleConstraintValidationFacade = scheduleConstraintValidationFacade;
         this.validationStartTime = validationStartTime;
         this.validationEndTime = validationEndTime;
-        this.maximumNumberOfIterations = maximumNumberOfIterations;
+        this.solverAccuracy = solverAccuracy;
     }
 
     @Override
@@ -46,7 +47,8 @@ public class TabuSearchSolver implements Solver {
             var bestSchedule = Tuple.of(initialSchedule, initialScheduleValidation);
             var currentSchedule = Tuple.of(initialSchedule, initialScheduleValidation);
 
-            var bestScheduleFoundIterationNumber = 0;
+            var firstFeasibleScheduleFoundIterationNumber = -1;
+            var bestScheduleFoundIterationNumber = -1;
 
             var tabuList = Collections.newSetFromMap(new LinkedHashMap<>() {
                 @Override
@@ -54,18 +56,15 @@ public class TabuSearchSolver implements Solver {
                     return size() > 10;
                 }
             });
-            for (int currentIteration = 0; currentIteration < maximumNumberOfIterations; currentIteration++) {
+            int currentIteration = 0;
+            final int numberOfIterationsAfterFeasibleFound = solverAccuracy.getNumberOfIterationsAfterFeasibleFound();
+            while (firstFeasibleScheduleFoundIterationNumber == -1 ? currentIteration < MAXIMUM_NUMBER_OF_ITERATIONS : (currentIteration - firstFeasibleScheduleFoundIterationNumber < numberOfIterationsAfterFeasibleFound)) {
+                currentIteration++;
                 log.debug("Current iteration: {}", currentIteration);
                 long iterationStart = System.nanoTime();
                 List<Schedule> neighbourCandidates = currentSchedule._1.getNeighbourhood();
                 var bestNeighbourResult = neighbourCandidates.stream()
-                        .filter(not(x -> {
-                            if(tabuList.contains(x)){
-                                log.debug("TABU!");
-                                return true;
-                            }
-                            return false;
-                        }))
+                        .filter(not(tabuList::contains))
                         .parallel()
                         .map(schedule -> Tuple.of(schedule, scheduleConstraintValidationFacade.validate(schedule, validationStartTime, validationEndTime)))
                         .min(feasibleFirst().thenComparing(tuple -> tuple._2.getPenalty()))
@@ -74,6 +73,11 @@ public class TabuSearchSolver implements Solver {
                 if (feasibleFirst().thenComparing(tuple -> tuple._2.getPenalty()).compare(bestNeighbourResult, bestSchedule) < 0) {
                     bestSchedule = bestNeighbourResult;
                     bestScheduleFoundIterationNumber = currentIteration;
+                }
+
+                if (firstFeasibleScheduleFoundIterationNumber == -1 && bestNeighbourResult._2.isFeasible()) {
+                    firstFeasibleScheduleFoundIterationNumber = currentIteration;
+                    log.debug("Found first feasible schedule");
                 }
 
                 tabuList.add(currentSchedule._1);

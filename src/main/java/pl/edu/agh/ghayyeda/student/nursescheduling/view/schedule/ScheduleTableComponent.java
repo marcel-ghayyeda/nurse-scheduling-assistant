@@ -9,6 +9,8 @@ import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.*;
 import pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee;
 
 import java.time.LocalDate;
+import java.time.Month;
+import java.time.Year;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
@@ -53,12 +55,13 @@ class ScheduleTableComponent extends Grid<ScheduleTableComponent.ScheduleLayoutR
         return initialSchedule.getYearMonth();
     }
 
-    public Schedule getSchedule() {
+    public Schedule buildSchedule(Year year, Month month, int numberOfChildren) {
         return ScheduleBuilder.schedule()
-                .numberOfChildren(initialSchedule.getNumberOfChildren())
-                .forMonth(initialSchedule.getMonth())
+                .numberOfChildren(numberOfChildren)
+                .forMonth(month)
                 .fromEmployeeShiftMap(items)
-                .forYear(initialSchedule.getYear().getValue())
+                .forYear(year.getValue())
+                .adjustForMonthLength()
                 .build();
     }
 

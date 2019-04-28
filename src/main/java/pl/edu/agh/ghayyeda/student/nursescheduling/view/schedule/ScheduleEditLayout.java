@@ -109,18 +109,16 @@ public class ScheduleEditLayout extends VerticalLayout implements HasUrlParamete
 
     private ComponentEventListener<ClickEvent<Button>> saveAsNewButtonClickHandler(EditableScheduleTableComponent scheduleTableComponent, TextField scheduleName, NumberField numberOfChildren, ComboBox<Month> month, NumberField year) {
         return e -> {
-            Schedule editedSchedule = scheduleTableComponent.getSchedule();
-            Schedule newSchedule = new Schedule(editedSchedule.getDateEmployeeShiftAssignmentsByDate(), Year.of(year.getValue().intValue()), month.getValue(), numberOfChildren.getValue().intValue());
-            UUID newScheduleId = scheduleFacade.save(newSchedule, scheduleName.getValue());
+            Schedule editedSchedule = scheduleTableComponent.buildSchedule(Year.of(year.getValue().intValue()), month.getValue(), numberOfChildren.getValue().intValue());
+            UUID newScheduleId = scheduleFacade.save(editedSchedule, scheduleName.getValue());
             UI.getCurrent().navigate("schedule/" + newScheduleId);
         };
     }
 
     private ComponentEventListener<ClickEvent<Button>> saveButtonClickHandler(UUID scheduleId, EditableScheduleTableComponent scheduleTableComponent, TextField scheduleName, NumberField numberOfChildren, ComboBox<Month> month, NumberField year) {
         return e -> {
-            Schedule editedSchedule = scheduleTableComponent.getSchedule();
-            Schedule newSchedule = new Schedule(editedSchedule.getDateEmployeeShiftAssignmentsByDate(), Year.of(year.getValue().intValue()), month.getValue(), numberOfChildren.getValue().intValue());
-            UUID newScheduleId = scheduleFacade.save(scheduleId, newSchedule, scheduleName.getValue());
+            Schedule editedSchedule = scheduleTableComponent.buildSchedule(Year.of(year.getValue().intValue()), month.getValue(), numberOfChildren.getValue().intValue());
+            UUID newScheduleId = scheduleFacade.save(scheduleId, editedSchedule, scheduleName.getValue());
             UI.getCurrent().navigate("schedule/" + newScheduleId);
         };
     }

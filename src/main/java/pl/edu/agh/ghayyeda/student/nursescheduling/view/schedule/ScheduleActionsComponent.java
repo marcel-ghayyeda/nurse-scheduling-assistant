@@ -61,7 +61,7 @@ class ScheduleActionsComponent extends HorizontalLayout {
 
     private void openConfigDialog(ScheduleFacade scheduleFacade, ScheduleWrapper schedule) {
         Dialog dialog = new Dialog();
-        var dialogMessage = new Label("Solution configuration");
+        var dialogMessage = new Label("Solver configuration");
         RadioButtonGroup<SolverAccuracy> solutionAccuracy = new RadioButtonGroup<>();
         solutionAccuracy.setLabel("Choose desired solution accuracy. The higher accuracy you choose, the longer it will take to fix the schedule.");
         solutionAccuracy.setItems(SolverAccuracy.values());

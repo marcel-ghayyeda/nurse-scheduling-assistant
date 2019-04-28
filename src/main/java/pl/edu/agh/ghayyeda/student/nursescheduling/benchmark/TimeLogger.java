@@ -17,7 +17,7 @@ public class TimeLogger {
         } finally {
             long end = System.nanoTime();
             var duration = Duration.ofNanos(end - start);
-            log.debug(description + " :Invocation took " + duration);
+            log.info(description + " :Invocation took " + duration);
         }
     }
 

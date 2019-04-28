@@ -23,6 +23,10 @@ public enum Shift {
     private final boolean workDay;
     private final RestTime restTime;
     private final String localizedShiftSymbol;
+    private final Duration duration;
+    private final boolean endsOnNextDay;
+    private final LocalTime startLocalTime;
+    private final LocalTime endLocalTime;
 
     Shift(int startTime, int endTime, RestTime restTime, String localizedShiftSymbol) {
         this.startTime = startTime;
@@ -30,6 +34,10 @@ public enum Shift {
         this.restTime = restTime;
         this.workDay = true;
         this.localizedShiftSymbol = localizedShiftSymbol;
+        this.startLocalTime = timeOfHour(startTime);
+        this.endLocalTime = timeOfHour(endTime);
+        this.endsOnNextDay = calculateEndsOnNextDay();
+        this.duration = calculateDuration();
     }
 
     Shift(String localizedShiftSymbol) {
@@ -38,6 +46,10 @@ public enum Shift {
         this.endTime = 0;
         this.restTime = RestTime.hours(0);
         this.localizedShiftSymbol = localizedShiftSymbol;
+        this.duration = Duration.ZERO;
+        this.endsOnNextDay = false;
+        this.startLocalTime = timeOfHour(startTime);
+        this.endLocalTime = timeOfHour(endTime);
     }
 
     public static Stream<Shift> allWorkingShifts() {
@@ -46,24 +58,19 @@ public enum Shift {
     }
 
     public Duration getDuration() {
-        if (isWorkDay())
-            if (endsOnNextDay())
-                return Duration.between(LocalDateTime.of(LocalDate.now(), getStartTime()),
-                        LocalDateTime.of(LocalDate.now().plusDays(1), getEndTime()));
-            else return Duration.ofHours(Math.abs(endTime - startTime));
-        else return Duration.ZERO;
+        return duration;
     }
 
     public LocalTime getStartTime() {
-        return timeOfHour(startTime);
+        return startLocalTime;
     }
 
     public LocalTime getEndTime() {
-        return timeOfHour(endTime);
+        return endLocalTime;
     }
 
     public boolean endsOnNextDay() {
-        return getEndTime().isBefore(getStartTime()) || getEndTime().equals(getStartTime());
+        return endsOnNextDay;
     }
 
     public Duration getRestTime() {
@@ -84,5 +91,18 @@ public enum Shift {
 
     public String getLocalizedShiftSymbol() {
         return localizedShiftSymbol;
+    }
+
+    private Duration calculateDuration() {
+        if (isWorkDay()) {
+            if (endsOnNextDay()) {
+                return Duration.between(LocalDateTime.of(LocalDate.now(), getStartTime()),
+                        LocalDateTime.of(LocalDate.now().plusDays(1), getEndTime()));
+            } else return Duration.ofHours(Math.abs(endTime - startTime));
+        } else return Duration.ZERO;
+    }
+
+    private boolean calculateEndsOnNextDay() {
+        return getEndTime().isBefore(getStartTime()) || getEndTime().equals(getStartTime());
     }
 }

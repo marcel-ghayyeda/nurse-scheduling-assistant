@@ -1,6 +1,6 @@
 language: java
 jdk:
-- openjdk10
+- openjdk12
 install: true
 script: "mvn clean package -Pproduction-mode"
 deploy:

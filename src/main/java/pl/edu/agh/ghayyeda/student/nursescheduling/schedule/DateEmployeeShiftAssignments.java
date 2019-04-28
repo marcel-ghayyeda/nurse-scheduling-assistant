@@ -26,14 +26,15 @@ public class DateEmployeeShiftAssignments {
     }
 
     public Stream<EmployeeShiftAssignment> getFor(LocalDateTime localDateTime) {
-        return shiftAssignments.stream()
-                .filter(lastsIn(localDateTime));
+        return !startDate.isAfter(localDateTime.toLocalDate()) ?
+                shiftAssignments.stream().filter(lastsIn(localDateTime)) :
+                Stream.empty();
     }
 
     private Predicate<EmployeeShiftAssignment> lastsIn(LocalDateTime localDateTime) {
         return shiftAssignment -> {
             var shiftStartDateTime = LocalDateTime.of(startDate, shiftAssignment.getStartTime());
-            return (shiftStartDateTime.isBefore(localDateTime) || shiftStartDateTime.equals(localDateTime)) && shiftStartDateTime.plus(shiftAssignment.getDuration()).isAfter(localDateTime);
+            return (!shiftStartDateTime.isAfter(localDateTime)) && shiftStartDateTime.plus(shiftAssignment.getDuration()).isAfter(localDateTime);
         };
     }
 

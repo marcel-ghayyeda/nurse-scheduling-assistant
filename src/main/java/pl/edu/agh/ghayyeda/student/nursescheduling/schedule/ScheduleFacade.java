@@ -3,6 +3,7 @@ package pl.edu.agh.ghayyeda.student.nursescheduling.schedule;
 import org.springframework.stereotype.Component;
 import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.failfast.FailFastScheduleConstraintValidationFacade;
 import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.penaltyaware.PenaltyAwareScheduleConstraintValidationFacade;
+import pl.edu.agh.ghayyeda.student.nursescheduling.solver.SolverAccuracy;
 import pl.edu.agh.ghayyeda.student.nursescheduling.solver.TabuSearchSolver;
 import pl.edu.agh.ghayyeda.student.nursescheduling.util.ScheduleValidationUtils;
 
@@ -60,10 +61,10 @@ public class ScheduleFacade {
                 .map(scheduleDto -> new ScheduleWrapper(toScheduleDescription(scheduleDto), isFeasible(scheduleDto), scheduleDto.getSchedule()));
     }
 
-    public CompletableFuture<UUID> fixAsync(Schedule schedule, String newScheduleName) {
+    public CompletableFuture<UUID> fixAsync(Schedule schedule, String newScheduleName, SolverAccuracy solverAccuracy) {
         var validationStartTime = ScheduleValidationUtils.getStandardValidationStartTime(schedule);
         var validationEndTime = ScheduleValidationUtils.getStandardValidationEndTime(schedule);
-        var solver = new TabuSearchSolver(penaltyAwareScheduleConstraintValidationFacade, validationStartTime, validationEndTime);
+        var solver = new TabuSearchSolver(penaltyAwareScheduleConstraintValidationFacade, validationStartTime, validationEndTime, solverAccuracy.getMaximumNumberOfInterations());
         return supplyAsync(() -> solver.findFeasibleSchedule(schedule), executorService)
                 .thenApply(foundSchedule -> save(foundSchedule, newScheduleName));
     }

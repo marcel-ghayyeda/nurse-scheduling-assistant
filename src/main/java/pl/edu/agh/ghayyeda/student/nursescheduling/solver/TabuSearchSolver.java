@@ -18,16 +18,24 @@ import static pl.edu.agh.ghayyeda.student.nursescheduling.util.Predicates.not;
 public class TabuSearchSolver implements Solver {
 
     private static final Logger log = LoggerFactory.getLogger(TabuSearchSolver.class);
-    private static final int MAXIMUM_NUMBER_OF_ITERATIONS = 130;
 
     private final PenaltyAwareScheduleConstraintValidationFacade scheduleConstraintValidationFacade;
     private final LocalDateTime validationStartTime;
     private final LocalDateTime validationEndTime;
+    private final int maximumNumberOfIterations;
 
     public TabuSearchSolver(PenaltyAwareScheduleConstraintValidationFacade scheduleConstraintValidationFacade, LocalDateTime validationStartTime, LocalDateTime validationEndTime) {
         this.scheduleConstraintValidationFacade = scheduleConstraintValidationFacade;
         this.validationStartTime = validationStartTime;
         this.validationEndTime = validationEndTime;
+        this.maximumNumberOfIterations = 130;
+    }
+
+    public TabuSearchSolver(PenaltyAwareScheduleConstraintValidationFacade scheduleConstraintValidationFacade, LocalDateTime validationStartTime, LocalDateTime validationEndTime, int maximumNumberOfIterations) {
+        this.scheduleConstraintValidationFacade = scheduleConstraintValidationFacade;
+        this.validationStartTime = validationStartTime;
+        this.validationEndTime = validationEndTime;
+        this.maximumNumberOfIterations = maximumNumberOfIterations;
     }
 
     @Override
@@ -46,7 +54,7 @@ public class TabuSearchSolver implements Solver {
                     return size() > 5;
                 }
             });
-            for (int currentIteration = 0; currentIteration < MAXIMUM_NUMBER_OF_ITERATIONS; currentIteration++) {
+            for (int currentIteration = 0; currentIteration < maximumNumberOfIterations; currentIteration++) {
                 log.debug("Current iteration: {}", currentIteration);
                 long iterationStart = System.nanoTime();
                 List<Schedule> neighbourCandidates = currentSchedule._1.getNeighbourhood();

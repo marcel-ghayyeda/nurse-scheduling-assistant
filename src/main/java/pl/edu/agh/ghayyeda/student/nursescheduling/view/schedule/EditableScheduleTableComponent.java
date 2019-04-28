@@ -21,8 +21,7 @@ import static com.vaadin.flow.component.icon.VaadinIcon.MINUS_CIRCLE;
 import static com.vaadin.flow.component.icon.VaadinIcon.PLUS_CIRCLE;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
-import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Shift.SICK_LEAVE;
-import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Shift.VACATION;
+import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Shift.*;
 import static pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee.Type.NURSE;
 import static pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee.employee;
 import static pl.edu.agh.ghayyeda.student.nursescheduling.util.YearMonthUtil.allDaysOf;
@@ -104,16 +103,29 @@ class EditableScheduleTableComponent extends ScheduleTableComponent {
     protected ValueProvider<ScheduleLayoutRow, Div> createShiftComponentColumn(LocalDate date) {
         return scheduleLayoutRow -> {
             var column = super.createShiftComponentColumn(date).apply(scheduleLayoutRow);
+            column.addClassName("shift");
             ContextMenu contextMenu = new ContextMenu();
             contextMenu.setTarget(column);
-            contextMenu.addItem("Set vacation", e -> {
-                scheduleLayoutRow.shifts.put(date, VACATION);
-                getDataProvider().refreshItem(scheduleLayoutRow);
-            });
-            contextMenu.addItem("Set sick leave", e -> {
-                scheduleLayoutRow.shifts.put(date, SICK_LEAVE);
-                getDataProvider().refreshItem(scheduleLayoutRow);
-            });
+            Shift shift = scheduleLayoutRow.getDateShiftMap().get(date);
+            if (shift != VACATION) {
+                contextMenu.addItem("Set vacation", e -> {
+                    scheduleLayoutRow.shifts.put(date, VACATION);
+                    getDataProvider().refreshItem(scheduleLayoutRow);
+                });
+            }
+            if (shift != SICK_LEAVE) {
+                contextMenu.addItem("Set sick leave", e -> {
+                    scheduleLayoutRow.shifts.put(date, SICK_LEAVE);
+                    getDataProvider().refreshItem(scheduleLayoutRow);
+                });
+            }
+
+            if (shift == VACATION || shift == SICK_LEAVE) {
+                contextMenu.addItem("Remove assignment", e -> {
+                    scheduleLayoutRow.shifts.put(date, DAY_OFF);
+                    getDataProvider().refreshItem(scheduleLayoutRow);
+                });
+            }
             return column;
         };
     }

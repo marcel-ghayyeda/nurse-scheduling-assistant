@@ -9,6 +9,7 @@ import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.details.Details;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.NumberField;
@@ -79,6 +80,13 @@ public class ScheduleEditLayout extends VerticalLayout implements HasUrlParamete
         yearField.setHasControls(true);
         scheduleDetailsForm.add(yearField);
         var scheduleTableComponent = new EditableScheduleTableComponent(schedule.getSchedule());
+        var scheduleTable = new VerticalLayout();
+        Label rightClickHint = new Label("Right-click on a shift to change it");
+        HorizontalLayout rightClickHintLayout = new HorizontalLayout();
+        rightClickHintLayout.add(VaadinIcon.QUESTION_CIRCLE.create());
+        rightClickHintLayout.add(rightClickHint);
+        scheduleTable.add(rightClickHintLayout);
+        scheduleTable.add(scheduleTableComponent);
         FormLayout actionsForm = new FormLayout();
         var saveAsNewButton = new Button("Save as new");
         saveAsNewButton.setEnabled(true);
@@ -98,7 +106,7 @@ public class ScheduleEditLayout extends VerticalLayout implements HasUrlParamete
         actionsHorizontalLayout.add(saveButton);
         actionsHorizontalLayout.setWidthFull();
         add(withCssClass("details", opened(new Details("Details", scheduleDetailsForm))));
-        add(withCssClass("details", opened(new Details("Schedule", scheduleTableComponent))));
+        add(withCssClass("details", opened(new Details("Schedule", scheduleTable))));
         add(withCssClass("details", opened(new Details("Actions", actionsHorizontalLayout))));
     }
 

@@ -9,6 +9,6 @@
     </appender>
 
     <root level="info">
-        <appender-ref ref="STDOUT_ASYNC"/>
+        <appender-ref ref="STDOUT"/>
     </root>
 </configuration>

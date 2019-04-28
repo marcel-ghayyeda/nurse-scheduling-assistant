@@ -1,6 +1,4 @@
 language: java
-jdk:
-- openjdk12
 install: true
 before_script:
 - wget https://github.com/sormuras/bach/raw/master/install-jdk.sh

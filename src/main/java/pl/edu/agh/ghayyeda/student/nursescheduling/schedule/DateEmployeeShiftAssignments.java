@@ -26,9 +26,7 @@ public class DateEmployeeShiftAssignments {
     }
 
     public Stream<EmployeeShiftAssignment> getFor(LocalDateTime localDateTime) {
-        return !startDate.isAfter(localDateTime.toLocalDate()) ?
-                shiftAssignments.stream().filter(lastsIn(localDateTime)) :
-                Stream.empty();
+        return shiftAssignments.stream().filter(lastsIn(localDateTime));
     }
 
     private Predicate<EmployeeShiftAssignment> lastsIn(LocalDateTime localDateTime) {

@@ -51,6 +51,7 @@ public class Schedule {
 
     public Stream<EmployeeShiftAssignment> getEmployeeShiftAssignmentsFor(LocalDateTime localDateTime) {
         return schedule.stream()
+                .filter(dateEmployeeShiftAssignments -> !dateEmployeeShiftAssignments.getStartDate().isAfter(localDateTime.toLocalDate()))
                 .flatMap(dateEmployeeShiftAssignments -> dateEmployeeShiftAssignments.getFor(localDateTime));
     }
 

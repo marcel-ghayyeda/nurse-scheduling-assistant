@@ -67,7 +67,7 @@ class PenaltyAwareRequiredNumberOfEmployees implements ScheduleConstraint {
             if (numberOfEmployees < requiredNumberOfEmployees) {
                 log.debug("Not enough employees on {}", timeOfDuty);
                 double missingEmployees = requiredNumberOfEmployees - numberOfEmployees;
-                return missingEmployees / requiredNumberOfEmployees;
+                return Math.sqrt(missingEmployees / requiredNumberOfEmployees);
             } else {
                 if (employees.stream().noneMatch(isNurse())) {
                     log.debug("No nurse on {}", timeOfDuty);

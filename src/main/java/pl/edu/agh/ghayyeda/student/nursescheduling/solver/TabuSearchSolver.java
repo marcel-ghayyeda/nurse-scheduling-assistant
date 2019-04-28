@@ -51,7 +51,7 @@ public class TabuSearchSolver implements Solver {
             var tabuList = Collections.newSetFromMap(new LinkedHashMap<>() {
                 @Override
                 protected boolean removeEldestEntry(Map.Entry<Object, Boolean> eldest) {
-                    return size() > 5;
+                    return size() > 10;
                 }
             });
             for (int currentIteration = 0; currentIteration < maximumNumberOfIterations; currentIteration++) {
@@ -59,7 +59,13 @@ public class TabuSearchSolver implements Solver {
                 long iterationStart = System.nanoTime();
                 List<Schedule> neighbourCandidates = currentSchedule._1.getNeighbourhood();
                 var bestNeighbourResult = neighbourCandidates.stream()
-                        .filter(not(tabuList::contains))
+                        .filter(not(x -> {
+                            if(tabuList.contains(x)){
+                                log.debug("TABU!");
+                                return true;
+                            }
+                            return false;
+                        }))
                         .parallel()
                         .map(schedule -> Tuple.of(schedule, scheduleConstraintValidationFacade.validate(schedule, validationStartTime, validationEndTime)))
                         .min(feasibleFirst().thenComparing(tuple -> tuple._2.getPenalty()))

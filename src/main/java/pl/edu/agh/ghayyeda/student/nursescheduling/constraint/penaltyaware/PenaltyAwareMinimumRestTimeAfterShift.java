@@ -78,6 +78,6 @@ class PenaltyAwareMinimumRestTimeAfterShift implements ScheduleConstraint {
     }
 
     private double calculatePenalty(ValidationResultForEmployee result) {
-        return result.notFeasibleShiftsCount / (double) result.totalShiftsCount;
+        return Math.sqrt(result.notFeasibleShiftsCount / (double) result.totalShiftsCount);
     }
 }

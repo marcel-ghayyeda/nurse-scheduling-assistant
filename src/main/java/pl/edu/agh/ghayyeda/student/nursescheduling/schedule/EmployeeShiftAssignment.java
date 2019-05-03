@@ -16,7 +16,7 @@ public class EmployeeShiftAssignment {
         this.shift = shift;
     }
 
-    Employee getEmployee() {
+    public Employee getEmployee() {
         return employee;
     }
 
@@ -24,7 +24,7 @@ public class EmployeeShiftAssignment {
         return employee.getType();
     }
 
-    Shift getShift() {
+    public Shift getShift() {
         return shift;
     }
 

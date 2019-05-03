@@ -28,14 +28,14 @@ import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Shift.SICK_LE
 import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Shift.VACATION;
 import static pl.edu.agh.ghayyeda.student.nursescheduling.view.util.ComponentUtil.withCssClass;
 
-class ScheduleTableComponent extends Grid<ScheduleTableComponent.ScheduleLayoutRow> {
+public class ScheduleTableComponent extends Grid<ScheduleTableComponent.ScheduleLayoutRow> {
 
     //TODO use common formatter with ascii presented
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE d").localizedBy(US);
     private final Schedule initialSchedule;
     protected Collection<ScheduleLayoutRow> items;
 
-    ScheduleTableComponent(Schedule initialSchedule) {
+    public ScheduleTableComponent(Schedule initialSchedule) {
         this.initialSchedule = initialSchedule;
         List<LocalDate> dates = initialSchedule.getDateEmployeeShiftAssignmentsByDate().stream().map(DateEmployeeShiftAssignments::getStartDate).sorted().collect(toList());
         addEmployeeColumn();

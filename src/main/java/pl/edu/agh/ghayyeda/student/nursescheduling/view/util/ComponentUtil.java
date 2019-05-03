@@ -36,4 +36,10 @@ public class ComponentUtil {
         return verticalLayout;
     }
 
+    public static VerticalLayout right(Component component) {
+        var verticalLayout = new VerticalLayout(component);
+        verticalLayout.setHorizontalComponentAlignment(FlexComponent.Alignment.END, component);
+        return verticalLayout;
+    }
+
 }

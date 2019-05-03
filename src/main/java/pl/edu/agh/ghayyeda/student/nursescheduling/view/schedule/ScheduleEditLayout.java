@@ -27,8 +27,7 @@ import java.util.UUID;
 
 import static com.vaadin.flow.component.icon.VaadinIcon.CHECK_SQUARE;
 import static com.vaadin.flow.component.icon.VaadinIcon.COPY;
-import static pl.edu.agh.ghayyeda.student.nursescheduling.view.util.ComponentUtil.setValue;
-import static pl.edu.agh.ghayyeda.student.nursescheduling.view.util.ComponentUtil.withCssClass;
+import static pl.edu.agh.ghayyeda.student.nursescheduling.view.util.ComponentUtil.*;
 
 @Route(value = "schedule-edit", layout = MainLayout.class)
 @StyleSheet("frontend://css/schedule.css")
@@ -110,10 +109,6 @@ public class ScheduleEditLayout extends VerticalLayout implements HasUrlParamete
         add(withCssClass("details", opened(new Details("Actions", actionsHorizontalLayout))));
     }
 
-    private Details opened(Details details) {
-        details.setOpened(true);
-        return details;
-    }
 
     private ComponentEventListener<ClickEvent<Button>> saveAsNewButtonClickHandler(EditableScheduleTableComponent scheduleTableComponent, TextField scheduleName, NumberField numberOfChildren, ComboBox<Month> month, NumberField year) {
         return e -> {

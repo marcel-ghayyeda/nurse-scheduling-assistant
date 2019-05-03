@@ -1,7 +1,7 @@
 package pl.edu.agh.ghayyeda.student.nursescheduling.schedule;
 
 import org.springframework.stereotype.Component;
-import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.failfast.FailFastScheduleConstraintValidationFacade;
+import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ScheduleConstraintValidationResult;
 import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.penaltyaware.PenaltyAwareScheduleConstraintValidationFacade;
 import pl.edu.agh.ghayyeda.student.nursescheduling.solver.SolverAccuracy;
 import pl.edu.agh.ghayyeda.student.nursescheduling.solver.TabuSearchSolver;
@@ -21,14 +21,11 @@ import static java.util.concurrent.CompletableFuture.supplyAsync;
 public class ScheduleFacade {
 
     private final ScheduleDao scheduleDao;
-    private final FailFastScheduleConstraintValidationFacade failFastScheduleConstraintValidationFacade;
     private final PenaltyAwareScheduleConstraintValidationFacade penaltyAwareScheduleConstraintValidationFacade;
     private final ExecutorService executorService = Executors.newCachedThreadPool();
 
-    public ScheduleFacade(ScheduleDao scheduleDao, FailFastScheduleConstraintValidationFacade failFastScheduleConstraintValidationFacade,
-                          PenaltyAwareScheduleConstraintValidationFacade penaltyAwareScheduleConstraintValidationFacade) {
+    public ScheduleFacade(ScheduleDao scheduleDao, PenaltyAwareScheduleConstraintValidationFacade penaltyAwareScheduleConstraintValidationFacade) {
         this.scheduleDao = scheduleDao;
-        this.failFastScheduleConstraintValidationFacade = failFastScheduleConstraintValidationFacade;
         this.penaltyAwareScheduleConstraintValidationFacade = penaltyAwareScheduleConstraintValidationFacade;
     }
 
@@ -52,13 +49,14 @@ public class ScheduleFacade {
         return scheduleDao.save(id, schedule, name);
     }
 
-    private ScheduleDescription toScheduleDescription(ScheduleDto scheduleDto) {
-        return new ScheduleDescription(scheduleDto.getId(), scheduleDto.getName(), isFeasible(scheduleDto));
-    }
-
     public Optional<ScheduleWrapper> getById(UUID id) {
         return scheduleDao.getById(id)
-                .map(scheduleDto -> new ScheduleWrapper(toScheduleDescription(scheduleDto), isFeasible(scheduleDto), scheduleDto.getSchedule()));
+                .map(scheduleDto -> new ScheduleWrapper(toScheduleDescription(scheduleDto), scheduleDto.getSchedule()));
+    }
+
+    private ScheduleDescription toScheduleDescription(ScheduleDto scheduleDto) {
+        var validationResult = penaltyAwareScheduleConstraintValidationFacade.validate(scheduleDto.getSchedule());
+        return new ScheduleDescription(scheduleDto.getId(), scheduleDto.getName(), validationResult.isFeasible(), validationResult.getDescriptions());
     }
 
     public CompletableFuture<UUID> fixAsync(Schedule schedule, String newScheduleName, SolverAccuracy solverAccuracy) {
@@ -70,7 +68,7 @@ public class ScheduleFacade {
     }
 
     private boolean isFeasible(ScheduleDto scheduleDto) {
-        return failFastScheduleConstraintValidationFacade.validate(scheduleDto.getSchedule()).isFeasible();
+        return penaltyAwareScheduleConstraintValidationFacade.validate(scheduleDto.getSchedule()).isFeasible();
     }
 
 }

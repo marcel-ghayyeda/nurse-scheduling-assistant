@@ -10,6 +10,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.YearMonth;
+import java.util.Collection;
+import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 import static pl.edu.agh.ghayyeda.student.nursescheduling.util.Predicates.not;
@@ -45,9 +47,10 @@ public class PenaltyAwareScheduleConstraintValidationFacade implements ScheduleC
                 .sum();
 
         var isNotFeasible = validationResults.stream().anyMatch(not(ScheduleConstraintValidationResult::isFeasible));
+        List<String> descriptions = validationResults.stream().map(ScheduleConstraintValidationResult::getDescriptions).flatMap(Collection::stream).collect(toList());
 
         return isNotFeasible ?
-                ScheduleConstraintValidationResult.ofPenalty(sumOfPenalties) :
+                ScheduleConstraintValidationResult.ofPenalty(sumOfPenalties, descriptions) :
                 ScheduleConstraintValidationResult.feasibleConstraintValidationResult(sumOfPenalties);
     }
 }

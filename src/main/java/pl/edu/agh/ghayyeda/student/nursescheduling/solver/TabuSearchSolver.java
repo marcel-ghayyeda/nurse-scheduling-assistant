@@ -8,6 +8,7 @@ import pl.edu.agh.ghayyeda.student.nursescheduling.benchmark.TimeLogger;
 import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ScheduleConstraintValidationResult;
 import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.penaltyaware.PenaltyAwareScheduleConstraintValidationFacade;
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Schedule;
+import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.ScheduleAsciiTablePresenter;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -53,7 +54,7 @@ public class TabuSearchSolver implements Solver {
             var tabuList = Collections.newSetFromMap(new LinkedHashMap<>() {
                 @Override
                 protected boolean removeEldestEntry(Map.Entry<Object, Boolean> eldest) {
-                    return size() > 10;
+                    return size() > 50;
                 }
             });
             int currentIteration = 0;
@@ -88,6 +89,7 @@ public class TabuSearchSolver implements Solver {
 
             log.debug("Found best schedule in {} iteration", bestScheduleFoundIterationNumber);
 
+            System.out.println(ScheduleAsciiTablePresenter.buildAsciiTableRepresentationOf(bestSchedule._1));
             if (scheduleConstraintValidationFacade.validate(bestSchedule._1, validationStartTime, validationEndTime).isFeasible()) {
                 return bestSchedule._1;
             } else {

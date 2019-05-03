@@ -178,3 +178,7 @@ vaadin-grid-cell-content {
     font-weight: bold;
     width: 55px;
 }
+
+.validation-description iron-icon {
+    margin-top: 6px;
+}

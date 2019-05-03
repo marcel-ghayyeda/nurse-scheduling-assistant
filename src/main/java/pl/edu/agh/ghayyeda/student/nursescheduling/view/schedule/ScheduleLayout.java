@@ -1,7 +1,9 @@
 package pl.edu.agh.ghayyeda.student.nursescheduling.view.schedule;
 
 import com.vaadin.flow.component.dependency.StyleSheet;
+import com.vaadin.flow.component.details.Details;
 import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.*;
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.ScheduleFacade;
@@ -10,6 +12,9 @@ import pl.edu.agh.ghayyeda.student.nursescheduling.view.MainLayout;
 import pl.edu.agh.ghayyeda.student.nursescheduling.view.NavigationComponents;
 
 import java.util.UUID;
+
+import static pl.edu.agh.ghayyeda.student.nursescheduling.view.util.ComponentUtil.opened;
+import static pl.edu.agh.ghayyeda.student.nursescheduling.view.util.ComponentUtil.withCssClass;
 
 @Route(value = "schedule", layout = MainLayout.class)
 @StyleSheet("frontend://css/schedule.css")
@@ -43,8 +48,15 @@ public class ScheduleLayout extends VerticalLayout implements HasUrlParameter<St
 
     private void presentSchedule(ScheduleWrapper schedule) {
         add(new ScheduleDetailsComponent(schedule));
-        add(new ScheduleTableComponent(schedule.getSchedule()));
+        if (!schedule.isFeasible()) {
+            add(new ScheduleValidationResultComponent(schedule));
+        }
+        add(wrapWithDetails(new ScheduleTableComponent(schedule.getSchedule())));
         add(new ScheduleActionsComponent(scheduleFacade, schedule));
+    }
+
+    private HorizontalLayout wrapWithDetails(ScheduleTableComponent schedule) {
+        return withCssClass("details", new HorizontalLayout(opened(new Details("Schedule", schedule))));
     }
 
 

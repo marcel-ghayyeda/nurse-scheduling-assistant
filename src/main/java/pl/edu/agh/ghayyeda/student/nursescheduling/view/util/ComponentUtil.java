@@ -2,6 +2,7 @@ package pl.edu.agh.ghayyeda.student.nursescheduling.view.util;
 
 import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.details.Details;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
@@ -40,6 +41,11 @@ public class ComponentUtil {
         var verticalLayout = new VerticalLayout(component);
         verticalLayout.setHorizontalComponentAlignment(FlexComponent.Alignment.END, component);
         return verticalLayout;
+    }
+
+    public static Details opened(Details details) {
+        details.setOpened(true);
+        return details;
     }
 
 }

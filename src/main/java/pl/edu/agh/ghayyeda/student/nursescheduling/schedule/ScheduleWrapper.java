@@ -2,16 +2,15 @@ package pl.edu.agh.ghayyeda.student.nursescheduling.schedule;
 
 import java.time.Month;
 import java.time.Year;
+import java.util.List;
 import java.util.UUID;
 
 public class ScheduleWrapper {
     private final ScheduleDescription scheduleDescription;
-    private final boolean isFeasible;
     private final Schedule schedule;
 
-    ScheduleWrapper(ScheduleDescription scheduleDescription, boolean isFeasible, Schedule schedule) {
+    ScheduleWrapper(ScheduleDescription scheduleDescription, Schedule schedule) {
         this.scheduleDescription = scheduleDescription;
-        this.isFeasible = isFeasible;
         this.schedule = schedule;
     }
 
@@ -24,7 +23,11 @@ public class ScheduleWrapper {
     }
 
     public boolean isFeasible() {
-        return isFeasible;
+        return scheduleDescription.isFeasible();
+    }
+
+    public List<String> getValidationDescriptions() {
+        return scheduleDescription.getValidationDescriptions();
     }
 
     public Schedule getSchedule() {

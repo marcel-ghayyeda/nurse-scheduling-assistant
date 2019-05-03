@@ -13,15 +13,20 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
-import java.util.function.ToDoubleFunction;
+import java.util.stream.Stream;
 
+import static java.util.Locale.US;
 import static java.util.stream.Collectors.toList;
 import static pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ScheduleContraintUtils.significantHoursOfDay;
 
 class PenaltyAwareRequiredNumberOfEmployees implements ScheduleConstraint {
 
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE d HH:mm").localizedBy(US);
     private static final Logger log = LoggerFactory.getLogger(PenaltyAwareRequiredNumberOfEmployees.class);
     private static final int MAX_CHILDREN_PER_EMPLOYEE_DURING_DAY = 3;
     private static final int MAX_CHILDREN_PER_EMPLOYEE_DURING_NIGHT = 5;
@@ -46,18 +51,18 @@ class PenaltyAwareRequiredNumberOfEmployees implements ScheduleConstraint {
 
     @Override
     public ScheduleConstraintValidationResult validate(Schedule schedule) {
-        var sumOfPenalties = YearMonthUtil.allDaysOf(validationMonth)
+        var summaryValidationResult = YearMonthUtil.allDaysOf(validationMonth)
                 .flatMap(dayOfMonth -> significantHoursOfDay().mapToObj(toLocalDateTimeOn(dayOfMonth)))
                 .filter(notBeforeValidationStartTime())
                 .filter(beforeValidationEndtime())
-                .mapToDouble(hasMinimumRequiredNumberOfBabySitters(schedule))
-                .sum();
+                .map(hasMinimumRequiredNumberOfBabySitters(schedule))
+                .reduce(new ValidationResultForDate(0d), ValidationResultForDate::sum);
 
-        return ScheduleConstraintValidationResult.ofPenalty(sumOfPenalties);
+        return ScheduleConstraintValidationResult.ofPenalty(summaryValidationResult.penalty, summaryValidationResult.descriptions);
     }
 
 
-    private ToDoubleFunction<LocalDateTime> hasMinimumRequiredNumberOfBabySitters(Schedule schedule) {
+    private Function<LocalDateTime, ValidationResultForDate> hasMinimumRequiredNumberOfBabySitters(Schedule schedule) {
         return timeOfDuty -> {
             var employees = schedule.getEmployeeShiftAssignmentsFor(timeOfDuty).collect(toList());
 
@@ -67,21 +72,50 @@ class PenaltyAwareRequiredNumberOfEmployees implements ScheduleConstraint {
             if (numberOfEmployees < requiredNumberOfEmployees) {
                 log.debug("Not enough employees on {}", timeOfDuty);
                 double missingEmployees = requiredNumberOfEmployees - numberOfEmployees;
-                return Math.sqrt(missingEmployees / requiredNumberOfEmployees);
+                String description = String.format("Not enough employees on %s. Expected %d but found %d", formatter.format(timeOfDuty), requiredNumberOfEmployees, numberOfEmployees);
+                return new ValidationResultForDate(Math.sqrt(missingEmployees / requiredNumberOfEmployees), description);
             } else {
                 if (employees.stream().noneMatch(isNurse())) {
                     log.debug("No nurse on {}", timeOfDuty);
-                    return NO_NURSE_PENALTY;
+                    String description = String.format("No nurse on %s", formatter.format(timeOfDuty));
+                    return new ValidationResultForDate(NO_NURSE_PENALTY, description);
                 }
-                return 0d;
+                return new ValidationResultForDate(0d);
             }
         };
     }
 
-    private double calculateRequiredNumberOfEmployees(LocalDateTime timeOfDuty) {
+    private static class ValidationResultForDate {
+        double penalty;
+        List<String> descriptions;
+
+        public ValidationResultForDate(double penalty, String description) {
+            this.penalty = penalty;
+            this.descriptions = List.of(description);
+        }
+
+        public ValidationResultForDate(double penalty) {
+            this.penalty = penalty;
+            descriptions = List.of();
+        }
+
+        public ValidationResultForDate(double penalty, List<String> descriptions) {
+            this.penalty = penalty;
+            this.descriptions = descriptions;
+        }
+
+        private static ValidationResultForDate sum(ValidationResultForDate result1, ValidationResultForDate result2) {
+            double penaltySum = result1.penalty + result2.penalty;
+            List<String> constraintViolationDescriptions = Stream.concat(result1.descriptions.stream(), result2.descriptions.stream()).collect(toList());
+
+            return new ValidationResultForDate(penaltySum, constraintViolationDescriptions);
+        }
+    }
+
+    private int calculateRequiredNumberOfEmployees(LocalDateTime timeOfDuty) {
         return isDay(timeOfDuty) ?
-                Math.ceil(numberOfChildren / (double) MAX_CHILDREN_PER_EMPLOYEE_DURING_DAY) :
-                Math.ceil(numberOfChildren / (double) MAX_CHILDREN_PER_EMPLOYEE_DURING_NIGHT);
+                (int) Math.ceil(numberOfChildren / (double) MAX_CHILDREN_PER_EMPLOYEE_DURING_DAY) :
+                (int) Math.ceil(numberOfChildren / (double) MAX_CHILDREN_PER_EMPLOYEE_DURING_NIGHT);
     }
 
     private Predicate<? super EmployeeShiftAssignment> isNurse() {

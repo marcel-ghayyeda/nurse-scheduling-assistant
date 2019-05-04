@@ -40,7 +40,7 @@ public class SchedulesLayout extends VerticalLayout {
         var statusButton = new Button(status);
         statusButton.setEnabled(false);
         statusButton.addClassName("status-button");
-        statusButton.addClassName("status-button-fixed-width");
+        statusButton.addClassName("button-80px");
         statusButton.addClassName(scheduleRow.isFeasible() ? "feasible-status-button" : "not-feasible-status-button");
         return statusButton;
     }

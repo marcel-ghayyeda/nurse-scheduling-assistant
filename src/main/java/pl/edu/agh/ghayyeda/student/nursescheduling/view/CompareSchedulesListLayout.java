@@ -99,7 +99,7 @@ public class CompareSchedulesListLayout extends VerticalLayout {
             var statusButton = new Button(scheduleDescription.isFeasible() ? "valid" : "invalid");
             statusButton.setEnabled(false);
             statusButton.addClassName("status-button");
-            statusButton.addClassName("status-button-fixed-width");
+            statusButton.addClassName("button-80px");
             statusButton.addClassName(scheduleDescription.isFeasible() ? "feasible-status-button" : "not-feasible-status-button");
 
             var statusButtonDiv = new Div(right(statusButton));

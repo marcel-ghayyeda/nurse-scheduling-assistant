@@ -56,7 +56,7 @@ public class ScheduleFacade {
 
     private ScheduleDescription toScheduleDescription(ScheduleDto scheduleDto) {
         var validationResult = penaltyAwareScheduleConstraintValidationFacade.validate(scheduleDto.getSchedule());
-        return new ScheduleDescription(scheduleDto.getId(), scheduleDto.getName(), validationResult.isFeasible(), validationResult.getDescriptions());
+        return new ScheduleDescription(scheduleDto.getId(), scheduleDto.getName(), validationResult.isFeasible(), validationResult.getConstraintViolationsDescriptions());
     }
 
     public CompletableFuture<UUID> fixAsync(Schedule schedule, String newScheduleName, SolverAccuracy solverAccuracy) {

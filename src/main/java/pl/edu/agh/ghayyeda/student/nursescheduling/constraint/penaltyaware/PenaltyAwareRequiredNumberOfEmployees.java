@@ -2,6 +2,8 @@ package pl.edu.agh.ghayyeda.student.nursescheduling.constraint.penaltyaware;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ConstraintViolationsDescription;
+import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.EmployeeDateViolation;
 import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ScheduleConstraint;
 import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ScheduleConstraintValidationResult;
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.EmployeeShiftAssignment;
@@ -14,6 +16,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.IntFunction;
@@ -22,11 +25,12 @@ import java.util.stream.Stream;
 
 import static java.util.Locale.US;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 import static pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ScheduleContraintUtils.significantHoursOfDay;
 
 class PenaltyAwareRequiredNumberOfEmployees implements ScheduleConstraint {
 
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE d HH:mm").localizedBy(US);
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE d").localizedBy(US);
     private static final Logger log = LoggerFactory.getLogger(PenaltyAwareRequiredNumberOfEmployees.class);
     private static final int MAX_CHILDREN_PER_EMPLOYEE_DURING_DAY = 3;
     private static final int MAX_CHILDREN_PER_EMPLOYEE_DURING_NIGHT = 5;
@@ -58,7 +62,7 @@ class PenaltyAwareRequiredNumberOfEmployees implements ScheduleConstraint {
                 .map(hasMinimumRequiredNumberOfBabySitters(schedule))
                 .reduce(new ValidationResultForDate(0d), ValidationResultForDate::sum);
 
-        return ScheduleConstraintValidationResult.ofPenalty(summaryValidationResult.penalty, summaryValidationResult.descriptions);
+        return ScheduleConstraintValidationResult.ofPenalty(summaryValidationResult.penalty, summaryValidationResult.constraintViolationsDescriptions);
     }
 
 
@@ -72,13 +76,16 @@ class PenaltyAwareRequiredNumberOfEmployees implements ScheduleConstraint {
             if (numberOfEmployees < requiredNumberOfEmployees) {
                 log.debug("Not enough employees on {}", timeOfDuty);
                 double missingEmployees = requiredNumberOfEmployees - numberOfEmployees;
-                String description = String.format("Not enough employees on %s. Expected %d but found %d", formatter.format(timeOfDuty), requiredNumberOfEmployees, numberOfEmployees);
-                return new ValidationResultForDate(Math.sqrt(missingEmployees / requiredNumberOfEmployees), description);
+                String description = String.format("Not enough employees on %s. Expected %d but found %d", formatter.format(timeOfDuty.toLocalDate()), requiredNumberOfEmployees, numberOfEmployees);
+                var employeeDateViolations = List.of(new EmployeeDateViolation(timeOfDuty.toLocalDate()));
+                double penalty = Math.sqrt(missingEmployees / requiredNumberOfEmployees);
+                return new ValidationResultForDate(penalty, List.of(new ConstraintViolationsDescription(description, employeeDateViolations)));
             } else {
                 if (employees.stream().noneMatch(isNurse())) {
                     log.debug("No nurse on {}", timeOfDuty);
                     String description = String.format("No nurse on %s", formatter.format(timeOfDuty));
-                    return new ValidationResultForDate(NO_NURSE_PENALTY, description);
+                    var employeeDateViolations = List.of(new EmployeeDateViolation(timeOfDuty.toLocalDate()));
+                    return new ValidationResultForDate(NO_NURSE_PENALTY, List.of(new ConstraintViolationsDescription(description, employeeDateViolations)));
                 }
                 return new ValidationResultForDate(0d);
             }
@@ -87,26 +94,21 @@ class PenaltyAwareRequiredNumberOfEmployees implements ScheduleConstraint {
 
     private static class ValidationResultForDate {
         double penalty;
-        List<String> descriptions;
+        Collection<ConstraintViolationsDescription> constraintViolationsDescriptions;
 
-        public ValidationResultForDate(double penalty, String description) {
+        public ValidationResultForDate(double penalty, Collection<ConstraintViolationsDescription> constraintViolationsDescriptions) {
             this.penalty = penalty;
-            this.descriptions = List.of(description);
+            this.constraintViolationsDescriptions = constraintViolationsDescriptions;
         }
 
         public ValidationResultForDate(double penalty) {
             this.penalty = penalty;
-            descriptions = List.of();
-        }
-
-        public ValidationResultForDate(double penalty, List<String> descriptions) {
-            this.penalty = penalty;
-            this.descriptions = descriptions;
+            constraintViolationsDescriptions = List.of();
         }
 
         private static ValidationResultForDate sum(ValidationResultForDate result1, ValidationResultForDate result2) {
             double penaltySum = result1.penalty + result2.penalty;
-            List<String> constraintViolationDescriptions = Stream.concat(result1.descriptions.stream(), result2.descriptions.stream()).collect(toList());
+            var constraintViolationDescriptions = Stream.concat(result1.constraintViolationsDescriptions.stream(), result2.constraintViolationsDescriptions.stream()).collect(toSet());
 
             return new ValidationResultForDate(penaltySum, constraintViolationDescriptions);
         }

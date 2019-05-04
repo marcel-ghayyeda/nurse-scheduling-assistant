@@ -1,8 +1,10 @@
 package pl.edu.agh.ghayyeda.student.nursescheduling.schedule;
 
+import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ConstraintViolationsDescription;
+
 import java.time.Month;
 import java.time.Year;
-import java.util.List;
+import java.util.Collection;
 import java.util.UUID;
 
 public class ScheduleWrapper {
@@ -26,8 +28,8 @@ public class ScheduleWrapper {
         return scheduleDescription.isFeasible();
     }
 
-    public List<String> getValidationDescriptions() {
-        return scheduleDescription.getValidationDescriptions();
+    public Collection<ConstraintViolationsDescription> getConstraintViolationsDescriptions() {
+        return scheduleDescription.getConstraintViolationsDescriptions();
     }
 
     public Schedule getSchedule() {

@@ -1,6 +1,8 @@
 package pl.edu.agh.ghayyeda.student.nursescheduling.schedule;
 
-import java.util.List;
+import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ConstraintViolationsDescription;
+
+import java.util.Collection;
 import java.util.UUID;
 
 public class ScheduleDescription {
@@ -8,13 +10,13 @@ public class ScheduleDescription {
     private final UUID id;
     private final String name;
     private final boolean isFeasible;
-    private final List<String> validationDescriptions;
+    private final Collection<ConstraintViolationsDescription> constraintViolationsDescriptions;
 
-    ScheduleDescription(UUID id, String name, boolean isFeasible, List<String> validationDescriptions) {
+    ScheduleDescription(UUID id, String name, boolean isFeasible, Collection<ConstraintViolationsDescription> constraintViolationsDescriptions) {
         this.id = id;
         this.name = name;
         this.isFeasible = isFeasible;
-        this.validationDescriptions = validationDescriptions;
+        this.constraintViolationsDescriptions = constraintViolationsDescriptions;
     }
 
     public UUID getId() {
@@ -29,7 +31,7 @@ public class ScheduleDescription {
         return isFeasible;
     }
 
-    public List<String> getValidationDescriptions() {
-        return validationDescriptions;
+    public Collection<ConstraintViolationsDescription> getConstraintViolationsDescriptions() {
+        return constraintViolationsDescriptions;
     }
 }

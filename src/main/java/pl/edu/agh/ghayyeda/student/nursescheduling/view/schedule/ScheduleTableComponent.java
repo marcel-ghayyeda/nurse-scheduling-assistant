@@ -5,6 +5,7 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.function.ValueProvider;
+import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.EmployeeDateViolation;
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.*;
 import pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee;
 
@@ -13,9 +14,7 @@ import java.time.Month;
 import java.time.Year;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
@@ -81,6 +80,10 @@ public class ScheduleTableComponent extends Grid<ScheduleTableComponent.Schedule
             } else if (VACATION == shift) {
                 div.addClassName("vacation");
             }
+            if (scheduleLayoutRow.getHighlightedDates().contains(date)) {
+                div.addClassName("highlighted");
+
+            }
             return div;
         };
     }
@@ -124,10 +127,29 @@ public class ScheduleTableComponent extends Grid<ScheduleTableComponent.Schedule
         return div;
     }
 
+    void unhighlight() {
+        items.forEach(ScheduleLayoutRow::unHighlight);
+        getDataProvider().refreshAll();
+    }
+
+    void highlight(Collection<EmployeeDateViolation> employeeDateViolations) {
+        items.forEach(ScheduleLayoutRow::unHighlight);
+        employeeDateViolations.forEach(employeeDateViolation -> {
+            items.forEach(scheduleLayoutRow -> {
+                if (!employeeDateViolation.getEmployee().isPresent() || employeeDateViolation.getEmployee().get().equals(scheduleLayoutRow.getEmployee())) {
+                    scheduleLayoutRow.highlight(employeeDateViolation.getDate());
+                }
+            });
+        });
+        getDataProvider().refreshAll();
+
+    }
+
     protected static class ScheduleLayoutRow implements EmployeeShiftMap {
 
         Employee employee;
         Map<LocalDate, Shift> shifts;
+        Set<LocalDate> highlightedDates = new HashSet<>();
 
         ScheduleLayoutRow(Employee employee, Map<LocalDate, Shift> shifts) {
             this.employee = employee;
@@ -142,6 +164,18 @@ public class ScheduleTableComponent extends Grid<ScheduleTableComponent.Schedule
         @Override
         public Map<LocalDate, Shift> getDateShiftMap() {
             return shifts;
+        }
+
+        public void highlight(LocalDate date) {
+            highlightedDates.add(date);
+        }
+
+        public void unHighlight() {
+            highlightedDates = new HashSet<>();
+        }
+
+        public Set<LocalDate> getHighlightedDates() {
+            return highlightedDates;
         }
     }
 }

@@ -2,13 +2,15 @@ package pl.edu.agh.ghayyeda.student.nursescheduling.constraint;
 
 import org.apache.commons.lang3.Validate;
 
+import java.util.Collection;
 import java.util.List;
 
 public class ScheduleConstraintValidationResult {
 
     private final boolean feasible;
     private final double penalty;
-    private final List<String> descriptions;
+    private final Collection<ConstraintViolationsDescription> constraintViolationsDescriptions;
+
 
     private ScheduleConstraintValidationResult(boolean feasible) {
         this(feasible, 0);
@@ -17,23 +19,19 @@ public class ScheduleConstraintValidationResult {
     private ScheduleConstraintValidationResult(boolean feasible, double penalty) {
         this.feasible = feasible;
         this.penalty = penalty;
-        this.descriptions = List.of();
+        this.constraintViolationsDescriptions = List.of();
     }
 
-    public ScheduleConstraintValidationResult(boolean feasible, double penalty, List<String> descriptions) {
+    private ScheduleConstraintValidationResult(boolean feasible, double penalty, Collection<ConstraintViolationsDescription> constraintViolationsDescriptions) {
         this.feasible = feasible;
         this.penalty = penalty;
-        this.descriptions = descriptions;
+        this.constraintViolationsDescriptions = constraintViolationsDescriptions;
     }
 
-    public static ScheduleConstraintValidationResult ofPenalty(double penalty) {
-        Validate.isTrue(penalty >= 0);
-        return new ScheduleConstraintValidationResult(penalty <= 0, penalty);
-    }
 
-    public static ScheduleConstraintValidationResult ofPenalty(double penalty, List<String> descriptions) {
+    public static ScheduleConstraintValidationResult ofPenalty(double penalty, Collection<ConstraintViolationsDescription> constraintViolationsDescriptions) {
         Validate.isTrue(penalty >= 0);
-        return new ScheduleConstraintValidationResult(penalty <= 0, penalty, descriptions);
+        return new ScheduleConstraintValidationResult(penalty <= 0, penalty, constraintViolationsDescriptions);
     }
 
     public static ScheduleConstraintValidationResult feasibleConstraintValidationResult(double penalty) {
@@ -63,7 +61,7 @@ public class ScheduleConstraintValidationResult {
         return penalty;
     }
 
-    public List<String> getDescriptions() {
-        return descriptions;
+    public Collection<ConstraintViolationsDescription> getConstraintViolationsDescriptions() {
+        return constraintViolationsDescriptions;
     }
 }

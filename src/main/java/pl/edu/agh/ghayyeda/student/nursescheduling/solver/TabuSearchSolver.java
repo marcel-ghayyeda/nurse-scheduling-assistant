@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import pl.edu.agh.ghayyeda.student.nursescheduling.benchmark.TimeLogger;
 import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ScheduleConstraintValidationResult;
 import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.penaltyaware.PenaltyAwareScheduleConstraintValidationFacade;
+import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.NeighbourhoodStrategyFactory;
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Schedule;
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.ScheduleAsciiTablePresenter;
 
@@ -22,19 +23,22 @@ public class TabuSearchSolver implements Solver {
     private static final int MAXIMUM_NUMBER_OF_ITERATIONS = 200;
 
     private final PenaltyAwareScheduleConstraintValidationFacade scheduleConstraintValidationFacade;
+    private final NeighbourhoodStrategyFactory neighbourhoodStrategyFactory;
     private final LocalDateTime validationStartTime;
     private final LocalDateTime validationEndTime;
     private final SolverAccuracy solverAccuracy;
 
-    public TabuSearchSolver(PenaltyAwareScheduleConstraintValidationFacade scheduleConstraintValidationFacade, LocalDateTime validationStartTime, LocalDateTime validationEndTime) {
+    public TabuSearchSolver(NeighbourhoodStrategyFactory neighbourhoodStrategyFactory, PenaltyAwareScheduleConstraintValidationFacade scheduleConstraintValidationFacade, LocalDateTime validationStartTime, LocalDateTime validationEndTime) {
         this.scheduleConstraintValidationFacade = scheduleConstraintValidationFacade;
+        this.neighbourhoodStrategyFactory = neighbourhoodStrategyFactory;
         this.validationStartTime = validationStartTime;
         this.validationEndTime = validationEndTime;
         this.solverAccuracy = SolverAccuracy.BEST;
     }
 
-    public TabuSearchSolver(PenaltyAwareScheduleConstraintValidationFacade scheduleConstraintValidationFacade, LocalDateTime validationStartTime, LocalDateTime validationEndTime, SolverAccuracy solverAccuracy) {
+    public TabuSearchSolver(NeighbourhoodStrategyFactory neighbourhoodStrategyFactory, PenaltyAwareScheduleConstraintValidationFacade scheduleConstraintValidationFacade, LocalDateTime validationStartTime, LocalDateTime validationEndTime, SolverAccuracy solverAccuracy) {
         this.scheduleConstraintValidationFacade = scheduleConstraintValidationFacade;
+        this.neighbourhoodStrategyFactory = neighbourhoodStrategyFactory;
         this.validationStartTime = validationStartTime;
         this.validationEndTime = validationEndTime;
         this.solverAccuracy = solverAccuracy;
@@ -63,7 +67,7 @@ public class TabuSearchSolver implements Solver {
                 currentIteration++;
                 log.debug("Current iteration: {}", currentIteration);
                 long iterationStart = System.nanoTime();
-                List<Schedule> neighbourCandidates = currentSchedule._1.getNeighbourhood();
+                List<Schedule> neighbourCandidates = neighbourhoodStrategyFactory.createNeighbourhoodStrategy().createNeighbourhood(currentSchedule._1).getSchedules();
                 var bestNeighbourResult = neighbourCandidates.stream()
                         .filter(not(tabuList::contains))
                         .parallel()

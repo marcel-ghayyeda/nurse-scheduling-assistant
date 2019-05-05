@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee;
 
 import java.time.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -13,7 +12,6 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.*;
-import static pl.edu.agh.ghayyeda.student.nursescheduling.util.Predicates.of;
 
 public class Schedule {
 
@@ -31,7 +29,7 @@ public class Schedule {
         this.numberOfChildren = numberOfChildren;
     }
 
-    private static Schedule ofDateEmployeeShiftAssignment(List<DateEmployeeShiftAssignment> dateEmployeeShiftAssignments, Year year, Month month, int numberOfChildren) {
+    public static Schedule ofDateEmployeeShiftAssignment(List<DateEmployeeShiftAssignment> dateEmployeeShiftAssignments, Year year, Month month, int numberOfChildren) {
         return dateEmployeeShiftAssignments.stream()
                 .collect(groupingBy(DateEmployeeShiftAssignment::getStartDate, mapping(DateEmployeeShiftAssignment::getEmployeeShiftAssignment, toList())))
                 .entrySet()
@@ -76,46 +74,7 @@ public class Schedule {
         return month;
     }
 
-    public List<Schedule> getNeighbourhood() {
-        var neighbourhood = Stream.concat(addRandomShifts(), removeRandomShifts()).collect(toList());
-        log.debug("Neighbourhood size: {}", neighbourhood.size());
-        return neighbourhood;
-    }
-
-    private Stream<Schedule> changeRandomShifts() {
-        return getDateShiftAssignmentMatching(of(DateEmployeeShiftAssignment::isDayOff).or(DateEmployeeShiftAssignment::isWorkDay))
-                .flatMap(dateEmployeeShiftAssignment -> Stream.concat(Shift.allWorkingShifts(), Stream.of(Shift.DAY_OFF)).map(shift -> {
-                    DateEmployeeShiftAssignment dateEmployeeShiftAssignmentWithAddedShift = dateEmployeeShiftAssignment.setShift(shift);
-                    List<DateEmployeeShiftAssignment> dateEmployeeShiftAssignments = getDateShiftAssignments().collect(toList());
-                    List<DateEmployeeShiftAssignment> newSchedule = new ArrayList<>(dateEmployeeShiftAssignments);
-                    newSchedule.set(dateEmployeeShiftAssignments.indexOf(dateEmployeeShiftAssignment), dateEmployeeShiftAssignmentWithAddedShift);
-                    return Schedule.ofDateEmployeeShiftAssignment(newSchedule, year, month, numberOfChildren);
-                }));
-    }
-
-    Stream<Schedule> addRandomShifts() {
-        return getDateShiftAssignmentMatching(DateEmployeeShiftAssignment::isDayOff)
-                .flatMap(dateEmployeeShiftAssignment -> Shift.allWorkingShifts().map(shift -> {
-                    DateEmployeeShiftAssignment dateEmployeeShiftAssignmentWithAddedShift = dateEmployeeShiftAssignment.setShift(shift);
-                    List<DateEmployeeShiftAssignment> dateEmployeeShiftAssignments = getDateShiftAssignments().collect(toList());
-                    List<DateEmployeeShiftAssignment> newSchedule = new ArrayList<>(dateEmployeeShiftAssignments);
-                    newSchedule.set(dateEmployeeShiftAssignments.indexOf(dateEmployeeShiftAssignment), dateEmployeeShiftAssignmentWithAddedShift);
-                    return Schedule.ofDateEmployeeShiftAssignment(newSchedule, year, month, numberOfChildren);
-                }));
-    }
-
-    Stream<Schedule> removeRandomShifts() {
-        return getDateShiftAssignmentMatching(DateEmployeeShiftAssignment::isWorkDay)
-                .map(randomDateEmployeeShiftAssignments -> {
-                    DateEmployeeShiftAssignment dateEmployeeShiftAssignmentWithAddedShift = randomDateEmployeeShiftAssignments.removeShift();
-                    List<DateEmployeeShiftAssignment> dateEmployeeShiftAssignments = getDateShiftAssignments().collect(toList());
-                    List<DateEmployeeShiftAssignment> newSchedule = new ArrayList<>(dateEmployeeShiftAssignments);
-                    newSchedule.set(dateEmployeeShiftAssignments.indexOf(randomDateEmployeeShiftAssignments), dateEmployeeShiftAssignmentWithAddedShift);
-                    return Schedule.ofDateEmployeeShiftAssignment(newSchedule, year, month, numberOfChildren);
-                });
-    }
-
-    private Stream<DateEmployeeShiftAssignment> getDateShiftAssignmentMatching(Predicate<DateEmployeeShiftAssignment> predicate) {
+    public Stream<DateEmployeeShiftAssignment> getDateShiftAssignmentMatching(Predicate<DateEmployeeShiftAssignment> predicate) {
         return getDateShiftAssignments().filter(predicate);
 
     }

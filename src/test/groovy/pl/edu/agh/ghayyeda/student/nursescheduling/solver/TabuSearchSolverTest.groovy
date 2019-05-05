@@ -2,6 +2,7 @@ package pl.edu.agh.ghayyeda.student.nursescheduling.solver
 
 import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.penaltyaware.PenaltyAwareScheduleConstraintFactory
 import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.penaltyaware.PenaltyAwareScheduleConstraintValidationFacade
+import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.NeighbourhoodStrategyFactory
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.ScheduleAsciiTablePresenter
 import pl.edu.agh.ghayyeda.student.nursescheduling.util.ScheduleValidationUtils
 import spock.lang.Specification
@@ -20,16 +21,18 @@ import static pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee.nurse
 class TabuSearchSolverTest extends Specification {
 
     def scheduleConstraintValidationFacade
+    def neighbourhoodStrategyFactory
 
     def setup() {
         scheduleConstraintValidationFacade = new PenaltyAwareScheduleConstraintValidationFacade(new PenaltyAwareScheduleConstraintFactory())
+        neighbourhoodStrategyFactory = new NeighbourhoodStrategyFactory();
     }
 
     def "Should return the same feasible schedule"() {
         given:
         def validationStartTime = LocalDateTime.of(LocalDate.of(2018, NOVEMBER, 1), DAY.startTime)
         def validationEndTime = LocalDateTime.of(LocalDate.of(2018, NOVEMBER, 3), NIGHT.endTime)
-        def solver = new TabuSearchSolver(scheduleConstraintValidationFacade, validationStartTime, validationEndTime)
+        def solver = new TabuSearchSolver(neighbourhoodStrategyFactory, scheduleConstraintValidationFacade, validationStartTime, validationEndTime)
 
         def schedule = schedule()
                 .forMonth(NOVEMBER)
@@ -57,7 +60,7 @@ class TabuSearchSolverTest extends Specification {
         given:
         def validationStartTime = LocalDateTime.of(LocalDate.of(2018, NOVEMBER, 1), DAY.startTime)
         def validationEndTime = LocalDateTime.of(LocalDate.of(2018, NOVEMBER, 3), NIGHT.endTime)
-        def solver = new TabuSearchSolver(scheduleConstraintValidationFacade, validationStartTime, validationEndTime)
+        def solver = new TabuSearchSolver(neighbourhoodStrategyFactory, scheduleConstraintValidationFacade, validationStartTime, validationEndTime)
 
         def originalSchedule = schedule()
                 .forMonth(NOVEMBER)
@@ -170,7 +173,7 @@ class TabuSearchSolverTest extends Specification {
 
         def validationStartTime = ScheduleValidationUtils.getStandardValidationStartTime(infeasibleScheduleToBeFixed)
         def validationEndTime = ScheduleValidationUtils.getStandardValidationEndTime(infeasibleScheduleToBeFixed)
-        def solver = new TabuSearchSolver(scheduleConstraintValidationFacade, validationStartTime, validationEndTime)
+        def solver = new TabuSearchSolver(neighbourhoodStrategyFactory, scheduleConstraintValidationFacade, validationStartTime, validationEndTime)
 
         when:
         def foundSchedule = solver.findFeasibleSchedule(infeasibleScheduleToBeFixed)

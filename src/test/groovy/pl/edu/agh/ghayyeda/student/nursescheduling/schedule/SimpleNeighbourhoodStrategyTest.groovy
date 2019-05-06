@@ -8,9 +8,9 @@ import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.EmployeeShift
 import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.ScheduleBuilder.schedule
 import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Shift.*
 
-class FullNeighbourhoodStrategyTest extends Specification {
+class SimpleNeighbourhoodStrategyTest extends Specification {
 
-    def fullNeighbourhoodStrategy = new FullNeighbourhoodStrategy();
+    def fullNeighbourhoodStrategy = new SimpleNeighbourhoodStrategy()
 
     def "Should create new schedules by adding exactly one working shift in place of free shift"() {
         given:
@@ -20,7 +20,7 @@ class FullNeighbourhoodStrategyTest extends Specification {
 
 
         when:
-        def newSchedules = fullNeighbourhoodStrategy.addRandomShifts(originalSchedule).collect()
+        def newSchedules = fullNeighbourhoodStrategy.addWorkingShifts(originalSchedule).collect()
 
         then:
         newSchedules.size() == 5
@@ -53,7 +53,7 @@ class FullNeighbourhoodStrategyTest extends Specification {
 
 
         when:
-        def newSchedules = fullNeighbourhoodStrategy.removeRandomShifts(originalSchedule).collect()
+        def newSchedules = fullNeighbourhoodStrategy.removeShifts(originalSchedule).collect()
 
         then:
         newSchedules.size() == 4

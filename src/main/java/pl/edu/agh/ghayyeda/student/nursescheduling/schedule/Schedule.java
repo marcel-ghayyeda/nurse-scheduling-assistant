@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee;
 
 import java.time.*;
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -17,28 +17,28 @@ public class Schedule {
 
     private static final Logger log = LoggerFactory.getLogger(Schedule.class);
 
-    private final List<DateEmployeeShiftAssignments> schedule;
+    private final Collection<DateEmployeeShiftAssignments> schedule;
     private final Year year;
     private final Month month;
     private final int numberOfChildren;
 
-    public Schedule(List<DateEmployeeShiftAssignments> schedule, Year year, Month month, int numberOfChildren) {
+    public Schedule(Collection<DateEmployeeShiftAssignments> schedule, Year year, Month month, int numberOfChildren) {
         this.schedule = schedule;
         this.year = year;
         this.month = month;
         this.numberOfChildren = numberOfChildren;
     }
 
-    public static Schedule ofDateEmployeeShiftAssignment(List<DateEmployeeShiftAssignment> dateEmployeeShiftAssignments, Year year, Month month, int numberOfChildren) {
+    public static Schedule ofDateEmployeeShiftAssignment(Collection<DateEmployeeShiftAssignment> dateEmployeeShiftAssignments, Year year, Month month, int numberOfChildren) {
         return dateEmployeeShiftAssignments.stream()
-                .collect(groupingBy(DateEmployeeShiftAssignment::getStartDate, mapping(DateEmployeeShiftAssignment::getEmployeeShiftAssignment, toList())))
+                .collect(groupingBy(DateEmployeeShiftAssignment::getStartDate, mapping(DateEmployeeShiftAssignment::getEmployeeShiftAssignment, toSet())))
                 .entrySet()
                 .stream()
                 .map(entry -> new DateEmployeeShiftAssignments(entry.getKey(), entry.getValue()))
-                .collect(collectingAndThen(toList(), schedule1 -> new Schedule(schedule1, year, month, numberOfChildren)));
+                .collect(collectingAndThen(toSet(), schedule1 -> new Schedule(schedule1, year, month, numberOfChildren)));
     }
 
-    public List<DateEmployeeShiftAssignments> getDateEmployeeShiftAssignmentsByDate() {
+    public Collection<DateEmployeeShiftAssignments> getDateEmployeeShiftAssignmentsByDate() {
         return schedule;
     }
 

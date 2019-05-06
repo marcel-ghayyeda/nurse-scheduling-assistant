@@ -43,7 +43,6 @@ class ScheduleTest extends Specification {
         schedule1.hashCode() == schedule1Copy.hashCode()
         schedule1.equals(schedule1Copy)
 
-        schedule1.hashCode() != anotherSchedule.hashCode()
         !schedule1.equals(anotherSchedule)
     }
 

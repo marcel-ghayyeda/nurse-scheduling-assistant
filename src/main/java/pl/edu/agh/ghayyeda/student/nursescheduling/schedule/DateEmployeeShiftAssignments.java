@@ -2,7 +2,7 @@ package pl.edu.agh.ghayyeda.student.nursescheduling.schedule;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Collection;
 import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -10,9 +10,9 @@ import java.util.stream.Stream;
 public class DateEmployeeShiftAssignments {
 
     private final LocalDate startDate;
-    private final List<EmployeeShiftAssignment> shiftAssignments;
+    private final Collection<EmployeeShiftAssignment> shiftAssignments;
 
-    public DateEmployeeShiftAssignments(LocalDate startDate, List<EmployeeShiftAssignment> shiftAssignments) {
+    public DateEmployeeShiftAssignments(LocalDate startDate, Collection<EmployeeShiftAssignment> shiftAssignments) {
         this.startDate = startDate;
         this.shiftAssignments = shiftAssignments;
     }
@@ -21,7 +21,7 @@ public class DateEmployeeShiftAssignments {
         return startDate;
     }
 
-    public List<EmployeeShiftAssignment> getShiftAssignments() {
+    public Collection<EmployeeShiftAssignment> getShiftAssignments() {
         return shiftAssignments;
     }
 

@@ -8,10 +8,7 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.time.Year;
 import java.time.YearMonth;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -26,7 +23,7 @@ import static pl.edu.agh.ghayyeda.student.nursescheduling.util.YearMonthUtil.all
 
 public class ScheduleBuilder {
 
-    private final Collection<Tuple2<LocalDate, EmployeeShiftAssignment>> shiftAssignments = new LinkedList<>();
+    private final Collection<Tuple2<LocalDate, EmployeeShiftAssignment>> shiftAssignments = new HashSet<>();
     private Year year = Year.now();
     private Month month = LocalDate.now().getMonth();
     private int numberOfChildren = 1;
@@ -43,6 +40,11 @@ public class ScheduleBuilder {
 
     public ScheduleBuilder forMonth(Month month) {
         this.month = month;
+        return this;
+    }
+
+    public ScheduleBuilder removeDay(int monthDay, EmployeeShiftAssignmentBuilder employeeShiftAssignmentBuilder) {
+        shiftAssignments.remove(Tuple.of(LocalDate.of(year.getValue(), month, monthDay), employeeShiftAssignmentBuilder.build()));
         return this;
     }
 
@@ -84,32 +86,32 @@ public class ScheduleBuilder {
 
     public Schedule build() {
         if (adjustForMonthLength) {
-            var employeeShiftAssignmentsByMonthDay = shiftAssignments.stream().collect(groupingBy(x -> x._1.getDayOfMonth(), mapping(Tuple2::_2, toList())));
-            var distinctEmployees = shiftAssignments.stream().map(Tuple2::_2).map(EmployeeShiftAssignment::getEmployee).distinct().collect(toList());
+            Map<Integer, Set<EmployeeShiftAssignment>> employeeShiftAssignmentsByMonthDay = shiftAssignments.stream().collect(groupingBy(x -> x._1.getDayOfMonth(), mapping(Tuple2::_2, toSet())));
+            var distinctEmployees = shiftAssignments.stream().map(Tuple2::_2).map(EmployeeShiftAssignment::getEmployee).distinct().collect(toSet());
             return allDaysOf(YearMonth.of(year.getValue(), month))
                     .map(buildDateEmployeeShiftAssignments(employeeShiftAssignmentsByMonthDay, distinctEmployees))
-                    .collect(collectingAndThen(toList(), schedule -> new Schedule(schedule, year, month, numberOfChildren)));
+                    .collect(collectingAndThen(toSet(), schedule -> new Schedule(schedule, year, month, numberOfChildren)));
 
         } else {
             return shiftAssignments.stream()
-                    .collect(groupingBy(Tuple2::_1, mapping(Tuple2::_2, toList())))
+                    .collect(groupingBy(Tuple2::_1, mapping(Tuple2::_2, toSet())))
                     .entrySet()
                     .stream()
                     .map(entry -> new DateEmployeeShiftAssignments(entry.getKey(), entry.getValue()))
-                    .collect(collectingAndThen(toList(), schedule -> new Schedule(schedule, year, month, numberOfChildren)));
+                    .collect(collectingAndThen(toSet(), schedule -> new Schedule(schedule, year, month, numberOfChildren)));
         }
     }
 
-    private Function<LocalDate, DateEmployeeShiftAssignments> buildDateEmployeeShiftAssignments(Map<Integer, List<EmployeeShiftAssignment>> employeeShiftAssignmentsByDate, List<Employee> distinctEmployees) {
+    private Function<LocalDate, DateEmployeeShiftAssignments> buildDateEmployeeShiftAssignments(Map<Integer, Set<EmployeeShiftAssignment>> employeeShiftAssignmentsByDate, Collection<Employee> distinctEmployees) {
         return dayOfMonth -> {
             var employeeShiftAssignments = ofNullable(employeeShiftAssignmentsByDate.get(dayOfMonth.getDayOfMonth())).orElseGet(dayOffShiftsForEachEmployee(distinctEmployees));
             return new DateEmployeeShiftAssignments(dayOfMonth, employeeShiftAssignments);
         };
     }
 
-    private Supplier<List<EmployeeShiftAssignment>> dayOffShiftsForEachEmployee(List<Employee> distinctEmployees) {
+    private Supplier<Set<EmployeeShiftAssignment>> dayOffShiftsForEachEmployee(Collection<Employee> distinctEmployees) {
         return () -> distinctEmployees.stream()
-                .map(employee -> new EmployeeShiftAssignment(employee, DAY_OFF)).collect(Collectors.toList());
+                .map(employee -> new EmployeeShiftAssignment(employee, DAY_OFF)).collect(Collectors.toSet());
     }
 
 

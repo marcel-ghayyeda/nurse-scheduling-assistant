@@ -67,13 +67,17 @@ public class TabuSearchSolver implements Solver {
                 currentIteration++;
                 log.debug("Current iteration: {}", currentIteration);
                 long iterationStart = System.nanoTime();
-                List<Schedule> neighbourCandidates = neighbourhoodStrategyFactory.createNeighbourhoodStrategy().createNeighbourhood(currentSchedule._1).getSchedules();
-                var bestNeighbourResult = neighbourCandidates.stream()
+                List<Schedule> neighbourCandidates = neighbourhoodStrategyFactory.createNeighbourhoodStrategy().createNeighbourhood(currentSchedule._1, currentSchedule._2).getSchedules();
+                var maybeBestNeighbourResult = neighbourCandidates.stream()
                         .filter(not(tabuList::contains))
                         .parallel()
                         .map(schedule -> Tuple.of(schedule, scheduleConstraintValidationFacade.validate(schedule, validationStartTime, validationEndTime)))
-                        .min(feasibleFirst().thenComparing(tuple -> tuple._2.getPenalty()))
-                        .orElseThrow();
+                        .min(feasibleFirst().thenComparing(tuple -> tuple._2.getPenalty()));
+
+                if (!maybeBestNeighbourResult.isPresent()) {
+                    break;
+                }
+                var bestNeighbourResult = maybeBestNeighbourResult.get();
 
                 if (feasibleFirst().thenComparing(tuple -> tuple._2.getPenalty()).compare(bestNeighbourResult, bestSchedule) < 0) {
                     bestSchedule = bestNeighbourResult;

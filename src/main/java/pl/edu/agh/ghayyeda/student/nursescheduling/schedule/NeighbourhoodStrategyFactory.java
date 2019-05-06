@@ -6,6 +6,6 @@ import org.springframework.stereotype.Component;
 public class NeighbourhoodStrategyFactory {
 
     public NeighbourhoodStrategy createNeighbourhoodStrategy() {
-        return new FullNeighbourhoodStrategy();
+        return new AdaptiveLargeNeighbourhoodStrategy();
     }
 }

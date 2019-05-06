@@ -28,6 +28,7 @@ public class ScheduleAsciiTablePresenter {
                 .collect(groupingBy(EmployeeShiftAssignment::getEmployee, LinkedHashMap::new, toList()))
                 .entrySet()
                 .stream()
+                .sorted(comparing(employeeName()))
                 .map(entry -> Stream.concat(Stream.of(entry.getKey().getName()), listShifts(entry)).toArray(String[]::new))
                 .toArray(String[][]::new);
         new TextTable(columnNames, data).printTable(ps, 0);
@@ -46,7 +47,7 @@ public class ScheduleAsciiTablePresenter {
         return baos.toString();
     }
 
-    private static Function<Map.Entry<Employee, Long>, String> employeeName() {
+    private static Function<Map.Entry<Employee, ?>, String> employeeName() {
         return entry -> entry.getKey().getName();
     }
 

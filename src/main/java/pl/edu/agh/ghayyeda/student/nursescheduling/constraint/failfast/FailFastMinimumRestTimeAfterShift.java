@@ -3,7 +3,7 @@ package pl.edu.agh.ghayyeda.student.nursescheduling.constraint.failfast;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ScheduleConstraint;
-import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ScheduleConstraintValidationResult;
+import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ConstraintValidationResult;
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.DateEmployeeShiftAssignment;
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Schedule;
 
@@ -14,20 +14,20 @@ import java.util.List;
 import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
-import static pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ScheduleConstraintValidationResult.feasibleConstraintValidationResult;
+import static pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ConstraintValidationResult.feasibleConstraintValidationResult;
 
 class FailFastMinimumRestTimeAfterShift implements ScheduleConstraint {
 
     private static final Logger log = LoggerFactory.getLogger(FailFastMinimumRestTimeAfterShift.class);
 
     @Override
-    public ScheduleConstraintValidationResult validate(Schedule schedule) {
+    public ConstraintValidationResult validate(Schedule schedule) {
         var isFeasible = schedule.getDateShiftAssignments()
                 .collect(groupingBy(DateEmployeeShiftAssignment::getEmployee))
                 .values().stream()
                 .allMatch(this::eachEmployeeHasMinimumRestTimeBetweenShifts);
 
-        return isFeasible ? feasibleConstraintValidationResult() : ScheduleConstraintValidationResult.notFeasibleConstraintValidationResult();
+        return isFeasible ? feasibleConstraintValidationResult() : ConstraintValidationResult.notFeasibleConstraintValidationResult();
     }
 
     private boolean eachEmployeeHasMinimumRestTimeBetweenShifts(List<DateEmployeeShiftAssignment> dateEmployeeShiftAssignments) {

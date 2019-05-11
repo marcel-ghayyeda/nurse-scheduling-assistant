@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ConstraintViolationsDescription;
 import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.EmployeeDateViolation;
 import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ScheduleConstraint;
-import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ScheduleConstraintValidationResult;
+import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ConstraintValidationResult;
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.EmployeeShiftAssignment;
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Schedule;
 import pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee;
@@ -54,7 +54,7 @@ class PenaltyAwareRequiredNumberOfEmployees implements ScheduleConstraint {
     }
 
     @Override
-    public ScheduleConstraintValidationResult validate(Schedule schedule) {
+    public ConstraintValidationResult validate(Schedule schedule) {
         var summaryValidationResult = YearMonthUtil.allDaysOf(validationMonth)
                 .flatMap(dayOfMonth -> significantHoursOfDay().mapToObj(toLocalDateTimeOn(dayOfMonth)))
                 .filter(notBeforeValidationStartTime())
@@ -62,7 +62,7 @@ class PenaltyAwareRequiredNumberOfEmployees implements ScheduleConstraint {
                 .map(hasMinimumRequiredNumberOfBabySitters(schedule))
                 .reduce(new ValidationResultForDate(0d), ValidationResultForDate::sum);
 
-        return ScheduleConstraintValidationResult.ofPenalty(summaryValidationResult.penalty, summaryValidationResult.constraintViolationsDescriptions);
+        return ConstraintValidationResult.ofPenalty(summaryValidationResult.penalty, summaryValidationResult.constraintViolationsDescriptions);
     }
 
 

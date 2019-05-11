@@ -2,7 +2,7 @@ package pl.edu.agh.ghayyeda.student.nursescheduling.schedule
 
 import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ConstraintViolationsDescription
 import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.EmployeeDateViolation
-import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ScheduleConstraintValidationResult
+import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ConstraintValidationResult
 import pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee
 import spock.lang.Specification
 
@@ -24,7 +24,7 @@ class AdaptiveLargeNeighbourhoodStrategyTest extends Specification {
         def employeeDateViolation1 = new EmployeeDateViolation(Employee.nurse("Nurse 1"), LocalDate.of(2018, NOVEMBER, 1))
         def employeeDateViolation2 = new EmployeeDateViolation(LocalDate.of(2018, NOVEMBER, 2))
         def constraintViolationsDescription = new ConstraintViolationsDescription("", [employeeDateViolation1, employeeDateViolation2])
-        def validationResult = ScheduleConstraintValidationResult.ofPenalty(0.002, [constraintViolationsDescription])
+        def validationResult = ConstraintValidationResult.ofPenalty(0.002, [constraintViolationsDescription])
 
         when:
         def newSchedules = neighbourhoodStrategy.createNeighbourhood(originalSchedule, validationResult).getSchedules()

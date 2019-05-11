@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ConstraintViolationsDescription;
 import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.EmployeeDateViolation;
 import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ScheduleConstraint;
-import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ScheduleConstraintValidationResult;
+import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ConstraintValidationResult;
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.DateEmployeeShiftAssignment;
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Schedule;
 
@@ -28,14 +28,14 @@ class PenaltyAwareMinimumRestTimeAfterShift implements ScheduleConstraint {
     private static final Logger log = LoggerFactory.getLogger(PenaltyAwareMinimumRestTimeAfterShift.class);
 
     @Override
-    public ScheduleConstraintValidationResult validate(Schedule schedule) {
+    public ConstraintValidationResult validate(Schedule schedule) {
         var result = schedule.getDateShiftAssignments()
                 .collect(groupingBy(DateEmployeeShiftAssignment::getEmployee))
                 .values().stream()
                 .map(this::eachEmployeeHasMinimumRestTimeBetweenShifts)
                 .reduce(new ValidationResultForEmployee(0, 0, List.of()), ValidationResultForEmployee::sum);
 
-        return ScheduleConstraintValidationResult.ofPenalty(calculatePenalty(result), result.constraintViolationsDescriptions);
+        return ConstraintValidationResult.ofPenalty(calculatePenalty(result), result.constraintViolationsDescriptions);
     }
 
     private ValidationResultForEmployee eachEmployeeHasMinimumRestTimeBetweenShifts(List<DateEmployeeShiftAssignment> dateEmployeeShiftAssignments) {

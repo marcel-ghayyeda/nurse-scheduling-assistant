@@ -3,7 +3,7 @@ package pl.edu.agh.ghayyeda.student.nursescheduling.constraint.penaltyaware;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ScheduleConstraint;
-import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ScheduleConstraintValidationResult;
+import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ConstraintValidationResult;
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Schedule;
 
 import java.time.DayOfWeek;
@@ -20,7 +20,7 @@ public class MinimumOvertime implements ScheduleConstraint {
     private static final Logger log = LoggerFactory.getLogger(MinimumOvertime.class);
 
     @Override
-    public ScheduleConstraintValidationResult validate(Schedule schedule) {
+    public ConstraintValidationResult validate(Schedule schedule) {
         Set<DayOfWeek> weekend = EnumSet.of(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY);
         YearMonth yearMonth = schedule.getYearMonth();
         int fullTimeWorkHoursPerMonth = IntStream.rangeClosed(1, yearMonth.lengthOfMonth())
@@ -36,6 +36,6 @@ public class MinimumOvertime implements ScheduleConstraint {
                 .sum();
 
         log.debug("Total penalty: {}", penalty);
-        return ScheduleConstraintValidationResult.feasibleConstraintValidationResult(penalty);
+        return ConstraintValidationResult.feasibleConstraintValidationResult(penalty);
     }
 }

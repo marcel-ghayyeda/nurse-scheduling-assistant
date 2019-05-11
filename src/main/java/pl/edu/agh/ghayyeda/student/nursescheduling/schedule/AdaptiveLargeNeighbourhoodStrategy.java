@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ConstraintViolationsDescription;
 import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.EmployeeDateViolation;
-import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ScheduleConstraintValidationResult;
+import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ConstraintValidationResult;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -21,7 +21,7 @@ public class AdaptiveLargeNeighbourhoodStrategy extends AbstractNeighbourhoodStr
     private static final Logger log = LoggerFactory.getLogger(AdaptiveLargeNeighbourhoodStrategy.class);
 
     @Override
-    public Neighbourhood createNeighbourhood(Schedule schedule, ScheduleConstraintValidationResult constraintValidationResult) {
+    public Neighbourhood createNeighbourhood(Schedule schedule, ConstraintValidationResult constraintValidationResult) {
         var employeeDateViolationsByDate = constraintValidationResult.getConstraintViolationsDescriptions().stream()
                 .map(ConstraintViolationsDescription::getEmployeeDateViolations)
                 .flatMap(Collection::stream)

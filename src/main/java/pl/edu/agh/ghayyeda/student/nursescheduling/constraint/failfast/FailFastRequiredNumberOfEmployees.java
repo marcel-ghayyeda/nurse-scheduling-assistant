@@ -3,7 +3,7 @@ package pl.edu.agh.ghayyeda.student.nursescheduling.constraint.failfast;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ScheduleConstraint;
-import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ScheduleConstraintValidationResult;
+import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ConstraintValidationResult;
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.EmployeeShiftAssignment;
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Schedule;
 import pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee;
@@ -17,7 +17,7 @@ import java.util.function.IntFunction;
 import java.util.function.Predicate;
 
 import static java.util.stream.Collectors.toList;
-import static pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ScheduleConstraintValidationResult.feasibleConstraintValidationResult;
+import static pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ConstraintValidationResult.feasibleConstraintValidationResult;
 import static pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ScheduleContraintUtils.significantHoursOfDay;
 
 class FailFastRequiredNumberOfEmployees implements ScheduleConstraint {
@@ -44,14 +44,14 @@ class FailFastRequiredNumberOfEmployees implements ScheduleConstraint {
     }
 
     @Override
-    public ScheduleConstraintValidationResult validate(Schedule schedule) {
+    public ConstraintValidationResult validate(Schedule schedule) {
         var isFeasible = YearMonthUtil.allDaysOf(validationMonth)
                 .flatMap(dayOfMonth -> significantHoursOfDay().mapToObj(toLocalDateTimeOn(dayOfMonth)))
                 .filter(notBeforeValidationStartTime())
                 .filter(beforeValidationEndtime())
                 .allMatch(hasMinimumRequiredNumberOfBabySitters(schedule));
 
-        return isFeasible ? feasibleConstraintValidationResult() : ScheduleConstraintValidationResult.notFeasibleConstraintValidationResult();
+        return isFeasible ? feasibleConstraintValidationResult() : ConstraintValidationResult.notFeasibleConstraintValidationResult();
     }
 
     private Predicate<? super LocalDateTime> hasMinimumRequiredNumberOfBabySitters(Schedule schedule) {

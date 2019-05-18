@@ -18,7 +18,9 @@ import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.ScheduleWrapper;
 import java.util.Collection;
 import java.util.function.Consumer;
 
+import static com.vaadin.flow.component.icon.VaadinIcon.CHECK_SQUARE_O;
 import static com.vaadin.flow.component.icon.VaadinIcon.CLOSE;
+import static java.util.stream.Collectors.toList;
 import static pl.edu.agh.ghayyeda.student.nursescheduling.view.util.ComponentUtil.setCssClass;
 
 class ScheduleValidationResultComponent extends HorizontalLayout {
@@ -42,20 +44,39 @@ class ScheduleValidationResultComponent extends HorizontalLayout {
         clickHintLayout.add(VaadinIcon.QUESTION_CIRCLE.create());
         clickHintLayout.add(clickHint);
 
-        ListBox<ConstraintViolationsDescription> violationDescriptions = setCssClass("constraint-violations-list", new ListBox<>());
-        violationDescriptions.setItems(schedule.getConstraintViolationsDescriptions());
-        violationDescriptions.setRenderer(constraintViolationRenderer());
-        violationDescriptions.addValueChangeListener(valueChangeListener(violationDescriptions));
+        var violationsDescriptions = schedule.getConstraintViolationsDescriptions();
+        ListBox<ConstraintViolationsDescription> violationDescriptionsListBox = setCssClass("constraint-violations-list", new ListBox<>());
+        violationDescriptionsListBox.setItems(violationsDescriptions);
+        violationDescriptionsListBox.setRenderer(constraintViolationRenderer());
+        violationDescriptionsListBox.addValueChangeListener(valueChangeListener(violationDescriptionsListBox));
 
-        var deselectButton = new Button("Deselect");
-        deselectButton.setEnabled(true);
-        deselectButton.setIcon(CLOSE.create());
-        deselectButton.addClassNames("constraint-violations-deselect-button", "button-with-icon");
-        deselectButton.addClickListener(event -> unclickCallback.run());
+        var highlightAllButton = new Button("Highlight all");
+        highlightAllButton.setEnabled(true);
+        highlightAllButton.setIcon(CHECK_SQUARE_O.create());
+        highlightAllButton.addClassNames("constraint-violations-button", "button-with-icon");
+        highlightAllButton.addClickListener(event -> {
+            violationDescriptionsListBox.setEnabled(false);
+            highlightAllButton.setEnabled(false);
+            highlightAllButton.addClassName("disabled-button");
+            clickCallback.accept(violationsDescriptions.stream().map(ConstraintViolationsDescription::getEmployeeDateViolations).flatMap(Collection::stream).collect(toList()));
+        });
+
+        var resetButton = new Button("Reset");
+        resetButton.setEnabled(true);
+        resetButton.setIcon(CLOSE.create());
+        resetButton.addClassNames("constraint-violations-button", "button-with-icon", "margin-left-10px");
+        resetButton.addClickListener(event -> {
+            highlightAllButton.setEnabled(true);
+            highlightAllButton.removeClassName("disabled-button");
+            violationDescriptionsListBox.setEnabled(true);
+            unclickCallback.run();
+        });
+
 
         detailsContent.add(clickHintLayout);
-        detailsContent.add(violationDescriptions);
-        detailsContent.add(deselectButton);
+        detailsContent.add(violationDescriptionsListBox);
+        detailsContent.add(highlightAllButton);
+        detailsContent.add(resetButton);
         return detailsContent;
     }
 

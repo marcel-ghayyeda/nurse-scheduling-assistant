@@ -181,6 +181,8 @@ vaadin-grid-cell-content {
 .highlighted {
     background-color: #f1c40f;
     color: #2c3e50;
+    font-weight: bold;
+    width: 55px;
 }
 
 .constraint-violations-list {
@@ -190,7 +192,16 @@ vaadin-grid-cell-content {
     margin-top: 10px;
 }
 
-.constraint-violations-deselect-button {
+.constraint-violations-button {
     background-color: #f1c40f;
     color: #2c3e50;
+}
+
+.disabled-button {
+    background-color: #bdc3c7;
+    color: #7f8c8d;
+}
+
+.margin-left-10px {
+    margin-left: 10px;
 }

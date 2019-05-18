@@ -62,7 +62,7 @@ public class TabuSearchSolver implements Solver {
         while (shouldProceed(firstFeasibleScheduleFoundIterationNumber, currentIteration)) {
             currentIteration++;
             log.debug("Current iteration: {}", currentIteration);
-            final var maybeBestCandidate = findBestNeighbourCandidate(currentValidatedSchedule, tabuSet);
+            final var maybeBestCandidate = findBestNeighbourCandidate(new AlgorithmMetadata(currentIteration, MAXIMUM_NUMBER_OF_ITERATIONS), currentValidatedSchedule, tabuSet);
 
             if (!maybeBestCandidate.isPresent()) {
                 break;
@@ -100,8 +100,8 @@ public class TabuSearchSolver implements Solver {
         return firstFeasibleScheduleFoundIterationNumber == -1 && bestValidatedCandidates.getConstraintValidationResult().isFeasible();
     }
 
-    private Optional<ValidatedSchedule> findBestNeighbourCandidate(ValidatedSchedule currentValidatedSchedule, Set<Schedule> tabuSet) {
-        return findNeighbourCandidates(currentValidatedSchedule)
+    private Optional<ValidatedSchedule> findBestNeighbourCandidate(AlgorithmMetadata algorithmMetadata, ValidatedSchedule currentValidatedSchedule, Set<Schedule> tabuSet) {
+        return findNeighbourCandidates(algorithmMetadata, currentValidatedSchedule)
                 .filter(not(tabuSet::contains))
                 .parallel()
                 .map(schedule -> new ValidatedSchedule(schedule, validate(schedule)))
@@ -112,8 +112,8 @@ public class TabuSearchSolver implements Solver {
         return feasibleFirst().thenComparing(valitedSchedule -> valitedSchedule.getConstraintValidationResult().getPenalty());
     }
 
-    private Stream<Schedule> findNeighbourCandidates(ValidatedSchedule currentValidatedSchedule) {
-        return neighbourhoodStrategyFactory.createNeighbourhoodStrategy()
+    private Stream<Schedule> findNeighbourCandidates(AlgorithmMetadata algorithmMetadata, ValidatedSchedule currentValidatedSchedule) {
+        return neighbourhoodStrategyFactory.createNeighbourhoodStrategy(algorithmMetadata)
                 .createNeighbourhood(currentValidatedSchedule.getSchedule(), currentValidatedSchedule.getConstraintValidationResult())
                 .getSchedules()
                 .stream();

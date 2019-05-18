@@ -2,9 +2,10 @@ package pl.edu.agh.ghayyeda.student.nursescheduling.schedule;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ConstraintValidationResult;
 import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ConstraintViolationsDescription;
 import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.EmployeeDateViolation;
-import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ConstraintValidationResult;
+import pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -17,6 +18,17 @@ import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 
 public class AdaptiveLargeNeighbourhoodStrategy extends AbstractNeighbourhoodStrategy implements NeighbourhoodStrategy {
+
+    enum Adaptation {
+        NARROW,
+        WIDE
+    }
+
+    private final Adaptation adaptation;
+
+    public AdaptiveLargeNeighbourhoodStrategy(Adaptation adaptation) {
+        this.adaptation = adaptation;
+    }
 
     private static final Logger log = LoggerFactory.getLogger(AdaptiveLargeNeighbourhoodStrategy.class);
 
@@ -43,12 +55,29 @@ public class AdaptiveLargeNeighbourhoodStrategy extends AbstractNeighbourhoodStr
                 .map(createNeighbourWithDayOffShift(schedule));
     }
 
-    private Predicate<DateEmployeeShiftAssignment> isEligibleForChanging(Map<LocalDate, List<EmployeeDateViolation>> byDate) {
-        return dateEmployeeShiftAssignment -> byDate.get(dateEmployeeShiftAssignment.getStartDate()) != null && byDate.get(dateEmployeeShiftAssignment.getStartDate()).stream().anyMatch(refersTo(dateEmployeeShiftAssignment));
+    private Predicate<DateEmployeeShiftAssignment> isEligibleForChanging(Map<LocalDate, List<EmployeeDateViolation>> violationsByDate) {
+        return dateEmployeeShiftAssignment -> getViolations(violationsByDate, dateEmployeeShiftAssignment)
+                .anyMatch(refersTo(dateEmployeeShiftAssignment.getEmployee()));
     }
 
-    private Predicate<EmployeeDateViolation> refersTo(DateEmployeeShiftAssignment dateEmployeeShiftAssignment) {
-        return employeeDateViolation -> !employeeDateViolation.getEmployee().isPresent() || employeeDateViolation.getEmployee().get().equals(dateEmployeeShiftAssignment.getEmployee());
+    private Stream<EmployeeDateViolation> getViolations(Map<LocalDate, List<EmployeeDateViolation>> violationsByDate, DateEmployeeShiftAssignment dateEmployeeShiftAssignment) {
+        switch (adaptation) {
+            case NARROW:
+                return violationsByDate.getOrDefault(dateEmployeeShiftAssignment.getStartDate(), List.of()).stream();
+            case WIDE:
+                return Stream.of(
+                        violationsByDate.getOrDefault(dateEmployeeShiftAssignment.getStartDate(), List.of()),
+                        violationsByDate.getOrDefault(dateEmployeeShiftAssignment.getStartDate().minusDays(1), List.of()),
+                        violationsByDate.getOrDefault(dateEmployeeShiftAssignment.getStartDate().plusDays(1), List.of())
+
+                ).flatMap(Collection::stream);
+            default:
+                throw new IllegalStateException();
+        }
+    }
+
+    private Predicate<EmployeeDateViolation> refersTo(Employee employee) {
+        return employeeDateViolation -> employeeDateViolation.getEmployee().map(employee::equals).orElse(true);
     }
 
 }

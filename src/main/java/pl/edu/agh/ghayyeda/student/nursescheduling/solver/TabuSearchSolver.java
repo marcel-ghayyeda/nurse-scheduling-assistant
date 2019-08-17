@@ -8,10 +8,10 @@ import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.penaltyaware.Penal
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.NeighbourhoodStrategyFactory;
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Schedule;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.ScheduleAsciiTablePresenter.buildAsciiTableRepresentationOf;
@@ -58,6 +58,7 @@ public class TabuSearchSolver implements Solver {
         int bestScheduleFoundIterationNumber = -1;
 
         final var tabuSet = TabuSet.newInstance();
+        Map<Integer, Double> pentalyByIteration = new HashMap<>();
         int currentIteration = 0;
         while (shouldProceed(firstFeasibleScheduleFoundIterationNumber, currentIteration)) {
             currentIteration++;
@@ -81,8 +82,13 @@ public class TabuSearchSolver implements Solver {
 
             tabuSet.add(currentValidatedSchedule.getSchedule());
             currentValidatedSchedule = bestValidatedCandidate;
+            pentalyByIteration.put(currentIteration, bestValidatedSchedule.getConstraintValidationResult().getPenalty());
         }
 
+        log.debug("PENALTY BY ITERATION NUMBER");
+        log.debug("------");
+        pentalyByIteration.forEach((it, penalty) -> System.out.println(it + "," + new BigDecimal(penalty).setScale(8, RoundingMode.HALF_UP)));
+        log.debug("------");
         log.debug("Found best schedule in {} iteration", bestScheduleFoundIterationNumber);
         log.debug(buildAsciiTableRepresentationOf(bestValidatedSchedule.getSchedule()));
         if (bestValidatedSchedule.isFeasible()) {
@@ -113,7 +119,7 @@ public class TabuSearchSolver implements Solver {
     }
 
     private Stream<Schedule> findNeighbourCandidates(AlgorithmMetadata algorithmMetadata, ValidatedSchedule currentValidatedSchedule) {
-        return neighbourhoodStrategyFactory.createNeighbourhoodStrategy(algorithmMetadata)
+        return neighbourhoodStrategyFactory.createNeighbourhoodStrategy(algorithmMetadata, currentValidatedSchedule.getConstraintValidationResult())
                 .createNeighbourhood(currentValidatedSchedule.getSchedule(), currentValidatedSchedule.getConstraintValidationResult())
                 .getSchedules()
                 .stream();

@@ -1,6 +1,7 @@
 package pl.edu.agh.ghayyeda.student.nursescheduling.solver;
 
 public enum SolverAccuracy {
+    NONE(0),
     LOW(20),
     MEDIUM(40),
     HIGH(60),

@@ -15,6 +15,7 @@ import static java.time.Month.SEPTEMBER
 import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.EmployeeShiftAssignmentBuilder.employeeShiftAssignment
 import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.ScheduleBuilder.schedule
 import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Shift.*
+import static pl.edu.agh.ghayyeda.student.nursescheduling.solver.SolverAccuracy.NONE
 import static pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee.babySitter
 import static pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee.nurse
 
@@ -173,7 +174,7 @@ class TabuSearchSolverTest extends Specification {
 
         def validationStartTime = ScheduleValidationUtils.getStandardValidationStartTime(infeasibleScheduleToBeFixed)
         def validationEndTime = ScheduleValidationUtils.getStandardValidationEndTime(infeasibleScheduleToBeFixed)
-        def solver = new TabuSearchSolver(neighbourhoodStrategyFactory, scheduleConstraintValidationFacade, validationStartTime, validationEndTime)
+        def solver = new TabuSearchSolver(neighbourhoodStrategyFactory, scheduleConstraintValidationFacade, validationStartTime, validationEndTime, NONE)
 
         when:
         def foundSchedule = solver.findFeasibleSchedule(infeasibleScheduleToBeFixed)

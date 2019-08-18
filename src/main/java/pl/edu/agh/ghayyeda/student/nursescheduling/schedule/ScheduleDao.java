@@ -6,7 +6,7 @@ import java.util.UUID;
 
 interface ScheduleDao {
 
-    List<ScheduleDto> getLatestSchedules();
+    List<ScheduleDto> getAll();
 
     Optional<ScheduleDto> getById(UUID id);
 

@@ -31,7 +31,7 @@ public class ScheduleFacade {
     }
 
     public List<ScheduleDescription> getLatestScheduleDescriptions() {
-        return scheduleDao.getLatestSchedules()
+        return scheduleDao.getAll()
                 .stream()
                 .map(this::toScheduleDescription)
                 .collect(Collectors.toList());

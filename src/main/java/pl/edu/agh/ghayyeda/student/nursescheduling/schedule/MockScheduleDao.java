@@ -1,14 +1,11 @@
 package pl.edu.agh.ghayyeda.student.nursescheduling.schedule;
 
-import org.springframework.stereotype.Service;
-
 import java.util.*;
 
 import static java.time.Month.SEPTEMBER;
 import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.ScheduleBuilder.schedule;
 import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Shift.*;
 
-@Service
 class MockScheduleDao implements ScheduleDao {
 
     private final Map
@@ -52,7 +49,7 @@ class MockScheduleDao implements ScheduleDao {
     }
 
     @Override
-    public List<ScheduleDto> getLatestSchedules() {
+    public List<ScheduleDto> getAll() {
         return new ArrayList<>(scheduleRepository.values());
     }
 

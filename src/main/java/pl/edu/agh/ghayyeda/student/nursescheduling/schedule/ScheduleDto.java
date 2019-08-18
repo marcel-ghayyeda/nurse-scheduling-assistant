@@ -1,9 +1,12 @@
 package pl.edu.agh.ghayyeda.student.nursescheduling.schedule;
 
+import org.springframework.data.annotation.Id;
+
 import java.util.UUID;
 
 public class ScheduleDto {
 
+    @Id
     private final UUID id;
     private final String name;
     private final Schedule schedule;

@@ -24,4 +24,14 @@ public class NeighbourhoodStrategyFactory {
             return new AdaptiveLargeNeighbourhoodStrategy(Adaptation.NARROW);
         }
     }
+
+    public NeighbourhoodStrategy createSimpleNeighbourhoodStrategy() {
+        return new SimpleNeighbourhoodStrategy();
+    }
+
+    public NeighbourhoodStrategy createAdaptiveNeighbourhoodStrategy(Adaptation adaptation) {
+        return new AdaptiveLargeNeighbourhoodStrategy(adaptation);
+    }
+
+
 }

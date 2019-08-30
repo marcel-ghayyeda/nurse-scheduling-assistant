@@ -12,8 +12,9 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toList;
+import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.AdaptiveLargeNeighbourhoodStrategy.Adaptation.WIDE;
 import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.ScheduleAsciiTablePresenter.buildAsciiTableRepresentationOf;
 import static pl.edu.agh.ghayyeda.student.nursescheduling.util.Predicates.not;
 
@@ -107,8 +108,31 @@ public class TabuSearchSolver implements Solver {
     }
 
     private Optional<ValidatedSchedule> findBestNeighbourCandidate(AlgorithmMetadata algorithmMetadata, ValidatedSchedule currentValidatedSchedule, Set<Schedule> tabuSet) {
-        return findNeighbourCandidates(algorithmMetadata, currentValidatedSchedule)
+        var neighbourhood = neighbourhoodStrategyFactory.createNeighbourhoodStrategy(algorithmMetadata, currentValidatedSchedule.getConstraintValidationResult())
+                .createNeighbourhood(currentValidatedSchedule.getSchedule(), currentValidatedSchedule.getConstraintValidationResult())
+                .getSchedules()
+                .stream()
                 .filter(not(tabuSet::contains))
+                .collect(toList());
+
+        if (neighbourhood.isEmpty()) {
+            neighbourhood = neighbourhoodStrategyFactory.createAdaptiveNeighbourhoodStrategy(WIDE)
+                    .createNeighbourhood(currentValidatedSchedule.getSchedule(), currentValidatedSchedule.getConstraintValidationResult())
+                    .getSchedules()
+                    .stream()
+                    .filter(not(tabuSet::contains))
+                    .collect(toList());
+
+            if (neighbourhood.isEmpty()) {
+                neighbourhood = neighbourhoodStrategyFactory.createSimpleNeighbourhoodStrategy()
+                        .createNeighbourhood(currentValidatedSchedule.getSchedule(), currentValidatedSchedule.getConstraintValidationResult())
+                        .getSchedules()
+                        .stream()
+                        .filter(not(tabuSet::contains))
+                        .collect(toList());
+            }
+        }
+        return neighbourhood.stream()
                 .parallel()
                 .map(schedule -> new ValidatedSchedule(schedule, validate(schedule)))
                 .min(bestScheduleFirst());
@@ -116,13 +140,6 @@ public class TabuSearchSolver implements Solver {
 
     private Comparator<ValidatedSchedule> bestScheduleFirst() {
         return feasibleFirst().thenComparing(valitedSchedule -> valitedSchedule.getConstraintValidationResult().getPenalty());
-    }
-
-    private Stream<Schedule> findNeighbourCandidates(AlgorithmMetadata algorithmMetadata, ValidatedSchedule currentValidatedSchedule) {
-        return neighbourhoodStrategyFactory.createNeighbourhoodStrategy(algorithmMetadata, currentValidatedSchedule.getConstraintValidationResult())
-                .createNeighbourhood(currentValidatedSchedule.getSchedule(), currentValidatedSchedule.getConstraintValidationResult())
-                .getSchedules()
-                .stream();
     }
 
     private ConstraintValidationResult validate(Schedule schedule) {

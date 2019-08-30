@@ -19,7 +19,7 @@ import static java.util.stream.Collectors.toList;
 
 public class AdaptiveLargeNeighbourhoodStrategy extends AbstractNeighbourhoodStrategy implements NeighbourhoodStrategy {
 
-    enum Adaptation {
+    public enum Adaptation {
         NARROW,
         WIDE
     }

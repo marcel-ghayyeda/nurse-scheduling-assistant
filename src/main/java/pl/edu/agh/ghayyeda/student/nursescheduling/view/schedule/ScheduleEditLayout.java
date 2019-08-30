@@ -65,7 +65,6 @@ public class ScheduleEditLayout extends VerticalLayout implements HasUrlParamete
         scheduleDetailsForm.add(scheduleNameField);
         NumberField numberOfChildrenField = setValue(new NumberField("Number of children"), (double) schedule.getNumberOfChildren());
         numberOfChildrenField.setMin(1);
-        numberOfChildrenField.setMax(10);
         numberOfChildrenField.setHasControls(true);
         scheduleDetailsForm.add(numberOfChildrenField);
         ComboBox<Month> monthComboBox = new ComboBox<>("Month");

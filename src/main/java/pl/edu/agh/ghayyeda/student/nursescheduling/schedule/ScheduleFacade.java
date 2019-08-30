@@ -6,15 +6,23 @@ import pl.edu.agh.ghayyeda.student.nursescheduling.solver.SolverAccuracy;
 import pl.edu.agh.ghayyeda.student.nursescheduling.solver.TabuSearchSolver;
 import pl.edu.agh.ghayyeda.student.nursescheduling.util.ScheduleValidationUtils;
 
+import java.time.Month;
+import java.time.Year;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static java.util.concurrent.CompletableFuture.supplyAsync;
+import static java.util.stream.Collectors.toList;
+import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.ScheduleBuilder.schedule;
+import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Shift.DAY_OFF;
+import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Shift.allWorkingShifts;
 
 @Component
 public class ScheduleFacade {
@@ -34,7 +42,7 @@ public class ScheduleFacade {
         return scheduleDao.getAll()
                 .stream()
                 .map(this::toScheduleDescription)
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
     public UUID save(Schedule schedule) {
@@ -43,6 +51,24 @@ public class ScheduleFacade {
 
     public UUID save(Schedule schedule, String name) {
         return scheduleDao.save(schedule, name);
+    }
+
+    public Schedule generateRandomSchedule(Year year, Month month, int numberOfChildren, int numberOfNurses) {
+        List<List<Shift>> nurseShifts = IntStream.rangeClosed(1, numberOfNurses)
+                .mapToObj(nurse -> IntStream.rangeClosed(1, month.length(year.isLeap())).mapToObj(__ -> randomShift()).collect(toList()))
+                .collect(toList());
+
+        return schedule()
+                .forMonth(month)
+                .forYear(year.getValue())
+                .nursesShifts(nurseShifts)
+                .numberOfChildren(numberOfChildren)
+                .adjustForMonthLength()
+                .build();
+    }
+
+    private Shift randomShift() {
+        return Stream.concat(allWorkingShifts(), Stream.of(DAY_OFF)).sorted((o1, o2) -> ThreadLocalRandom.current().nextInt(-1, 2)).findAny().orElseThrow();
     }
 
 

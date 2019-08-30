@@ -15,4 +15,6 @@ interface ScheduleDao {
     UUID save(Schedule schedule, String name);
 
     UUID save(UUID id, Schedule schedule, String name);
+
+    void delete(UUID scheduleId);
 }

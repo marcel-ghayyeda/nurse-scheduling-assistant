@@ -45,4 +45,9 @@ public class MongoScheduleDao implements ScheduleDao {
         scheduleMongoRepository.save(new ScheduleDto(id, name, schedule));
         return id;
     }
+
+    @Override
+    public void delete(UUID scheduleId) {
+        scheduleMongoRepository.deleteById(scheduleId);
+    }
 }

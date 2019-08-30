@@ -79,6 +79,11 @@ class MockScheduleDao implements ScheduleDao {
         return id;
     }
 
+    @Override
+    public void delete(UUID scheduleId) {
+        scheduleRepository.remove(scheduleId);
+    }
+
     private static final List<List<Shift>> notFeasibleShifts = List.of(
             //NURSE 1
             List.of(DAY_OFF, DAY, DAY_OFF, DAY_NIGHT, DAY_OFF, DAY, MORNING,

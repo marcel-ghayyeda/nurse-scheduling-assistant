@@ -76,6 +76,10 @@ public class ScheduleFacade {
         return scheduleDao.save(id, schedule, name);
     }
 
+    public void delete(UUID scheduleId) {
+        scheduleDao.delete(scheduleId);
+    }
+
     public Optional<ScheduleWrapper> getById(UUID id) {
         return scheduleDao.getById(id)
                 .map(scheduleDto -> new ScheduleWrapper(toScheduleDescription(scheduleDto), scheduleDto.getSchedule()));
@@ -97,5 +101,4 @@ public class ScheduleFacade {
     private boolean isFeasible(ScheduleDto scheduleDto) {
         return penaltyAwareScheduleConstraintValidationFacade.validate(scheduleDto.getSchedule()).isFeasible();
     }
-
 }

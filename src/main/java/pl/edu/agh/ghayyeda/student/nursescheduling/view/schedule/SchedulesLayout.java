@@ -14,27 +14,27 @@ import pl.edu.agh.ghayyeda.student.nursescheduling.view.MainLayout;
 import java.util.UUID;
 
 import static com.vaadin.flow.component.grid.GridVariant.LUMO_ROW_STRIPES;
-import static com.vaadin.flow.component.icon.VaadinIcon.EDIT;
-import static com.vaadin.flow.component.icon.VaadinIcon.EXPAND_SQUARE;
+import static com.vaadin.flow.component.icon.VaadinIcon.*;
 import static java.util.stream.Collectors.toList;
 
 @Route(value = "schedules", layout = MainLayout.class)
 @StyleSheet("frontend://css/schedule.css")
 public class SchedulesLayout extends VerticalLayout {
 
+    private final ScheduleFacade scheduleFacade;
+
     public SchedulesLayout(ScheduleFacade scheduleFacade) {
-        var scheduleDescriptions = scheduleFacade.getLatestScheduleDescriptions().stream()
-                .map(x -> new ScheduleRow(x.getId(), x.getName(), x.isFeasible()))
-                .collect(toList());
+        this.scheduleFacade = scheduleFacade;
         Grid<ScheduleRow> grid = new Grid<>();
-        grid.setItems(scheduleDescriptions);
+        grid.setItems(scheduleFacade.getLatestScheduleDescriptions().stream()
+                .map(x -> new ScheduleRow(x.getId(), x.getName(), x.isFeasible())).collect(toList()));
         grid.addColumn(ScheduleRow::getName).setHeader("Schedule");
         grid.addComponentColumn(this::statusColumn).setHeader("Status");
         grid.addComponentColumn(this::actionColumn).setHeader("Actions");
         grid.addThemeVariants(LUMO_ROW_STRIPES);
-
         add(grid);
     }
+
 
     private Component statusColumn(ScheduleRow scheduleRow) {
         var status = scheduleRow.isFeasible() ? "valid" : "invalid";
@@ -58,7 +58,15 @@ public class SchedulesLayout extends VerticalLayout {
         editButton.setIcon(EDIT.create());
         editButton.addClickListener(e -> UI.getCurrent().navigate("schedule-edit/" + scheduleRow.getId()));
 
-        parentDiv.add(showButton, editButton);
+        Button deleteButton = new Button("Delete");
+        deleteButton.addClassNames("base-active-button");
+        deleteButton.setIcon(TRASH.create());
+        deleteButton.addClickListener(e -> {
+            scheduleFacade.delete(scheduleRow.getId());
+            UI.getCurrent().getPage().reload();
+        });
+
+        parentDiv.add(showButton, editButton, deleteButton);
         return parentDiv;
     }
 

@@ -14,5 +14,10 @@ app-menu {
 }
 
 .app-layout.lumo {
-    --app-layout-background:#ecf0f1;
+    --app-layout-background: #ecf0f1;
+}
+
+.welcome-message {
+    font-weight: bold;
+    color: #2980b9;
 }

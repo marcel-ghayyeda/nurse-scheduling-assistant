@@ -11,9 +11,11 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 
@@ -38,9 +40,30 @@ public class AdaptiveLargeNeighbourhoodStrategy extends AbstractNeighbourhoodStr
                 .map(ConstraintViolationsDescription::getEmployeeDateViolations)
                 .flatMap(Collection::stream)
                 .collect(groupingBy(EmployeeDateViolation::getDate));
-        var neighbourhood = Stream.concat(addWorkingShifts(schedule, employeeDateViolationsByDate), removeShifts(schedule, employeeDateViolationsByDate)).collect(toList());
+        var neighbourhood = Stream.of(changeShifts(schedule, employeeDateViolationsByDate), addWorkingShifts(schedule, employeeDateViolationsByDate), removeShifts(schedule, employeeDateViolationsByDate))
+                .flatMap(identity())
+                .collect(toList());
         log.debug("Neighbourhood size: {}", neighbourhood.size());
         return new Neighbourhood(neighbourhood);
+    }
+
+    private Stream<Schedule> changeShifts(Schedule schedule, Map<LocalDate, List<EmployeeDateViolation>> employeeDateViolationsByDate) {
+        if (adaptation != Adaptation.NARROW) {
+            return Stream.empty();
+        }
+        return schedule.getDateShiftAssignmentMatching(DateEmployeeShiftAssignment::isWorkDay)
+                .filter(isEligibleForChanging(employeeDateViolationsByDate))
+                .flatMap(x -> {
+                    Stream<DateEmployeeShiftAssignment> shiftsToMix = schedule.getDateShiftAssignmentMatching(y -> y.getStartDate().equals(x.getStartDate()) && !y.getEmployee().equals(x.getEmployee()) && (y.getShift().isWorkDay() || y.getShift().isDayOff()));
+                    return shiftsToMix.map(assignment -> {
+                        Schedule intermediateSchedule = createNeighbour(schedule, assignment, x.getShift());
+                        return createNeighbour(intermediateSchedule, x, assignment.getShift());
+                    });
+                });
+    }
+
+    Function<DateEmployeeShiftAssignment, Stream<? extends Schedule>> createNeighboursWithAllWorkingShifts(Schedule schedule) {
+        return dateEmployeeShiftAssignment -> Shift.allWorkingShifts().map(shift -> createNeighbour(schedule, dateEmployeeShiftAssignment, shift));
     }
 
     private Stream<Schedule> addWorkingShifts(Schedule schedule, Map<LocalDate, List<EmployeeDateViolation>> employeeDateViolationsByDate) {

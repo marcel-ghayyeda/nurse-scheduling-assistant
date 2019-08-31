@@ -21,7 +21,7 @@ import static pl.edu.agh.ghayyeda.student.nursescheduling.util.Predicates.not;
 public class TabuSearchSolver implements Solver {
 
     private static final Logger log = LoggerFactory.getLogger(TabuSearchSolver.class);
-    private static final int MAXIMUM_NUMBER_OF_ITERATIONS = 200;
+    private static final int MAXIMUM_NUMBER_OF_ITERATIONS = 800;
 
     private final PenaltyAwareScheduleConstraintValidationFacade scheduleConstraintValidationFacade;
     private final NeighbourhoodStrategyFactory neighbourhoodStrategyFactory;
@@ -59,12 +59,13 @@ public class TabuSearchSolver implements Solver {
         int bestScheduleFoundIterationNumber = -1;
 
         final var tabuSet = TabuSet.newInstance();
-        Map<Integer, Double> pentalyByIteration = new HashMap<>();
+        Map<Integer, Double> pentalyByIteration = new LinkedHashMap<>();
+
         int currentIteration = 0;
         while (shouldProceed(firstFeasibleScheduleFoundIterationNumber, currentIteration)) {
             currentIteration++;
             log.debug("Current iteration: {}", currentIteration);
-            final var maybeBestCandidate = findBestNeighbourCandidate(new AlgorithmMetadata(currentIteration, MAXIMUM_NUMBER_OF_ITERATIONS), currentValidatedSchedule, tabuSet);
+            final var maybeBestCandidate = findBestNeighbourCandidate(new AlgorithmMetadata(currentIteration, MAXIMUM_NUMBER_OF_ITERATIONS, pentalyByIteration.values()), currentValidatedSchedule, tabuSet);
 
             if (!maybeBestCandidate.isPresent()) {
                 break;
@@ -83,7 +84,9 @@ public class TabuSearchSolver implements Solver {
 
             tabuSet.add(currentValidatedSchedule.getSchedule());
             currentValidatedSchedule = bestValidatedCandidate;
-            pentalyByIteration.put(currentIteration, bestValidatedSchedule.getConstraintValidationResult().getPenalty());
+            double penalty = currentValidatedSchedule.getConstraintValidationResult().getPenalty();
+            log.debug("Penalty: " + penalty);
+            pentalyByIteration.put(currentIteration, penalty);
         }
 
         log.debug("PENALTY BY ITERATION NUMBER");

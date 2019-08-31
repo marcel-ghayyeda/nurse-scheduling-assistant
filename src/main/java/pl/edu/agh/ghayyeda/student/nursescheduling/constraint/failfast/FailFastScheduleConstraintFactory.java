@@ -14,10 +14,15 @@ import java.util.List;
 public class FailFastScheduleConstraintFactory implements ScheduleConstraintFactory {
 
     @Override
-    public Collection<ScheduleConstraint> get(LocalDateTime validationStartTime, LocalDateTime validationEndTime, int numberOfChildren) {
+    public Collection<ScheduleConstraint> getHardConstraints(LocalDateTime validationStartTime, LocalDateTime validationEndTime, int numberOfChildren) {
         var minimumRestTimeAfterShift = new FailFastMinimumRestTimeAfterShift();
         var requiredNumberOfBabySitters = FailFastRequiredNumberOfEmployees.between(validationStartTime, validationEndTime, numberOfChildren);
         return List.of(minimumRestTimeAfterShift, requiredNumberOfBabySitters);
+    }
+
+    @Override
+    public Collection<ScheduleConstraint> getSoftConstraints(LocalDateTime validationStartTime, LocalDateTime validationEndTime, int numberOfChildren) {
+        return List.of();
     }
 
 }

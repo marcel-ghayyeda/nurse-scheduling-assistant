@@ -1,8 +1,10 @@
 package pl.edu.agh.ghayyeda.student.nursescheduling.constraint.penaltyaware;
 
 import org.springframework.stereotype.Component;
-import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ScheduleConstraintValidationFacade;
 import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ConstraintValidationResult;
+import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ConstraintViolationsDescription;
+import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ScheduleConstraint;
+import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ScheduleConstraintValidationFacade;
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Schedule;
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Shift;
 
@@ -11,6 +13,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.YearMonth;
 import java.util.Collection;
+import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 import static pl.edu.agh.ghayyeda.student.nursescheduling.util.Predicates.not;
@@ -35,21 +38,40 @@ public class PenaltyAwareScheduleConstraintValidationFacade implements ScheduleC
 
     @Override
     public ConstraintValidationResult validate(Schedule schedule, LocalDateTime validationStartTime, LocalDateTime validationEndTime) {
-        var scheduleConstraints = scheduleConstraintFactory.get(validationStartTime, validationEndTime, schedule.getNumberOfChildren());
-        var validationResults = scheduleConstraints.stream()
+        var hardConstraints = scheduleConstraintFactory.getHardConstraints(validationStartTime, validationEndTime, schedule.getNumberOfChildren());
+        var validationResults = validate(schedule, hardConstraints);
+
+        var isNotFeasible = validationResults.stream().anyMatch(not(ConstraintValidationResult::isFeasible));
+        if (isNotFeasible) {
+            var sumOfPenalties = sumPenalties(validationResults);
+            var constraintViolationsDescriptions = getConstraintValidationDescriptions(validationResults);
+            return ConstraintValidationResult.ofPenalty(sumOfPenalties, constraintViolationsDescriptions);
+        } else {
+            return validateSoftConstraints(schedule, validationStartTime, validationEndTime);
+        }
+    }
+
+    private List<ConstraintViolationsDescription> getConstraintValidationDescriptions(List<ConstraintValidationResult> validationResults) {
+        return validationResults.stream().map(ConstraintValidationResult::getConstraintViolationsDescriptions).flatMap(Collection::stream).collect(toList());
+    }
+
+    private ConstraintValidationResult validateSoftConstraints(Schedule schedule, LocalDateTime validationStartTime, LocalDateTime validationEndTime) {
+        var softConstraints = scheduleConstraintFactory.getSoftConstraints(validationStartTime, validationEndTime, schedule.getNumberOfChildren());
+        var validationResults = validate(schedule, softConstraints);
+        var sumOfPenalties = sumPenalties(validationResults);
+        return ConstraintValidationResult.feasibleConstraintValidationResult(sumOfPenalties);
+    }
+
+    private List<ConstraintValidationResult> validate(Schedule schedule, Collection<ScheduleConstraint> softConstraints) {
+        return softConstraints.stream()
                 .parallel()
                 .map(scheduleConstraint -> scheduleConstraint.validate(schedule))
                 .collect(toList());
+    }
 
-        var sumOfPenalties = validationResults.stream()
+    private double sumPenalties(List<ConstraintValidationResult> validationResults) {
+        return validationResults.stream()
                 .mapToDouble(ConstraintValidationResult::getPenalty)
                 .sum();
-
-        var isNotFeasible = validationResults.stream().anyMatch(not(ConstraintValidationResult::isFeasible));
-        var constraintViolationsDescriptions = validationResults.stream().map(ConstraintValidationResult::getConstraintViolationsDescriptions).flatMap(Collection::stream).collect(toList());
-
-        return isNotFeasible ?
-                ConstraintValidationResult.ofPenalty(sumOfPenalties, constraintViolationsDescriptions) :
-                ConstraintValidationResult.feasibleConstraintValidationResult(sumOfPenalties);
     }
 }

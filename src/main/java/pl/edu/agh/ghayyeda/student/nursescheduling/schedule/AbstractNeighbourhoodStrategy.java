@@ -10,13 +10,6 @@ import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Shift.DAY_OFF
 
 class AbstractNeighbourhoodStrategy {
 
-    Function<DateEmployeeShiftAssignment, Stream<? extends Schedule>> createNeighboursWithOtherPossibleShifts(Schedule schedule) {
-        return dateEmployeeShiftAssignment ->
-                Stream.concat(Shift.allWorkingShifts(), Stream.of(DAY_OFF))
-                        .filter(shift -> !shift.equals(dateEmployeeShiftAssignment.getShift()))
-                        .map(shift -> createNeighbour(schedule, dateEmployeeShiftAssignment, shift));
-    }
-
     Function<DateEmployeeShiftAssignment, Stream<? extends Schedule>> createNeighboursWithAllWorkingShifts(Schedule schedule) {
         return dateEmployeeShiftAssignment -> Shift.allWorkingShifts().map(shift -> createNeighbour(schedule, dateEmployeeShiftAssignment, shift));
     }
@@ -26,7 +19,7 @@ class AbstractNeighbourhoodStrategy {
 
     }
 
-    private Schedule createNeighbour(Schedule schedule, DateEmployeeShiftAssignment dateEmployeeShiftAssignment, Shift shift) {
+     Schedule createNeighbour(Schedule schedule, DateEmployeeShiftAssignment dateEmployeeShiftAssignment, Shift shift) {
         DateEmployeeShiftAssignment dateEmployeeShiftAssignmentWithAddedShift = dateEmployeeShiftAssignment.setShift(shift);
         List<DateEmployeeShiftAssignment> dateEmployeeShiftAssignments = schedule.getDateShiftAssignments().collect(toList());
         List<DateEmployeeShiftAssignment> newSchedule = new ArrayList<>(dateEmployeeShiftAssignments);

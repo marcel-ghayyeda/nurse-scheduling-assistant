@@ -21,8 +21,6 @@ import java.util.stream.Stream;
 import static java.util.concurrent.CompletableFuture.supplyAsync;
 import static java.util.stream.Collectors.toList;
 import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.ScheduleBuilder.schedule;
-import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Shift.DAY_OFF;
-import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Shift.allWorkingShifts;
 
 @Component
 public class ScheduleFacade {
@@ -68,7 +66,8 @@ public class ScheduleFacade {
     }
 
     private Shift randomShift() {
-        return Stream.concat(allWorkingShifts(), Stream.of(DAY_OFF)).sorted((o1, o2) -> ThreadLocalRandom.current().nextInt(-1, 2)).findAny().orElseThrow();
+        var shifts = Stream.of(Shift.DAY, Shift.NIGHT, Shift.DAY_OFF).collect(toList());
+        return shifts.get(ThreadLocalRandom.current().nextInt(0, shifts.size()));
     }
 
 

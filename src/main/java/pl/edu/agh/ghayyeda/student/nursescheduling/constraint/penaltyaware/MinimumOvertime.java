@@ -32,10 +32,10 @@ public class MinimumOvertime implements ScheduleConstraint {
 
         double penalty = schedule.getWorkHoursPerEmployee().values().stream()
                 .filter(numberOfHours -> numberOfHours > fullTimeWorkHoursPerMonth)
-                .mapToDouble(numberOfHours -> (numberOfHours - fullTimeWorkHoursPerMonth) * 0.000001)
+                .mapToDouble(numberOfHours -> (numberOfHours - fullTimeWorkHoursPerMonth))
                 .sum();
 
-        log.debug("Total penalty: {}", penalty);
+        log.trace("Total penalty: {}", penalty);
         return ConstraintValidationResult.feasibleConstraintValidationResult(penalty);
     }
 }

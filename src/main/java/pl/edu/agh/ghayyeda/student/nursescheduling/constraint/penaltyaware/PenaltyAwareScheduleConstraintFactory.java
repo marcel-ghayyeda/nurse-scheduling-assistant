@@ -13,12 +13,18 @@ import java.util.List;
 @VisibleForTesting
 public class PenaltyAwareScheduleConstraintFactory implements ScheduleConstraintFactory {
 
+    private final PenaltyAwareMinimumRestTimeAfterShift minimumRestTimeAfterShift = new PenaltyAwareMinimumRestTimeAfterShift();
+    private final MinimumOvertime minimumOvertime = new MinimumOvertime();
+
     @Override
-    public Collection<ScheduleConstraint> get(LocalDateTime validationStartTime, LocalDateTime validationEndTime, int numberOfChildren) {
-        var minimumRestTimeAfterShift = new PenaltyAwareMinimumRestTimeAfterShift();
+    public Collection<ScheduleConstraint> getHardConstraints(LocalDateTime validationStartTime, LocalDateTime validationEndTime, int numberOfChildren) {
         var requiredNumberOfBabySitters = PenaltyAwareRequiredNumberOfEmployees.between(validationStartTime, validationEndTime, numberOfChildren);
-        var minimumOvertime = new MinimumOvertime();
-        return List.of(minimumRestTimeAfterShift, requiredNumberOfBabySitters, minimumOvertime);
+        return List.of(this.minimumRestTimeAfterShift, requiredNumberOfBabySitters);
+    }
+
+    @Override
+    public Collection<ScheduleConstraint> getSoftConstraints(LocalDateTime validationStartTime, LocalDateTime validationEndTime, int numberOfChildren) {
+        return List.of(this.minimumOvertime);
     }
 
 }

@@ -7,21 +7,36 @@ import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ConstraintValidati
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.AdaptiveLargeNeighbourhoodStrategy.Adaptation;
 import pl.edu.agh.ghayyeda.student.nursescheduling.solver.AlgorithmMetadata;
 
+import java.util.List;
+
 @Component
 public class NeighbourhoodStrategyFactory {
 
     private static final Logger log = LoggerFactory.getLogger(NeighbourhoodStrategyFactory.class);
 
     public NeighbourhoodStrategy createNeighbourhoodStrategy(AlgorithmMetadata algorithmMetadata, ConstraintValidationResult constraintValidationResult) {
-        if (algorithmMetadata.getProgressPercentage() > 60 || constraintValidationResult.getConstraintViolationsDescriptions().isEmpty()) {
+        if (algorithmMetadata.getLatestPenalties(150).map(this::qualityOfCandidatesDidNotChangeIn).orElse(false) || constraintValidationResult.getConstraintViolationsDescriptions().isEmpty()) {
             log.info("Using SimpleNeighbourhoodStrategy");
             return new SimpleNeighbourhoodStrategy();
-        } else if (algorithmMetadata.getProgressPercentage() > 30) {
+        } else if (algorithmMetadata.getLatestPenalties(100).map(this::qualityOfCandidatesDidNotChangeIn).orElse(false)) {
             log.info("Using AdaptiveLargeNeighbourhoodStrategy(WIDE)");
             return new AdaptiveLargeNeighbourhoodStrategy(Adaptation.WIDE);
         } else {
             log.info("Using AdaptiveLargeNeighbourhoodStrategy(NARROW)");
             return new AdaptiveLargeNeighbourhoodStrategy(Adaptation.NARROW);
+        }
+    }
+
+    private boolean qualityOfCandidatesDidNotChangeIn(List<Double> latestPenalties) {
+        if (latestPenalties.size() < 2) {
+            return false;
+        }
+        double oldest = latestPenalties.get(latestPenalties.size() - 1);
+        double newest = latestPenalties.get(0);
+        if (newest >= oldest || oldest - newest < 0.00001) {
+            return true;
+        } else {
+            return false;
         }
     }
 

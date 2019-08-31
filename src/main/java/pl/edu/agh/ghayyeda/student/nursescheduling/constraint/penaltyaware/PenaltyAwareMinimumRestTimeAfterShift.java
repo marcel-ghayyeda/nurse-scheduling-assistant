@@ -63,7 +63,7 @@ class PenaltyAwareMinimumRestTimeAfterShift implements ScheduleConstraint {
                 var violationDescription = format("No minimum required rest time %dh between %s and %s for %s", requiredRestTime.toHours(), formatter.format(firstShiftEndTime), formatter.format(secondShiftStartTime), firstAssignment.getEmployee().getName());
                 var employeeDateViolations = List.of(new EmployeeDateViolation(firstAssignment.getEmployee(), firstShiftEndTime.toLocalDate()), new EmployeeDateViolation(firstAssignment.getEmployee(), secondShiftStartTime.toLocalDate()));
                 constraintViolationsDescriptions.add(new ConstraintViolationsDescription(violationDescription, employeeDateViolations));
-                log.debug("No minimum required rest time {} between {} and {}, for {}", requiredRestTime, firstShiftEndTime, secondShiftStartTime, firstAssignment.getEmployee());
+                log.trace("No minimum required rest time {} between {} and {}, for {}", requiredRestTime, firstShiftEndTime, secondShiftStartTime, firstAssignment.getEmployee());
                 notFeasibleShiftsCount++;
             }
 
@@ -94,6 +94,6 @@ class PenaltyAwareMinimumRestTimeAfterShift implements ScheduleConstraint {
     }
 
     private double calculatePenalty(ValidationResultForEmployee result) {
-        return Math.sqrt(result.notFeasibleShiftsCount / (double) result.totalShiftsCount);
+        return result.notFeasibleShiftsCount;
     }
 }

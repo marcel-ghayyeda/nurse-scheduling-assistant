@@ -2,10 +2,10 @@ package pl.edu.agh.ghayyeda.student.nursescheduling.constraint.penaltyaware;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ConstraintValidationResult;
 import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ConstraintViolationsDescription;
 import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.EmployeeDateViolation;
 import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ScheduleConstraint;
-import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ConstraintValidationResult;
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.EmployeeShiftAssignment;
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Schedule;
 import pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee;
@@ -74,18 +74,18 @@ class PenaltyAwareRequiredNumberOfEmployees implements ScheduleConstraint {
             var requiredNumberOfEmployees = calculateRequiredNumberOfEmployees(timeOfDuty);
 
             if (numberOfEmployees < requiredNumberOfEmployees) {
-                log.debug("Not enough employees on {}", timeOfDuty);
+                log.trace("Not enough employees on {}", timeOfDuty);
                 double missingEmployees = requiredNumberOfEmployees - numberOfEmployees;
                 String description = String.format("Not enough employees on %s. Expected %d but found %d", formatter.format(timeOfDuty.toLocalDate()), requiredNumberOfEmployees, numberOfEmployees);
                 var employeeDateViolations = List.of(new EmployeeDateViolation(timeOfDuty.toLocalDate()));
-                double penalty = Math.sqrt(missingEmployees / requiredNumberOfEmployees);
+                double penalty = missingEmployees;
                 return new ValidationResultForDate(penalty, List.of(new ConstraintViolationsDescription(description, employeeDateViolations)));
             } else {
                 if (employees.stream().noneMatch(isNurse())) {
-                    log.debug("No nurse on {}", timeOfDuty);
+                    log.trace("No nurse on {}", timeOfDuty);
                     String description = String.format("No nurse on %s", formatter.format(timeOfDuty));
                     var employeeDateViolations = List.of(new EmployeeDateViolation(timeOfDuty.toLocalDate()));
-                    return new ValidationResultForDate(NO_NURSE_PENALTY, List.of(new ConstraintViolationsDescription(description, employeeDateViolations)));
+                    return new ValidationResultForDate(1, List.of(new ConstraintViolationsDescription(description, employeeDateViolations)));
                 }
                 return new ValidationResultForDate(0d);
             }

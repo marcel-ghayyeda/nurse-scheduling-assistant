@@ -32,6 +32,7 @@ public class SchedulesLayout extends VerticalLayout {
         grid.addComponentColumn(this::statusColumn).setHeader("Status");
         grid.addComponentColumn(this::actionColumn).setHeader("Actions");
         grid.addThemeVariants(LUMO_ROW_STRIPES);
+        setSizeFull();
         add(grid);
     }
 

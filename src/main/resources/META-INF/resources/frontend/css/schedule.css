@@ -133,6 +133,10 @@ vaadin-grid-cell-content {
     margin-top: 3px;
 }
 
+.configure-employee-button iron-icon {
+    margin-top: 3px;
+}
+
 .add-employee-button iron-icon {
     margin-top: 3px;
 }
@@ -143,6 +147,15 @@ vaadin-grid-cell-content {
     color: #e74c3c;
     margin-top: -10px;
     margin-bottom: -20px;
+}
+
+.configure-employee-button {
+    padding: 0;
+    background-color: white;
+    color: #34495e;
+    margin-top: -10px;
+    margin-bottom: -20px;
+    margin-left: 0;
 }
 
 .add-employee-button {

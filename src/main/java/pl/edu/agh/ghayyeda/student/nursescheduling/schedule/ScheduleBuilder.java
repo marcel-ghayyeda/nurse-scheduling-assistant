@@ -28,6 +28,7 @@ public class ScheduleBuilder {
     private Month month = LocalDate.now().getMonth();
     private int numberOfChildren = 1;
     private boolean adjustForMonthLength = false;
+    private AllowedWorkingShiftsPerEmployee allowedWorkingShiftPerEmployee;
 
     public static ScheduleBuilder schedule() {
         return new ScheduleBuilder();
@@ -90,7 +91,7 @@ public class ScheduleBuilder {
             var distinctEmployees = shiftAssignments.stream().map(Tuple2::_2).map(EmployeeShiftAssignment::getEmployee).distinct().collect(toSet());
             return allDaysOf(YearMonth.of(year.getValue(), month))
                     .map(buildDateEmployeeShiftAssignments(employeeShiftAssignmentsByMonthDay, distinctEmployees))
-                    .collect(collectingAndThen(toSet(), schedule -> new Schedule(schedule, year, month, numberOfChildren)));
+                    .collect(collectingAndThen(toSet(), schedule -> new Schedule(schedule, year, month, numberOfChildren, allowedWorkingShiftPerEmployee)));
 
         } else {
             return shiftAssignments.stream()
@@ -98,7 +99,7 @@ public class ScheduleBuilder {
                     .entrySet()
                     .stream()
                     .map(entry -> new DateEmployeeShiftAssignments(entry.getKey(), entry.getValue()))
-                    .collect(collectingAndThen(toSet(), schedule -> new Schedule(schedule, year, month, numberOfChildren)));
+                    .collect(collectingAndThen(toSet(), schedule -> new Schedule(schedule, year, month, numberOfChildren, allowedWorkingShiftPerEmployee)));
         }
     }
 
@@ -128,6 +129,11 @@ public class ScheduleBuilder {
 
     public ScheduleBuilder adjustForMonthLength() {
         this.adjustForMonthLength = true;
+        return this;
+    }
+
+    public ScheduleBuilder withAllowedWorkingShiftsPerEmployee(AllowedWorkingShiftsPerEmployee allowedWorkingShiftPerEmployee) {
+        this.allowedWorkingShiftPerEmployee = allowedWorkingShiftPerEmployee;
         return this;
     }
 }

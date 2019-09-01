@@ -137,7 +137,7 @@ public class TabuSearchSolver implements Solver {
         }
         return neighbourhood.stream()
                 .parallel()
-                .map(schedule -> new ValidatedSchedule(schedule, validate(schedule)))
+                .map(schedule -> new ValidatedSchedule(schedule, validate(schedule))).collect(toList()).stream()
                 .min(bestScheduleFirst());
     }
 

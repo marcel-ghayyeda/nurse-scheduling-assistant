@@ -22,7 +22,7 @@ public class SimpleNeighbourhoodStrategy extends AbstractNeighbourhoodStrategy i
 
     @VisibleForTesting
     Stream<Schedule> addWorkingShifts(Schedule schedule) {
-        return schedule.getDateShiftAssignmentMatching(DateEmployeeShiftAssignment::isDayOff)
+        return schedule.getDateShiftAssignmentMatching(shouldAddWorkingShift(schedule))
                 .flatMap(createNeighboursWithAllWorkingShifts(schedule));
     }
 

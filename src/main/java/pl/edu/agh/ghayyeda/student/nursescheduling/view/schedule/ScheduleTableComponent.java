@@ -33,6 +33,7 @@ public class ScheduleTableComponent extends Grid<ScheduleTableComponent.Schedule
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE d").localizedBy(US);
     private final Schedule initialSchedule;
     protected Collection<ScheduleLayoutRow> items;
+    protected AllowedWorkingShiftsPerEmployee allowedWorkingShiftPerEmployee;
 
     public ScheduleTableComponent(Schedule initialSchedule) {
         this.initialSchedule = initialSchedule;
@@ -47,6 +48,7 @@ public class ScheduleTableComponent extends Grid<ScheduleTableComponent.Schedule
                 .collect(Collectors.toList());
 
         items = scheduleLayoutRows;
+        allowedWorkingShiftPerEmployee = initialSchedule.getAllowedWorkingShiftPerEmployee();
         setItems(items);
     }
 
@@ -60,6 +62,7 @@ public class ScheduleTableComponent extends Grid<ScheduleTableComponent.Schedule
                 .forMonth(month)
                 .fromEmployeeShiftMap(items)
                 .forYear(year.getValue())
+                .withAllowedWorkingShiftsPerEmployee(allowedWorkingShiftPerEmployee)
                 .adjustForMonthLength()
                 .build();
     }
@@ -91,7 +94,7 @@ public class ScheduleTableComponent extends Grid<ScheduleTableComponent.Schedule
     private void addEmployeeColumn() {
         addComponentColumn(createEmployeeColumn())
                 .setHeader(createEmployeeHeader())
-                .setWidth("180px")
+                .setWidth("200px")
                 .setFlexGrow(0);
     }
 

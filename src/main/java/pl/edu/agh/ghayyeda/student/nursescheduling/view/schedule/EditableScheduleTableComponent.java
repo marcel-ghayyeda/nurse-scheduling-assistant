@@ -1,10 +1,14 @@
 package pl.edu.agh.ghayyeda.student.nursescheduling.view.schedule;
 
+import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.contextmenu.ContextMenu;
 import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -16,9 +20,10 @@ import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Shift;
 import pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
-import static com.vaadin.flow.component.icon.VaadinIcon.MINUS_CIRCLE;
-import static com.vaadin.flow.component.icon.VaadinIcon.PLUS_CIRCLE;
+import static com.vaadin.flow.component.icon.VaadinIcon.*;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Shift.*;
@@ -85,17 +90,87 @@ class EditableScheduleTableComponent extends ScheduleTableComponent {
         return scheduleLayoutRow -> {
             var employeeName = setCssClass("editable-employee-row", super.createEmployeeColumn().apply(scheduleLayoutRow));
             HorizontalLayout horizontalLayout = new HorizontalLayout();
-            Button button = new Button();
-            button.setIcon(MINUS_CIRCLE.create());
-            button.addClassNames("delete-employee-button", "button-with-icon");
-            button.addClickListener(clickEvent -> {
+            Button deleteButton = new Button();
+            deleteButton.setIcon(MINUS_CIRCLE.create());
+            deleteButton.addClassNames("delete-employee-button", "button-with-icon");
+            deleteButton.addClickListener(clickEvent -> {
                 items.remove(scheduleLayoutRow);
                 getDataProvider().refreshAll();
 
             });
-            horizontalLayout.add(button);
+
+            Button settingsButton = new Button();
+            settingsButton.setIcon(COG.create());
+            settingsButton.addClassNames("configure-employee-button", "button-with-icon");
+            settingsButton.addClickListener(event -> {
+                Set<Shift> allowedShifts = new HashSet<>(allowedWorkingShiftPerEmployee.getAllowedWorkingShiftsFor(scheduleLayoutRow.getEmployee()));
+
+                Dialog dialog = new Dialog();
+
+                var dialogMessage = new Label("Configure employee");
+
+                FormLayout formLayout = new FormLayout();
+
+                Checkbox morningShift = new Checkbox();
+                morningShift.setLabel("Morning");
+                morningShift.setValue(allowedShifts.contains(Shift.MORNING));
+                morningShift.addValueChangeListener(handleValueChange(allowedShifts, Shift.MORNING));
+
+                Checkbox afternoonShift = new Checkbox();
+                afternoonShift.setLabel("Afternoon");
+                afternoonShift.setValue(allowedShifts.contains(Shift.AFTERNOON));
+                morningShift.addValueChangeListener(handleValueChange(allowedShifts, Shift.AFTERNOON));
+
+                Checkbox dayShift = new Checkbox();
+                dayShift.setLabel("Day");
+                dayShift.setValue(allowedShifts.contains(Shift.DAY));
+                dayShift.addValueChangeListener(handleValueChange(allowedShifts, Shift.DAY));
+
+                Checkbox nightShift = new Checkbox();
+                nightShift.setLabel("Night");
+                nightShift.setValue(allowedShifts.contains(Shift.NIGHT));
+                nightShift.addValueChangeListener(handleValueChange(allowedShifts, Shift.NIGHT));
+
+                Checkbox dayNightShift = new Checkbox();
+                dayNightShift.setLabel("Day-night");
+                dayNightShift.setValue(allowedShifts.contains(Shift.DAY_NIGHT));
+                dayNightShift.addValueChangeListener(handleValueChange(allowedShifts, Shift.DAY_NIGHT));
+
+                formLayout.add(morningShift);
+                formLayout.add(afternoonShift);
+                formLayout.add(dayShift);
+                formLayout.add(nightShift);
+                formLayout.add(dayNightShift);
+
+                var okButton = new Button("OK", addEmployeeEvent -> {
+                    allowedWorkingShiftPerEmployee.set(scheduleLayoutRow.employee, allowedShifts);
+                    dialog.close();
+                });
+
+                VerticalLayout verticalLayout = new VerticalLayout();
+                verticalLayout.add(centered(dialogMessage));
+                verticalLayout.add(new Label("Select allowed working shifts"));
+                verticalLayout.add(formLayout);
+                verticalLayout.add(centered(okButton));
+                dialog.add(verticalLayout);
+                dialog.setWidth("500px");
+                dialog.open();
+            });
+
+            horizontalLayout.add(deleteButton);
+            horizontalLayout.add(settingsButton);
             horizontalLayout.add(employeeName);
             return horizontalLayout;
+        };
+    }
+
+    private HasValue.ValueChangeListener<AbstractField.ComponentValueChangeEvent<Checkbox, Boolean>> handleValueChange(Set<Shift> allowedShifts, Shift morning) {
+        return valueChangeEvent -> {
+            if (valueChangeEvent.getValue()) {
+                allowedShifts.add(morning);
+            } else {
+                allowedShifts.remove(morning);
+            }
         };
     }
 

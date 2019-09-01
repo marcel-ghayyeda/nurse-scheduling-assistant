@@ -9,7 +9,7 @@ import java.util.Set;
 import static java.util.Collections.newSetFromMap;
 
 class TabuSet {
-    private static final int TABU_LIST_SIZE = 50;
+    private static final int TABU_LIST_SIZE = 150;
 
     static Set<Schedule> newInstance() {
         return newSetFromMap(new LinkedHashMap<>() {

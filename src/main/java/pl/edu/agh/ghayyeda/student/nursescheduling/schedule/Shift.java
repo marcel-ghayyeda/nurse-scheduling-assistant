@@ -4,8 +4,6 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Arrays;
-import java.util.stream.Stream;
 
 public enum Shift {
 
@@ -50,11 +48,6 @@ public enum Shift {
         this.endsOnNextDay = false;
         this.startLocalTime = timeOfHour(startTime);
         this.endLocalTime = timeOfHour(endTime);
-    }
-
-    public static Stream<Shift> allWorkingShifts() {
-        return Arrays.stream(values())
-                .filter(Shift::isWorkDay);
     }
 
     public Duration getDuration() {

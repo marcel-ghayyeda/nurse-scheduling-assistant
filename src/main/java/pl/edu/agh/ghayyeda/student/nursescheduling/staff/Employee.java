@@ -50,6 +50,10 @@ public class Employee {
         return type;
     }
 
+    public String getId() {
+        return name + type;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

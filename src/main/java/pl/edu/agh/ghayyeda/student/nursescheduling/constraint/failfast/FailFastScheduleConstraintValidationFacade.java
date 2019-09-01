@@ -27,7 +27,7 @@ public class FailFastScheduleConstraintValidationFacade implements ScheduleConst
 
     @Override
     public ConstraintValidationResult validate(Schedule schedule, LocalDateTime validationStartTime, LocalDateTime validationEndTime) {
-        var scheduleConstraints = failFastScheduleConstraintFactory.getHardConstraints(validationStartTime, validationEndTime, schedule.getNumberOfChildren());
+        var scheduleConstraints = failFastScheduleConstraintFactory.get(validationStartTime, validationEndTime, schedule.getNumberOfChildren());
 
         for (ScheduleConstraint scheduleConstraint : scheduleConstraints) {
             var validationResult = scheduleConstraint.validate(schedule);

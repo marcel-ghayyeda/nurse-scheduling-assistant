@@ -11,6 +11,7 @@ import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.*;
 
 public class Schedule {
@@ -21,21 +22,35 @@ public class Schedule {
     private final Year year;
     private final Month month;
     private final int numberOfChildren;
+    private final AllowedWorkingShiftsPerEmployee allowedWorkingShiftPerEmployee;
 
-    public Schedule(Collection<DateEmployeeShiftAssignments> schedule, Year year, Month month, int numberOfChildren) {
+    public Schedule(Collection<DateEmployeeShiftAssignments> schedule, Year year, Month month, int numberOfChildren, AllowedWorkingShiftsPerEmployee allowedWorkingShiftPerEmployee) {
         this.schedule = schedule;
         this.year = year;
         this.month = month;
         this.numberOfChildren = numberOfChildren;
+        this.allowedWorkingShiftPerEmployee = ofNullable(allowedWorkingShiftPerEmployee).orElseGet(AllowedWorkingShiftsPerEmployee::empty);
     }
 
-    public static Schedule ofDateEmployeeShiftAssignment(Collection<DateEmployeeShiftAssignment> dateEmployeeShiftAssignments, Year year, Month month, int numberOfChildren) {
+    public static Schedule ofDateEmployeeShiftAssignment(Collection<DateEmployeeShiftAssignment> dateEmployeeShiftAssignments, Year year, Month month, int numberOfChildren, AllowedWorkingShiftsPerEmployee allowedWorkingShiftPerEmployee) {
         return dateEmployeeShiftAssignments.stream()
                 .collect(groupingBy(DateEmployeeShiftAssignment::getStartDate, mapping(DateEmployeeShiftAssignment::getEmployeeShiftAssignment, toSet())))
                 .entrySet()
                 .stream()
                 .map(entry -> new DateEmployeeShiftAssignments(entry.getKey(), entry.getValue()))
-                .collect(collectingAndThen(toSet(), schedule1 -> new Schedule(schedule1, year, month, numberOfChildren)));
+                .collect(collectingAndThen(toSet(), schedule1 -> new Schedule(schedule1, year, month, numberOfChildren, allowedWorkingShiftPerEmployee)));
+    }
+
+    public Collection<Shift> getAllowedWorkingShiftsFor(Employee employee) {
+        return allowedWorkingShiftPerEmployee.getAllowedWorkingShiftsFor(employee);
+    }
+
+    public boolean isAllowedShift(Employee employee, Shift shift) {
+        return !shift.isWorkDay() || allowedWorkingShiftPerEmployee.getAllowedWorkingShiftsFor(employee).contains(shift);
+    }
+
+    public AllowedWorkingShiftsPerEmployee getAllowedWorkingShiftPerEmployee() {
+        return allowedWorkingShiftPerEmployee;
     }
 
     public Collection<DateEmployeeShiftAssignments> getDateEmployeeShiftAssignmentsByDate() {

@@ -15,16 +15,12 @@ public class PenaltyAwareScheduleConstraintFactory implements ScheduleConstraint
 
     private final PenaltyAwareMinimumRestTimeAfterShift minimumRestTimeAfterShift = new PenaltyAwareMinimumRestTimeAfterShift();
     private final MinimumOvertime minimumOvertime = new MinimumOvertime();
+    private final PenaltyAwareOnlyAllowedShifts penaltyAwareOnlyAllowedShifts = new PenaltyAwareOnlyAllowedShifts();
 
     @Override
-    public Collection<ScheduleConstraint> getHardConstraints(LocalDateTime validationStartTime, LocalDateTime validationEndTime, int numberOfChildren) {
+    public Collection<ScheduleConstraint> get(LocalDateTime validationStartTime, LocalDateTime validationEndTime, int numberOfChildren) {
         var requiredNumberOfBabySitters = PenaltyAwareRequiredNumberOfEmployees.between(validationStartTime, validationEndTime, numberOfChildren);
-        return List.of(this.minimumRestTimeAfterShift, requiredNumberOfBabySitters);
-    }
-
-    @Override
-    public Collection<ScheduleConstraint> getSoftConstraints(LocalDateTime validationStartTime, LocalDateTime validationEndTime, int numberOfChildren) {
-        return List.of(this.minimumOvertime);
+        return List.of(this.minimumRestTimeAfterShift, requiredNumberOfBabySitters, penaltyAwareOnlyAllowedShifts, this.minimumOvertime);
     }
 
 }

@@ -40,34 +40,43 @@ public class AdaptiveLargeNeighbourhoodStrategy extends AbstractNeighbourhoodStr
                 .map(ConstraintViolationsDescription::getEmployeeDateViolations)
                 .flatMap(Collection::stream)
                 .collect(groupingBy(EmployeeDateViolation::getDate));
-        var neighbourhood = Stream.of(changeShifts(schedule, employeeDateViolationsByDate), addWorkingShifts(schedule, employeeDateViolationsByDate), removeShifts(schedule, employeeDateViolationsByDate))
+        var neighbourhood = Stream.of(swapShiftsInTheSameDaysBetweenEmployees(schedule, employeeDateViolationsByDate), addWorkingShifts(schedule, employeeDateViolationsByDate), removeShifts(schedule, employeeDateViolationsByDate))
                 .flatMap(identity())
                 .collect(toList());
         log.debug("Neighbourhood size: {}", neighbourhood.size());
         return new Neighbourhood(neighbourhood);
     }
 
-    private Stream<Schedule> changeShifts(Schedule schedule, Map<LocalDate, List<EmployeeDateViolation>> employeeDateViolationsByDate) {
+    private Stream<Schedule> swapShiftsInTheSameDaysBetweenEmployees(Schedule schedule, Map<LocalDate, List<EmployeeDateViolation>> employeeDateViolationsByDate) {
         if (adaptation != Adaptation.NARROW) {
             return Stream.empty();
         }
-        return schedule.getDateShiftAssignmentMatching(DateEmployeeShiftAssignment::isWorkDay)
+        return schedule.getDateShiftAssignmentMatching(this::isWorkDayOrDayOff)
                 .filter(isEligibleForChanging(employeeDateViolationsByDate))
-                .flatMap(x -> {
-                    Stream<DateEmployeeShiftAssignment> shiftsToMix = schedule.getDateShiftAssignmentMatching(y -> y.getStartDate().equals(x.getStartDate()) && !y.getEmployee().equals(x.getEmployee()) && (y.getShift().isWorkDay() || y.getShift().isDayOff()));
-                    return shiftsToMix.map(assignment -> {
-                        Schedule intermediateSchedule = createNeighbour(schedule, assignment, x.getShift());
-                        return createNeighbour(intermediateSchedule, x, assignment.getShift());
-                    });
-                });
+                .flatMap(shiftAssignment1 ->
+                        schedule.getDateShiftAssignmentMatching(isEligibleToSwap(shiftAssignment1))
+                                .filter(shiftAssignment2 -> schedule.isAllowedShift(shiftAssignment2.getEmployee(), shiftAssignment1.getShift()))
+                                .map(shiftAssignment2 -> createNeighbourWithSwappedShifts(schedule, shiftAssignment1, shiftAssignment2)));
+    }
+
+    private Schedule createNeighbourWithSwappedShifts(Schedule schedule, DateEmployeeShiftAssignment shiftAssignment1, DateEmployeeShiftAssignment shiftAssignment2) {
+        return createNeighbour(createNeighbour(schedule, shiftAssignment2, shiftAssignment1.getShift()), shiftAssignment1, shiftAssignment2.getShift());
+    }
+
+    private Predicate<DateEmployeeShiftAssignment> isEligibleToSwap(DateEmployeeShiftAssignment shiftAssignment1) {
+        return assignment2 -> assignment2.getStartDate().equals(shiftAssignment1.getStartDate()) && !assignment2.getEmployee().equals(shiftAssignment1.getEmployee()) && assignment2.getShift() != shiftAssignment1.getShift() && isWorkDayOrDayOff(assignment2);
+    }
+
+    private boolean isWorkDayOrDayOff(DateEmployeeShiftAssignment assignment) {
+        return assignment.isWorkDay() || assignment.isDayOff();
     }
 
     Function<DateEmployeeShiftAssignment, Stream<? extends Schedule>> createNeighboursWithAllWorkingShifts(Schedule schedule) {
-        return dateEmployeeShiftAssignment -> Shift.allWorkingShifts().map(shift -> createNeighbour(schedule, dateEmployeeShiftAssignment, shift));
+        return dateEmployeeShiftAssignment -> schedule.getAllowedWorkingShiftsFor(dateEmployeeShiftAssignment.getEmployee()).stream().map(shift -> createNeighbour(schedule, dateEmployeeShiftAssignment, shift));
     }
 
     private Stream<Schedule> addWorkingShifts(Schedule schedule, Map<LocalDate, List<EmployeeDateViolation>> employeeDateViolationsByDate) {
-        return schedule.getDateShiftAssignmentMatching(DateEmployeeShiftAssignment::isDayOff)
+        return schedule.getDateShiftAssignmentMatching(this::isWorkDayOrDayOff)
                 .filter(isEligibleForChanging(employeeDateViolationsByDate))
                 .flatMap(createNeighboursWithAllWorkingShifts(schedule));
     }

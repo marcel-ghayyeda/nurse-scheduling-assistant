@@ -48,9 +48,6 @@ public class AdaptiveLargeNeighbourhoodStrategy extends AbstractNeighbourhoodStr
     }
 
     private Stream<Schedule> swapShiftsInTheSameDaysBetweenEmployees(Schedule schedule, Map<LocalDate, List<EmployeeDateViolation>> employeeDateViolationsByDate) {
-        if (adaptation != Adaptation.NARROW) {
-            return Stream.empty();
-        }
         return schedule.getDateShiftAssignmentMatching(this::isWorkDayOrDayOff)
                 .filter(isEligibleForChanging(employeeDateViolationsByDate))
                 .flatMap(shiftAssignment1 ->
@@ -59,17 +56,6 @@ public class AdaptiveLargeNeighbourhoodStrategy extends AbstractNeighbourhoodStr
                                 .map(shiftAssignment2 -> createNeighbourWithSwappedShifts(schedule, shiftAssignment1, shiftAssignment2)));
     }
 
-    private Schedule createNeighbourWithSwappedShifts(Schedule schedule, DateEmployeeShiftAssignment shiftAssignment1, DateEmployeeShiftAssignment shiftAssignment2) {
-        return createNeighbour(createNeighbour(schedule, shiftAssignment2, shiftAssignment1.getShift()), shiftAssignment1, shiftAssignment2.getShift());
-    }
-
-    private Predicate<DateEmployeeShiftAssignment> isEligibleToSwap(DateEmployeeShiftAssignment shiftAssignment1) {
-        return assignment2 -> assignment2.getStartDate().equals(shiftAssignment1.getStartDate()) && !assignment2.getEmployee().equals(shiftAssignment1.getEmployee()) && assignment2.getShift() != shiftAssignment1.getShift() && isWorkDayOrDayOff(assignment2);
-    }
-
-    private boolean isWorkDayOrDayOff(DateEmployeeShiftAssignment assignment) {
-        return assignment.isWorkDay() || assignment.isDayOff();
-    }
 
     Function<DateEmployeeShiftAssignment, Stream<? extends Schedule>> createNeighboursWithAllWorkingShifts(Schedule schedule) {
         return dateEmployeeShiftAssignment -> schedule.getAllowedWorkingShiftsFor(dateEmployeeShiftAssignment.getEmployee()).stream().map(shift -> createNeighbour(schedule, dateEmployeeShiftAssignment, shift));

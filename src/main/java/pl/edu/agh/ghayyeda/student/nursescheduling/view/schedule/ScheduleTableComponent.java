@@ -34,6 +34,7 @@ public class ScheduleTableComponent extends Grid<ScheduleTableComponent.Schedule
     private final Schedule initialSchedule;
     protected Collection<ScheduleLayoutRow> items;
     protected AllowedWorkingShiftsPerEmployee allowedWorkingShiftPerEmployee;
+    protected AvailabilityPerEmployee availabilityPerEmployee;
 
     public ScheduleTableComponent(Schedule initialSchedule) {
         this.initialSchedule = initialSchedule;
@@ -49,6 +50,7 @@ public class ScheduleTableComponent extends Grid<ScheduleTableComponent.Schedule
 
         items = scheduleLayoutRows;
         allowedWorkingShiftPerEmployee = initialSchedule.getAllowedWorkingShiftPerEmployee();
+        availabilityPerEmployee = initialSchedule.getAvailabilityPerEmployee();
         setItems(items);
     }
 
@@ -63,6 +65,7 @@ public class ScheduleTableComponent extends Grid<ScheduleTableComponent.Schedule
                 .fromEmployeeShiftMap(items)
                 .forYear(year.getValue())
                 .withAllowedWorkingShiftsPerEmployee(allowedWorkingShiftPerEmployee)
+                .withAvailabilityPerEmployee(availabilityPerEmployee)
                 .adjustForMonthLength()
                 .build();
     }
@@ -104,8 +107,17 @@ public class ScheduleTableComponent extends Grid<ScheduleTableComponent.Schedule
 
     private Component employeeName(ScheduleLayoutRow scheduleLayoutRow) {
         Span span = new Span(format("%s (%s)", scheduleLayoutRow.employee.getName(), scheduleLayoutRow.employee.getType().getName()));
+
+        var employeeAvailability = availabilityPerEmployee.getAvailabilityFor(scheduleLayoutRow.getEmployee());
+        String allowedShifts = allowedWorkingShiftPerEmployee.getAllowedWorkingShiftsFor(scheduleLayoutRow.getEmployee()).stream().map(Shift::getLocalizedShiftSymbol).collect(joining(","));
+        Long workLoad = initialSchedule.getWorkHoursPerEmployee().get(scheduleLayoutRow.employee);
+        Div tooltip = new Div(new Span(employeeAvailability.getLabel() +":" + allowedShifts +"; Current workload: " + workLoad + "h"));
+        tooltip.setClassName("employee-tooltip");
+
         Div div = new Div();
+        div.setClassName("employee-name");
         div.add(span);
+        div.add(tooltip);
         div.setWidthFull();
         return div;
     }
@@ -115,6 +127,7 @@ public class ScheduleTableComponent extends Grid<ScheduleTableComponent.Schedule
         Div div = new Div();
         div.add(span);
         div.setWidth("180px");
+
         return withCssClass("employee-header", div);
     }
 

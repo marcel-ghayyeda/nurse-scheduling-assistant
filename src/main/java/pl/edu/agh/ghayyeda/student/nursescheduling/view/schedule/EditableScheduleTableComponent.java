@@ -13,8 +13,10 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.function.ValueProvider;
+import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.EmployeeAvailability;
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Schedule;
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Shift;
 import pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee;
@@ -104,7 +106,7 @@ class EditableScheduleTableComponent extends ScheduleTableComponent {
             settingsButton.addClassNames("configure-employee-button", "button-with-icon");
             settingsButton.addClickListener(event -> {
                 Set<Shift> allowedShifts = new HashSet<>(allowedWorkingShiftPerEmployee.getAllowedWorkingShiftsFor(scheduleLayoutRow.getEmployee()));
-
+                EmployeeAvailability employeeAvailability = availabilityPerEmployee.getAvailabilityFor(scheduleLayoutRow.getEmployee());
                 Dialog dialog = new Dialog();
 
                 var dialogMessage = new Label("Configure employee");
@@ -136,6 +138,14 @@ class EditableScheduleTableComponent extends ScheduleTableComponent {
                 dayNightShift.setValue(allowedShifts.contains(Shift.DAY_NIGHT));
                 dayNightShift.addValueChangeListener(handleValueChange(allowedShifts, Shift.DAY_NIGHT));
 
+                Select<EmployeeAvailability> availabilitySelect = new Select<>();
+                availabilitySelect.setLabel("Availability");
+                availabilitySelect.setItems(EmployeeAvailability.values());
+                availabilitySelect.setValue(employeeAvailability);
+                availabilitySelect.setEmptySelectionAllowed(false);
+                availabilitySelect.setItemLabelGenerator(EmployeeAvailability::getLabel);
+
+
                 formLayout.add(morningShift);
                 formLayout.add(afternoonShift);
                 formLayout.add(dayShift);
@@ -144,6 +154,7 @@ class EditableScheduleTableComponent extends ScheduleTableComponent {
 
                 var okButton = new Button("OK", addEmployeeEvent -> {
                     allowedWorkingShiftPerEmployee.set(scheduleLayoutRow.employee, allowedShifts);
+                    availabilityPerEmployee.set(scheduleLayoutRow.employee, availabilitySelect.getValue());
                     dialog.close();
                 });
 
@@ -151,6 +162,8 @@ class EditableScheduleTableComponent extends ScheduleTableComponent {
                 verticalLayout.add(centered(dialogMessage));
                 verticalLayout.add(new Label("Select allowed working shifts"));
                 verticalLayout.add(formLayout);
+                verticalLayout.add(new Label("Select availability"));
+                verticalLayout.add(availabilitySelect);
                 verticalLayout.add(centered(okButton));
                 dialog.add(verticalLayout);
                 dialog.setWidth("500px");

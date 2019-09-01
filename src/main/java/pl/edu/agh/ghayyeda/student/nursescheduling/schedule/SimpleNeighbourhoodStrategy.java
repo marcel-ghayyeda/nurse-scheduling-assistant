@@ -7,6 +7,7 @@ import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ConstraintValidati
 
 import java.util.stream.Stream;
 
+import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toList;
 
 public class SimpleNeighbourhoodStrategy extends AbstractNeighbourhoodStrategy implements NeighbourhoodStrategy {
@@ -15,10 +16,20 @@ public class SimpleNeighbourhoodStrategy extends AbstractNeighbourhoodStrategy i
 
     @Override
     public Neighbourhood createNeighbourhood(Schedule schedule, ConstraintValidationResult ignored) {
-        var neighbourhood = Stream.concat(addWorkingShifts(schedule), removeShifts(schedule)).collect(toList());
+        var neighbourhood = Stream.of(swapShiftsInTheSameDaysBetweenEmployees(schedule), addWorkingShifts(schedule), removeShifts(schedule)).flatMap(identity()).collect(toList());
         log.debug("Neighbourhood size: {}", neighbourhood.size());
         return new Neighbourhood(neighbourhood);
     }
+
+
+    private Stream<Schedule> swapShiftsInTheSameDaysBetweenEmployees(Schedule schedule) {
+        return schedule.getDateShiftAssignmentMatching(this::isWorkDayOrDayOff)
+                .flatMap(shiftAssignment1 ->
+                        schedule.getDateShiftAssignmentMatching(isEligibleToSwap(shiftAssignment1))
+                                .filter(shiftAssignment2 -> schedule.isAllowedShift(shiftAssignment2.getEmployee(), shiftAssignment1.getShift()))
+                                .map(shiftAssignment2 -> createNeighbourWithSwappedShifts(schedule, shiftAssignment1, shiftAssignment2)));
+    }
+
 
     @VisibleForTesting
     Stream<Schedule> addWorkingShifts(Schedule schedule) {

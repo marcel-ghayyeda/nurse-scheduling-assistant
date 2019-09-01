@@ -29,6 +29,7 @@ public class ScheduleBuilder {
     private int numberOfChildren = 1;
     private boolean adjustForMonthLength = false;
     private AllowedWorkingShiftsPerEmployee allowedWorkingShiftPerEmployee;
+    private AvailabilityPerEmployee availabilityPerEmployee;
 
     public static ScheduleBuilder schedule() {
         return new ScheduleBuilder();
@@ -91,7 +92,7 @@ public class ScheduleBuilder {
             var distinctEmployees = shiftAssignments.stream().map(Tuple2::_2).map(EmployeeShiftAssignment::getEmployee).distinct().collect(toSet());
             return allDaysOf(YearMonth.of(year.getValue(), month))
                     .map(buildDateEmployeeShiftAssignments(employeeShiftAssignmentsByMonthDay, distinctEmployees))
-                    .collect(collectingAndThen(toSet(), schedule -> new Schedule(schedule, year, month, numberOfChildren, allowedWorkingShiftPerEmployee)));
+                    .collect(collectingAndThen(toSet(), schedule -> new Schedule(schedule, year, month, numberOfChildren, allowedWorkingShiftPerEmployee, availabilityPerEmployee)));
 
         } else {
             return shiftAssignments.stream()
@@ -99,7 +100,7 @@ public class ScheduleBuilder {
                     .entrySet()
                     .stream()
                     .map(entry -> new DateEmployeeShiftAssignments(entry.getKey(), entry.getValue()))
-                    .collect(collectingAndThen(toSet(), schedule -> new Schedule(schedule, year, month, numberOfChildren, allowedWorkingShiftPerEmployee)));
+                    .collect(collectingAndThen(toSet(), schedule -> new Schedule(schedule, year, month, numberOfChildren, allowedWorkingShiftPerEmployee, availabilityPerEmployee)));
         }
     }
 
@@ -134,6 +135,11 @@ public class ScheduleBuilder {
 
     public ScheduleBuilder withAllowedWorkingShiftsPerEmployee(AllowedWorkingShiftsPerEmployee allowedWorkingShiftPerEmployee) {
         this.allowedWorkingShiftPerEmployee = allowedWorkingShiftPerEmployee;
+        return this;
+    }
+
+    public ScheduleBuilder withAvailabilityPerEmployee(AvailabilityPerEmployee availabilityPerEmployee) {
+        this.availabilityPerEmployee = availabilityPerEmployee;
         return this;
     }
 }

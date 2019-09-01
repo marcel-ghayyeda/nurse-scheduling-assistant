@@ -23,30 +23,40 @@ public class Schedule {
     private final Month month;
     private final int numberOfChildren;
     private final AllowedWorkingShiftsPerEmployee allowedWorkingShiftPerEmployee;
+    private final AvailabilityPerEmployee availabilityPerEmployee;
 
-    public Schedule(Collection<DateEmployeeShiftAssignments> schedule, Year year, Month month, int numberOfChildren, AllowedWorkingShiftsPerEmployee allowedWorkingShiftPerEmployee) {
+    public Schedule(Collection<DateEmployeeShiftAssignments> schedule, Year year, Month month, int numberOfChildren, AllowedWorkingShiftsPerEmployee allowedWorkingShiftPerEmployee, AvailabilityPerEmployee availabilityPerEmployee) {
         this.schedule = schedule;
         this.year = year;
         this.month = month;
         this.numberOfChildren = numberOfChildren;
         this.allowedWorkingShiftPerEmployee = ofNullable(allowedWorkingShiftPerEmployee).orElseGet(AllowedWorkingShiftsPerEmployee::empty);
+        this.availabilityPerEmployee = ofNullable(availabilityPerEmployee).orElseGet(AvailabilityPerEmployee::empty);
     }
 
-    public static Schedule ofDateEmployeeShiftAssignment(Collection<DateEmployeeShiftAssignment> dateEmployeeShiftAssignments, Year year, Month month, int numberOfChildren, AllowedWorkingShiftsPerEmployee allowedWorkingShiftPerEmployee) {
+    public static Schedule ofDateEmployeeShiftAssignment(Collection<DateEmployeeShiftAssignment> dateEmployeeShiftAssignments, Year year, Month month, int numberOfChildren, AllowedWorkingShiftsPerEmployee allowedWorkingShiftPerEmployee, AvailabilityPerEmployee availabilityPerEmployee) {
         return dateEmployeeShiftAssignments.stream()
                 .collect(groupingBy(DateEmployeeShiftAssignment::getStartDate, mapping(DateEmployeeShiftAssignment::getEmployeeShiftAssignment, toSet())))
                 .entrySet()
                 .stream()
                 .map(entry -> new DateEmployeeShiftAssignments(entry.getKey(), entry.getValue()))
-                .collect(collectingAndThen(toSet(), schedule1 -> new Schedule(schedule1, year, month, numberOfChildren, allowedWorkingShiftPerEmployee)));
+                .collect(collectingAndThen(toSet(), schedule1 -> new Schedule(schedule1, year, month, numberOfChildren, allowedWorkingShiftPerEmployee, availabilityPerEmployee)));
     }
 
     public Collection<Shift> getAllowedWorkingShiftsFor(Employee employee) {
         return allowedWorkingShiftPerEmployee.getAllowedWorkingShiftsFor(employee);
     }
 
+    public AvailabilityPerEmployee getAvailabilityPerEmployee() {
+        return availabilityPerEmployee;
+    }
+
     public boolean isAllowedShift(Employee employee, Shift shift) {
         return !shift.isWorkDay() || allowedWorkingShiftPerEmployee.getAllowedWorkingShiftsFor(employee).contains(shift);
+    }
+
+    public EmployeeAvailability getAvailabilityFor(Employee employee) {
+        return availabilityPerEmployee.getAvailabilityFor(employee);
     }
 
     public AllowedWorkingShiftsPerEmployee getAllowedWorkingShiftPerEmployee() {

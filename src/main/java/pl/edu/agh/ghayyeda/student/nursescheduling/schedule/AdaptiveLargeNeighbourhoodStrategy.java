@@ -17,7 +17,6 @@ import java.util.stream.Stream;
 
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.toList;
 
 public class AdaptiveLargeNeighbourhoodStrategy extends AbstractNeighbourhoodStrategy implements NeighbourhoodStrategy {
 
@@ -35,16 +34,14 @@ public class AdaptiveLargeNeighbourhoodStrategy extends AbstractNeighbourhoodStr
     private static final Logger log = LoggerFactory.getLogger(AdaptiveLargeNeighbourhoodStrategy.class);
 
     @Override
-    public Neighbourhood createNeighbourhood(Schedule schedule, ConstraintValidationResult constraintValidationResult) {
+    public Stream<Schedule> createNeighbourhood(Schedule schedule, ConstraintValidationResult constraintValidationResult) {
         var employeeDateViolationsByDate = constraintValidationResult.getConstraintViolationsDescriptions().stream()
                 .map(ConstraintViolationsDescription::getEmployeeDateViolations)
                 .flatMap(Collection::stream)
                 .collect(groupingBy(EmployeeDateViolation::getDate));
-        var neighbourhood = Stream.of(swapShiftsInTheSameDaysBetweenEmployees(schedule, employeeDateViolationsByDate), addWorkingShifts(schedule, employeeDateViolationsByDate), removeShifts(schedule, employeeDateViolationsByDate))
-                .flatMap(identity())
-                .collect(toList());
-        log.debug("Neighbourhood size: {}", neighbourhood.size());
-        return new Neighbourhood(neighbourhood);
+
+        return Stream.of(swapShiftsInTheSameDaysBetweenEmployees(schedule, employeeDateViolationsByDate), addWorkingShifts(schedule, employeeDateViolationsByDate), removeShifts(schedule, employeeDateViolationsByDate))
+                .flatMap(identity());
     }
 
     private Stream<Schedule> swapShiftsInTheSameDaysBetweenEmployees(Schedule schedule, Map<LocalDate, List<EmployeeDateViolation>> employeeDateViolationsByDate) {

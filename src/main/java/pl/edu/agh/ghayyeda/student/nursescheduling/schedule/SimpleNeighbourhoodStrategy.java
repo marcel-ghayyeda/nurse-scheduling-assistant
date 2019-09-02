@@ -8,17 +8,15 @@ import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ConstraintValidati
 import java.util.stream.Stream;
 
 import static java.util.function.Function.identity;
-import static java.util.stream.Collectors.toList;
 
 public class SimpleNeighbourhoodStrategy extends AbstractNeighbourhoodStrategy implements NeighbourhoodStrategy {
 
     private static final Logger log = LoggerFactory.getLogger(SimpleNeighbourhoodStrategy.class);
 
     @Override
-    public Neighbourhood createNeighbourhood(Schedule schedule, ConstraintValidationResult ignored) {
-        var neighbourhood = Stream.of(swapShiftsInTheSameDaysBetweenEmployees(schedule), addWorkingShifts(schedule), removeShifts(schedule)).flatMap(identity()).collect(toList());
-        log.debug("Neighbourhood size: {}", neighbourhood.size());
-        return new Neighbourhood(neighbourhood);
+    public Stream<Schedule> createNeighbourhood(Schedule schedule, ConstraintValidationResult ignored) {
+        return Stream.of(swapShiftsInTheSameDaysBetweenEmployees(schedule), addWorkingShifts(schedule), removeShifts(schedule))
+                .flatMap(identity());
     }
 
 

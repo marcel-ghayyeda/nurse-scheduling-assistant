@@ -20,10 +20,6 @@ class AbstractNeighbourhoodStrategy {
 
     }
 
-    Predicate<DateEmployeeShiftAssignment> shouldAddWorkingShift(Schedule schedule) {
-        return assignment -> assignment.isDayOff() || !schedule.isAllowedShift(assignment.getEmployee(), assignment.getShift());
-    }
-
 
     Schedule createNeighbour(Schedule schedule, DateEmployeeShiftAssignment dateEmployeeShiftAssignment, Shift shift) {
         DateEmployeeShiftAssignment dateEmployeeShiftAssignmentWithAddedShift = dateEmployeeShiftAssignment.setShift(shift);

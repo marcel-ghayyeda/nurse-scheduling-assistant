@@ -20,6 +20,10 @@ public class AlgorithmMetadata {
         return (int) ((currentIteration / (double) maximumIterations) * 100);
     }
 
+    public int getCurrentIteration() {
+        return currentIteration;
+    }
+
     public Optional<List<Double>> getLatestPenalties(int size) {
         if (penaltiesHistory.size() < size) {
             return Optional.empty();

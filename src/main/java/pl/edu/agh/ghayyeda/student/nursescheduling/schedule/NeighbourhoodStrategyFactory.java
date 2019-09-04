@@ -13,6 +13,9 @@ import java.util.List;
 public class NeighbourhoodStrategyFactory {
 
     private static final Logger log = LoggerFactory.getLogger(NeighbourhoodStrategyFactory.class);
+    private final SimpleNeighbourhoodStrategy simpleNeighbourhoodStrategy = new SimpleNeighbourhoodStrategy();
+    private final AdaptiveLargeNeighbourhoodStrategy wideNeighbourhood = new AdaptiveLargeNeighbourhoodStrategy(Adaptation.WIDE);
+    private final AdaptiveLargeNeighbourhoodStrategy narrowNeighbourhood = new AdaptiveLargeNeighbourhoodStrategy(Adaptation.NARROW);
 
     public NeighbourhoodStrategy createNeighbourhoodStrategy(AlgorithmMetadata algorithmMetadata, ConstraintValidationResult constraintValidationResult) {
         if (algorithmMetadata.getLatestPenalties(150).map(this::qualityOfCandidatesDidNotChangeIn).orElse(false) || constraintValidationResult.getConstraintViolationsDescriptions().isEmpty()) {
@@ -20,10 +23,10 @@ public class NeighbourhoodStrategyFactory {
             return new SimpleNeighbourhoodStrategy();
         } else if (algorithmMetadata.getLatestPenalties(100).map(this::qualityOfCandidatesDidNotChangeIn).orElse(false)) {
             log.info("Using AdaptiveLargeNeighbourhoodStrategy(WIDE)");
-            return new AdaptiveLargeNeighbourhoodStrategy(Adaptation.WIDE);
+            return wideNeighbourhood;
         } else {
             log.info("Using AdaptiveLargeNeighbourhoodStrategy(NARROW)");
-            return new AdaptiveLargeNeighbourhoodStrategy(Adaptation.NARROW);
+            return narrowNeighbourhood;
         }
     }
 
@@ -33,19 +36,22 @@ public class NeighbourhoodStrategyFactory {
         }
         double oldest = latestPenalties.get(latestPenalties.size() - 1);
         double newest = latestPenalties.get(0);
-        if (newest >= oldest || oldest - newest < 0.00001) {
-            return true;
-        } else {
-            return false;
-        }
+        return newest >= oldest || oldest - newest < 0.00001;
     }
 
     public NeighbourhoodStrategy createSimpleNeighbourhoodStrategy() {
-        return new SimpleNeighbourhoodStrategy();
+        return simpleNeighbourhoodStrategy;
     }
 
     public NeighbourhoodStrategy createAdaptiveNeighbourhoodStrategy(Adaptation adaptation) {
-        return new AdaptiveLargeNeighbourhoodStrategy(adaptation);
+        switch (adaptation) {
+            case WIDE:
+                return wideNeighbourhood;
+            case NARROW:
+                return narrowNeighbourhood;
+            default:
+                throw new IllegalStateException();
+        }
     }
 
 

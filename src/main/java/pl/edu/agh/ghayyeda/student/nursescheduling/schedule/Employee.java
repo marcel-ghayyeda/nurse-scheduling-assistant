@@ -1,9 +1,9 @@
-package pl.edu.agh.ghayyeda.student.nursescheduling.staff;
+package pl.edu.agh.ghayyeda.student.nursescheduling.schedule;
 
 import java.util.Objects;
 
-import static pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee.Type.BABY_SITTER;
-import static pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee.Type.NURSE;
+import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Employee.Type.BABY_SITTER;
+import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Employee.Type.NURSE;
 
 public class Employee {
 

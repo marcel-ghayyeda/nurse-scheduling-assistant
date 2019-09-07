@@ -2,7 +2,6 @@ package pl.edu.agh.ghayyeda.student.nursescheduling.schedule;
 
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
-import pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -18,7 +17,7 @@ import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.*;
 import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.EmployeeShiftAssignmentBuilder.employeeShiftAssignment;
 import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Shift.DAY_OFF;
-import static pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee.nurse;
+import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Employee.nurse;
 import static pl.edu.agh.ghayyeda.student.nursescheduling.util.YearMonthUtil.allDaysOf;
 
 public class ScheduleBuilder {

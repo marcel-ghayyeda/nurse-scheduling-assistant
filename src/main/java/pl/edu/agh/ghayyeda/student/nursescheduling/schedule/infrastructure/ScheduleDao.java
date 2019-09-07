@@ -1,10 +1,12 @@
-package pl.edu.agh.ghayyeda.student.nursescheduling.schedule;
+package pl.edu.agh.ghayyeda.student.nursescheduling.schedule.infrastructure;
+
+import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Schedule;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-interface ScheduleDao {
+public interface ScheduleDao {
 
     List<ScheduleDto> getAll();
 

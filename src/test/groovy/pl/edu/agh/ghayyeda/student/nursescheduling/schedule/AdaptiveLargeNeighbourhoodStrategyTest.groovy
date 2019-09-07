@@ -3,14 +3,14 @@ package pl.edu.agh.ghayyeda.student.nursescheduling.schedule
 import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ConstraintValidationResult
 import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ConstraintViolationsDescription
 import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.EmployeeDateViolation
-import pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee
+import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.neighbourhood.AdaptiveLargeNeighbourhoodStrategy
 import spock.lang.Specification
 
 import java.time.LocalDate
 
 import static java.time.Month.NOVEMBER
-import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.AdaptiveLargeNeighbourhoodStrategy.Adaptation.NARROW
-import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.AdaptiveLargeNeighbourhoodStrategy.Adaptation.WIDE
+import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.neighbourhood.Adaptation.NARROW
+import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.neighbourhood.Adaptation.WIDE
 import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.EmployeeShiftAssignmentBuilder.employeeShiftAssignment
 import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.ScheduleBuilder.schedule
 import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Shift.*

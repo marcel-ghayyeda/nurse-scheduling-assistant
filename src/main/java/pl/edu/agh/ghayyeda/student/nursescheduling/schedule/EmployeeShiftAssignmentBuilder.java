@@ -1,7 +1,5 @@
 package pl.edu.agh.ghayyeda.student.nursescheduling.schedule;
 
-import pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee;
-
 public class EmployeeShiftAssignmentBuilder {
 
     private Employee employee;

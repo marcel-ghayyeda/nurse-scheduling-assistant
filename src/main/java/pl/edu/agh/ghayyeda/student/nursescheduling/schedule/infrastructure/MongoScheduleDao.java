@@ -1,8 +1,9 @@
-package pl.edu.agh.ghayyeda.student.nursescheduling.schedule;
+package pl.edu.agh.ghayyeda.student.nursescheduling.schedule.infrastructure;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
+import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Schedule;
 
 import java.util.List;
 import java.util.Optional;

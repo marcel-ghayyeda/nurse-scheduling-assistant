@@ -1,4 +1,9 @@
-package pl.edu.agh.ghayyeda.student.nursescheduling.schedule;
+package pl.edu.agh.ghayyeda.student.nursescheduling.schedule.infrastructure;
+
+import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Schedule;
+import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Shift;
+import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.infrastructure.ScheduleDao;
+import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.infrastructure.ScheduleDto;
 
 import java.util.*;
 

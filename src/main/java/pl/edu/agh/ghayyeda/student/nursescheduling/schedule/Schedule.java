@@ -2,7 +2,6 @@ package pl.edu.agh.ghayyeda.student.nursescheduling.schedule;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee;
 
 import java.time.*;
 import java.util.Collection;
@@ -65,6 +64,15 @@ public class Schedule {
 
     public Collection<DateEmployeeShiftAssignments> getDateEmployeeShiftAssignmentsByDate() {
         return schedule;
+    }
+
+    public long getNumberOfEmployees() {
+        return schedule.stream()
+                .map(DateEmployeeShiftAssignments::getShiftAssignments)
+                .flatMap(Collection::stream)
+                .map(EmployeeShiftAssignment::getEmployee)
+                .distinct()
+                .count();
     }
 
     public Map<Employee, Long> getWorkHoursPerEmployee() {

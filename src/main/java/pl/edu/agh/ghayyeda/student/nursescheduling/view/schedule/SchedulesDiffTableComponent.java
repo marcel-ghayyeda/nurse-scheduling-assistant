@@ -6,7 +6,7 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.function.ValueProvider;
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.*;
-import pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee;
+import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Employee;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;

@@ -19,7 +19,7 @@ import com.vaadin.flow.function.ValueProvider;
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.EmployeeAvailability;
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Schedule;
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Shift;
-import pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee;
+import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Employee;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -29,8 +29,8 @@ import static com.vaadin.flow.component.icon.VaadinIcon.*;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Shift.*;
-import static pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee.Type.NURSE;
-import static pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee.employee;
+import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Employee.Type.NURSE;
+import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Employee.employee;
 import static pl.edu.agh.ghayyeda.student.nursescheduling.util.YearMonthUtil.allDaysOf;
 import static pl.edu.agh.ghayyeda.student.nursescheduling.view.util.ComponentUtil.*;
 

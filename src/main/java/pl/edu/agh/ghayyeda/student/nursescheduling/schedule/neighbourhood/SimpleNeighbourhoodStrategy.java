@@ -1,9 +1,11 @@
-package pl.edu.agh.ghayyeda.student.nursescheduling.schedule;
+package pl.edu.agh.ghayyeda.student.nursescheduling.schedule.neighbourhood;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ConstraintValidationResult;
+import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.DateEmployeeShiftAssignment;
+import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Schedule;
 
 import java.util.stream.Stream;
 
@@ -16,7 +18,8 @@ public class SimpleNeighbourhoodStrategy extends AbstractNeighbourhoodStrategy i
     @Override
     public Stream<Schedule> createNeighbourhood(Schedule schedule, ConstraintValidationResult ignored) {
         return Stream.of(swapShiftsInTheSameDaysBetweenEmployees(schedule), addWorkingShifts(schedule), removeShifts(schedule))
-                .flatMap(identity());
+                .flatMap(identity())
+                .distinct();
     }
 
 

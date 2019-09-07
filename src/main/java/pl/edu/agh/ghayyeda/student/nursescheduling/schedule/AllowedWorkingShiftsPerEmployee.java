@@ -1,7 +1,5 @@
 package pl.edu.agh.ghayyeda.student.nursescheduling.schedule;
 
-import pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;

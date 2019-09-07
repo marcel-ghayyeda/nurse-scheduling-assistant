@@ -1,7 +1,6 @@
 package pl.edu.agh.ghayyeda.student.nursescheduling.schedule;
 
 import dnl.utils.text.table.TextTable;
-import pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;

@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ConstraintValidationResult;
 import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ScheduleConstraint;
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Schedule;
-import pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee;
+import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Employee;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;

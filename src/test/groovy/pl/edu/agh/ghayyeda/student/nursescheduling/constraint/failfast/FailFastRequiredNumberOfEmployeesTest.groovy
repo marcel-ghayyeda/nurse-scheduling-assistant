@@ -1,7 +1,6 @@
 package pl.edu.agh.ghayyeda.student.nursescheduling.constraint.failfast
 
-import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.failfast.FailFastRequiredNumberOfEmployees
-import pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee
+import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Employee
 import spock.lang.Specification
 
 import java.time.LocalDate

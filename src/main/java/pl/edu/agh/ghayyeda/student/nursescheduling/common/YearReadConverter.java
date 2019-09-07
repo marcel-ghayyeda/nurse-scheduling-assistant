@@ -1,4 +1,4 @@
-package pl.edu.agh.ghayyeda.student.nursescheduling.schedule;
+package pl.edu.agh.ghayyeda.student.nursescheduling.common;
 
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.convert.ReadingConverter;

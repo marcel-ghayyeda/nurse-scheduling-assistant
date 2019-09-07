@@ -1,6 +1,7 @@
-package pl.edu.agh.ghayyeda.student.nursescheduling.schedule;
+package pl.edu.agh.ghayyeda.student.nursescheduling.schedule.infrastructure;
 
 import org.springframework.data.annotation.Id;
+import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Schedule;
 
 import java.util.UUID;
 
@@ -17,11 +18,11 @@ public class ScheduleDto {
         this.schedule = schedule;
     }
 
-    UUID getId() {
+    public UUID getId() {
         return id;
     }
 
-    String getName() {
+    public String getName() {
         return name;
     }
 

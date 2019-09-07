@@ -1,6 +1,6 @@
 package pl.edu.agh.ghayyeda.student.nursescheduling.constraint;
 
-import pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee;
+import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Employee;
 
 import java.time.LocalDate;
 import java.util.Objects;

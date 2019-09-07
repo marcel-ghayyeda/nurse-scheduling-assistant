@@ -2,7 +2,7 @@ package pl.edu.agh.ghayyeda.student.nursescheduling.solver
 
 import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.penaltyaware.PenaltyAwareScheduleConstraintFactory
 import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.penaltyaware.PenaltyAwareScheduleConstraintValidationFacade
-import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.NeighbourhoodStrategyFactory
+import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.neighbourhood.NeighbourhoodStrategyFactory
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.ScheduleAsciiTablePresenter
 import pl.edu.agh.ghayyeda.student.nursescheduling.util.ScheduleValidationUtils
 import spock.lang.Specification
@@ -16,8 +16,8 @@ import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.EmployeeShift
 import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.ScheduleBuilder.schedule
 import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Shift.*
 import static pl.edu.agh.ghayyeda.student.nursescheduling.solver.SolverAccuracy.NONE
-import static pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee.babySitter
-import static pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee.nurse
+import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Employee.babySitter
+import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Employee.nurse
 
 class TabuSearchSolverTest extends Specification {
 

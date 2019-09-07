@@ -6,7 +6,7 @@ import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ScheduleConstraint
 import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ConstraintValidationResult;
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.EmployeeShiftAssignment;
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Schedule;
-import pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee;
+import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Employee;
 import pl.edu.agh.ghayyeda.student.nursescheduling.util.YearMonthUtil;
 
 import java.time.LocalDate;

@@ -1,6 +1,5 @@
 package pl.edu.agh.ghayyeda.student.nursescheduling.schedule
 
-import pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee
 import spock.lang.Specification
 
 import static java.time.Month.NOVEMBER

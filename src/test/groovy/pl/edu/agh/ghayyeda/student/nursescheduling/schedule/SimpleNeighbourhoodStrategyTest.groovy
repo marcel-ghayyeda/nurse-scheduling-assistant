@@ -1,6 +1,6 @@
 package pl.edu.agh.ghayyeda.student.nursescheduling.schedule
 
-import pl.edu.agh.ghayyeda.student.nursescheduling.staff.Employee
+import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.neighbourhood.SimpleNeighbourhoodStrategy
 import spock.lang.Specification
 
 import static java.time.Month.NOVEMBER

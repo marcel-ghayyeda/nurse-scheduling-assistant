@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import pl.edu.agh.ghayyeda.student.nursescheduling.benchmark.TimeLogger;
 import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ConstraintValidationResult;
 import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.penaltyaware.PenaltyAwareScheduleConstraintValidationFacade;
-import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.NeighbourhoodStrategyFactory;
+import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.neighbourhood.NeighbourhoodStrategyFactory;
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Schedule;
 
 import java.math.BigDecimal;
@@ -14,8 +14,8 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import static java.util.stream.Collectors.toList;
-import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.AdaptiveLargeNeighbourhoodStrategy.Adaptation.WIDE;
 import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.ScheduleAsciiTablePresenter.buildAsciiTableRepresentationOf;
+import static pl.edu.agh.ghayyeda.student.nursescheduling.schedule.neighbourhood.Adaptation.WIDE;
 import static pl.edu.agh.ghayyeda.student.nursescheduling.util.Predicates.not;
 
 public class TabuSearchSolver implements Solver {

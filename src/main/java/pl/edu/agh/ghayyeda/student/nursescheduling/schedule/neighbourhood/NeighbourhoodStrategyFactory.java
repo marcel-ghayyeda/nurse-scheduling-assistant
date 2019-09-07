@@ -1,10 +1,9 @@
-package pl.edu.agh.ghayyeda.student.nursescheduling.schedule;
+package pl.edu.agh.ghayyeda.student.nursescheduling.schedule.neighbourhood;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ConstraintValidationResult;
-import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.AdaptiveLargeNeighbourhoodStrategy.Adaptation;
 import pl.edu.agh.ghayyeda.student.nursescheduling.solver.AlgorithmMetadata;
 
 import java.util.List;
@@ -14,19 +13,27 @@ public class NeighbourhoodStrategyFactory {
 
     private static final Logger log = LoggerFactory.getLogger(NeighbourhoodStrategyFactory.class);
     private final SimpleNeighbourhoodStrategy simpleNeighbourhoodStrategy = new SimpleNeighbourhoodStrategy();
-    private final AdaptiveLargeNeighbourhoodStrategy wideNeighbourhood = new AdaptiveLargeNeighbourhoodStrategy(Adaptation.WIDE);
-    private final AdaptiveLargeNeighbourhoodStrategy narrowNeighbourhood = new AdaptiveLargeNeighbourhoodStrategy(Adaptation.NARROW);
+    private final AdaptiveLargeNeighbourhoodStrategy adaptiveWideNeighbourhood = new AdaptiveLargeNeighbourhoodStrategy(Adaptation.WIDE);
+    private final AdaptiveLargeNeighbourhoodStrategy adaptiveNarrowNeighbourhood = new AdaptiveLargeNeighbourhoodStrategy(Adaptation.NARROW);
+    private final RandomlyAdaptiveLargeNeighbourhoodStrategy randomlyAdaptiveWideNeighbourhood = new RandomlyAdaptiveLargeNeighbourhoodStrategy(Adaptation.WIDE);
+    private final RandomlyAdaptiveLargeNeighbourhoodStrategy randomlyAdaptiveNarrowNeighbourhood = new RandomlyAdaptiveLargeNeighbourhoodStrategy(Adaptation.NARROW);
 
     public NeighbourhoodStrategy createNeighbourhoodStrategy(AlgorithmMetadata algorithmMetadata, ConstraintValidationResult constraintValidationResult) {
-        if (algorithmMetadata.getLatestPenalties(150).map(this::qualityOfCandidatesDidNotChangeIn).orElse(false) || constraintValidationResult.getConstraintViolationsDescriptions().isEmpty()) {
+        if (algorithmMetadata.getLatestPenalties(16).map(this::qualityOfCandidatesDidNotChangeIn).orElse(false) || constraintValidationResult.getConstraintViolationsDescriptions().isEmpty()) {
             log.info("Using SimpleNeighbourhoodStrategy");
             return new SimpleNeighbourhoodStrategy();
-        } else if (algorithmMetadata.getLatestPenalties(100).map(this::qualityOfCandidatesDidNotChangeIn).orElse(false)) {
+        } else if (algorithmMetadata.getLatestPenalties(8).map(this::qualityOfCandidatesDidNotChangeIn).orElse(false)) {
             log.info("Using AdaptiveLargeNeighbourhoodStrategy(WIDE)");
-            return wideNeighbourhood;
-        } else {
+            return adaptiveWideNeighbourhood;
+        } else if (algorithmMetadata.getLatestPenalties(4).map(this::qualityOfCandidatesDidNotChangeIn).orElse(false)) {
             log.info("Using AdaptiveLargeNeighbourhoodStrategy(NARROW)");
-            return narrowNeighbourhood;
+            return adaptiveNarrowNeighbourhood;
+        } else if (algorithmMetadata.getLatestPenalties(2).map(this::qualityOfCandidatesDidNotChangeIn).orElse(false)) {
+            log.info("Using RandomlyAdaptiveLargeNeighbourhoodStrategy(WIDE)");
+            return randomlyAdaptiveWideNeighbourhood;
+        } else {
+            log.info("Using RandomlyAdaptiveLargeNeighbourhoodStrategy(NARROW)");
+            return randomlyAdaptiveNarrowNeighbourhood;
         }
     }
 
@@ -46,9 +53,9 @@ public class NeighbourhoodStrategyFactory {
     public NeighbourhoodStrategy createAdaptiveNeighbourhoodStrategy(Adaptation adaptation) {
         switch (adaptation) {
             case WIDE:
-                return wideNeighbourhood;
+                return adaptiveWideNeighbourhood;
             case NARROW:
-                return narrowNeighbourhood;
+                return adaptiveNarrowNeighbourhood;
             default:
                 throw new IllegalStateException();
         }

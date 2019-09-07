@@ -2,6 +2,9 @@ package pl.edu.agh.ghayyeda.student.nursescheduling.schedule;
 
 import org.springframework.stereotype.Component;
 import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.penaltyaware.PenaltyAwareScheduleConstraintValidationFacade;
+import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.infrastructure.ScheduleDao;
+import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.infrastructure.ScheduleDto;
+import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.neighbourhood.NeighbourhoodStrategyFactory;
 import pl.edu.agh.ghayyeda.student.nursescheduling.solver.SolverAccuracy;
 import pl.edu.agh.ghayyeda.student.nursescheduling.solver.TabuSearchSolver;
 import pl.edu.agh.ghayyeda.student.nursescheduling.util.ScheduleValidationUtils;

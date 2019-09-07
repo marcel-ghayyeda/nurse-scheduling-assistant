@@ -13,6 +13,7 @@ public class NeighbourhoodStrategyFactory {
 
     private static final Logger log = LoggerFactory.getLogger(NeighbourhoodStrategyFactory.class);
     private final SimpleNeighbourhoodStrategy simpleNeighbourhoodStrategy = new SimpleNeighbourhoodStrategy();
+    private final SimpleNeighbourhoodStrategy randomSimpleNeighbourhoodStrategy = new SimpleNeighbourhoodStrategy(0.05);
     private final AdaptiveLargeNeighbourhoodStrategy adaptiveWideNeighbourhood = new AdaptiveLargeNeighbourhoodStrategy(Adaptation.WIDE);
     private final AdaptiveLargeNeighbourhoodStrategy adaptiveNarrowNeighbourhood = new AdaptiveLargeNeighbourhoodStrategy(Adaptation.NARROW);
     private final RandomlyAdaptiveLargeNeighbourhoodStrategy randomlyAdaptiveWideNeighbourhood = new RandomlyAdaptiveLargeNeighbourhoodStrategy(Adaptation.WIDE);
@@ -48,6 +49,10 @@ public class NeighbourhoodStrategyFactory {
 
     public NeighbourhoodStrategy createSimpleNeighbourhoodStrategy() {
         return simpleNeighbourhoodStrategy;
+    }
+
+    public NeighbourhoodStrategy createRandomSimpleNeighbourhoodStrategy() {
+        return randomSimpleNeighbourhoodStrategy;
     }
 
     public NeighbourhoodStrategy createAdaptiveNeighbourhoodStrategy(Adaptation adaptation) {

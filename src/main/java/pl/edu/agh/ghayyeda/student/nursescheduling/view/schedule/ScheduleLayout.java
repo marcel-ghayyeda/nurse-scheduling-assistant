@@ -6,6 +6,7 @@ import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.*;
+import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.ScheduleAsciiTablePresenter;
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.ScheduleFacade;
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.ScheduleWrapper;
 import pl.edu.agh.ghayyeda.student.nursescheduling.view.MainLayout;
@@ -47,6 +48,7 @@ public class ScheduleLayout extends VerticalLayout implements HasUrlParameter<St
     }
 
     private void presentSchedule(ScheduleWrapper schedule) {
+        System.out.println(ScheduleAsciiTablePresenter.buildAsciiTableRepresentationOf(schedule.getSchedule()));
         ScheduleTableComponent scheduleTableComponent = new ScheduleTableComponent(schedule.getSchedule());
 
         add(new ScheduleDetailsComponent(schedule));

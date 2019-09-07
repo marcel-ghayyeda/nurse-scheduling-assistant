@@ -9,11 +9,17 @@ public class AlgorithmMetadata {
     private final int currentIteration;
     private final int maximumIterations;
     private final Collection<Double> penaltiesHistory;
+    private final boolean foundFeasibleSchedule;
 
-    public AlgorithmMetadata(int currentIteration, int maximumIterations, Collection<Double> penaltiesHistory) {
+    public AlgorithmMetadata(boolean foundFeasibleSchedule, int currentIteration, int maximumIterations, Collection<Double> penaltiesHistory) {
+        this.foundFeasibleSchedule = foundFeasibleSchedule;
         this.currentIteration = currentIteration;
         this.maximumIterations = maximumIterations;
         this.penaltiesHistory = penaltiesHistory;
+    }
+
+    public boolean isFoundFeasibleSchedule() {
+        return foundFeasibleSchedule;
     }
 
     public int getProgressPercentage() {

@@ -5,8 +5,8 @@ import org.slf4j.LoggerFactory;
 import pl.edu.agh.ghayyeda.student.nursescheduling.benchmark.TimeLogger;
 import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.ConstraintValidationResult;
 import pl.edu.agh.ghayyeda.student.nursescheduling.constraint.penaltyaware.PenaltyAwareScheduleConstraintValidationFacade;
-import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.neighbourhood.NeighbourhoodStrategyFactory;
 import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.Schedule;
+import pl.edu.agh.ghayyeda.student.nursescheduling.schedule.neighbourhood.NeighbourhoodStrategyFactory;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -55,7 +55,7 @@ public class TabuSearchSolver implements Solver {
         var bestValidatedSchedule = initialValidatedSchedule;
         var currentValidatedSchedule = initialValidatedSchedule;
 
-        int firstFeasibleScheduleFoundIterationNumber = -1;
+        int firstFeasibleScheduleFoundIterationNumber = initialValidatedSchedule.isFeasible() ? 0 : -1;
         int bestScheduleFoundIterationNumber = -1;
 
         final var tabuSet = TabuSet.newInstance();
@@ -65,7 +65,7 @@ public class TabuSearchSolver implements Solver {
         while (shouldProceed(firstFeasibleScheduleFoundIterationNumber, currentIteration)) {
             currentIteration++;
             log.debug("Current iteration: {}", currentIteration);
-            final var maybeBestCandidate = findBestNeighbourCandidate(new AlgorithmMetadata(currentIteration, MAXIMUM_NUMBER_OF_ITERATIONS, pentalyByIteration.values()), currentValidatedSchedule, tabuSet);
+            final var maybeBestCandidate = findBestNeighbourCandidate(new AlgorithmMetadata(firstFeasibleScheduleFoundIterationNumber > -1, currentIteration, MAXIMUM_NUMBER_OF_ITERATIONS, pentalyByIteration.values()), currentValidatedSchedule, tabuSet);
 
             if (!maybeBestCandidate.isPresent()) {
                 break;
@@ -91,7 +91,7 @@ public class TabuSearchSolver implements Solver {
 
         log.debug("PENALTY BY ITERATION NUMBER");
         log.debug("------");
-        pentalyByIteration.forEach((it, penalty) -> System.out.println(it + "," + new BigDecimal(penalty).setScale(8, RoundingMode.HALF_UP)));
+        pentalyByIteration.forEach((it, penalty) -> System.out.println(it + "," + new BigDecimal(penalty).setScale(20, RoundingMode.HALF_UP)));
         log.debug("------");
         log.debug("Found best schedule in {} iteration", bestScheduleFoundIterationNumber);
         log.debug(buildAsciiTableRepresentationOf(bestValidatedSchedule.getSchedule()));
@@ -111,6 +111,20 @@ public class TabuSearchSolver implements Solver {
     }
 
     private Optional<ValidatedSchedule> findBestNeighbourCandidate(AlgorithmMetadata algorithmMetadata, ValidatedSchedule currentValidatedSchedule, Set<Schedule> tabuSet) {
+        if (algorithmMetadata.isFoundFeasibleSchedule()) {
+            for (int i = 0; i < 20; i++) {
+                Optional<ValidatedSchedule> result = neighbourhoodStrategyFactory.createRandomSimpleNeighbourhoodStrategy()
+                        .createNeighbourhood(currentValidatedSchedule.getSchedule(), currentValidatedSchedule.getConstraintValidationResult())
+                        .filter(not(tabuSet::contains))
+                        .parallel()
+                        .map(schedule -> new ValidatedSchedule(schedule, validate(schedule))).collect(toList()).stream()
+                        .min(bestScheduleFirst());
+                if (result.isPresent()) {
+                    return result;
+                }
+            }
+            return Optional.empty();
+        }
         var result = neighbourhoodStrategyFactory.createNeighbourhoodStrategy(algorithmMetadata, currentValidatedSchedule.getConstraintValidationResult())
                 .createNeighbourhood(currentValidatedSchedule.getSchedule(), currentValidatedSchedule.getConstraintValidationResult())
                 .filter(not(tabuSet::contains))

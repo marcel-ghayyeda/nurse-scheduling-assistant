@@ -15,7 +15,7 @@
         <gmavenplus-plugin.version>1.5</gmavenplus-plugin.version>
         <vavr.version>0.9.2</vavr.version>
         <!-- Dependencies -->
-        <vaadin.version>13.0.1</vaadin.version>
+        <vaadin.version>19.0.5</vaadin.version>
         <groovy.version>2.5.4</groovy.version>
 
     </properties>
